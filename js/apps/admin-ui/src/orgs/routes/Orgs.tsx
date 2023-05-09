@@ -13,8 +13,8 @@ export const OrgsRoute: AppRouteObject = {
   element: <OrgsSection />,
   breadcrumb: (t) => t("orgs:orgList"),
   handle: {
-    access: "view-realm",
-  }
+    access: "query-clients",
+  },
 };
 
 export const toOrgs = (params: OrgsParams): Partial<Path> => ({

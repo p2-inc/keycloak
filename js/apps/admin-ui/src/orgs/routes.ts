@@ -1,4 +1,5 @@
 import type { AppRouteObject } from "../routes";
+
 import { OrgsRoute } from "./routes/Orgs";
 import { OrgRoute } from "./routes/Org";
 

@@ -12,11 +12,11 @@ import { GeneralStyles } from "./general/general-styles";
 import { EmailTemplate } from "./email/email-template";
 import { PortalStyles } from "./portal/portal-styles";
 
-import type RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { KeycloakSpinner } from "../components/keycloak-spinner/KeycloakSpinner";
 import { useAdminClient, useFetch } from "../context/auth/AdminClient";
 import { useState } from "react";
 import { useRealm } from "../context/realm-context/RealmContext";
+import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
 
 export default function StylesSection() {
   const { t } = useTranslation("styles");

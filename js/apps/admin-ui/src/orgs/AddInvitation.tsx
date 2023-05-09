@@ -14,7 +14,7 @@ import { useAlerts } from "../components/alert/Alerts";
 import useOrgFetcher from "./useOrgFetcher";
 import { useRealm } from "../context/realm-context/RealmContext";
 import type { OrgRepresentation } from "./routes";
-import { HelpItem } from "../components/help-enabler/HelpItem";
+import { HelpItem } from "ui-shared";
 
 type AddInvitationProps = {
   toggleVisibility: () => void;

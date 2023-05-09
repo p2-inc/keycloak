@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
 import { FormGroup, TextInput, ValidatedOptions } from "@patternfly/react-core";
 import { MultiLineInput } from "../../components/multi-line-input/MultiLineInput";
-import { HelpItem } from "../../components/help-enabler/HelpItem";
+import { HelpItem } from "ui-shared";
 
 export const NewOrg = () => {
   const { t } = useTranslation("orgs");

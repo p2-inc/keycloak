@@ -1,6 +1,7 @@
+import type { AppRouteObject } from "../../routes";
+
 import { lazy } from "react";
 import { generatePath, Path } from "react-router-dom";
-import type { AppRouteObject } from "../../routes";
 
 export type OrgTab =
   | "settings"
@@ -23,8 +24,8 @@ export const OrgRoute: AppRouteObject = {
   element: <OrgDetails />,
   breadcrumb: (t) => t("orgs:orgDetails"),
   handle: {
-    access: "view-realm",
-  }
+    access: "view-clients",
+  },
 };
 
 export const toOrg = (params: OrgParams): Partial<Path> => ({

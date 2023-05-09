@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 import { useAlerts } from "../components/alert/Alerts";
 import { useConfirmDialog } from "../components/confirm-dialog/ConfirmDialog";
 import type { KeyValueType } from "../components/key-value-form/key-value-convert";
-import { RealmSettingsAttributeTab } from "./RealmSettingsAttributeTab";
 import {
   RoutableTabs,
   useRoutableTab,
@@ -242,7 +241,6 @@ export const RealmSettingsTabs = ({
     useServerInfo().profileInfo?.disabledFeatures?.includes("CLIENT_POLICIES");
   const userProfileTab = useTab("user-profile");
   const userRegistrationTab = useTab("user-registration");
-  const attributesTab = useTab("attributes");
 
   const useClientPoliciesTab = (tab: ClientPoliciesTab) =>
     useRoutableTab(
@@ -425,13 +423,6 @@ export const RealmSettingsTabs = ({
             {...userRegistrationTab}
           >
             <UserRegistration />
-          </Tab>
-          <Tab
-            title={<TabTitleText>{t("attributes")}</TabTitleText>}
-            data-testid="rs-realm-attributes-tab"
-            {...attributesTab}
-          >
-            <RealmSettingsAttributeTab realm={realm} />
           </Tab>
         </RoutableTabs>
       </PageSection>

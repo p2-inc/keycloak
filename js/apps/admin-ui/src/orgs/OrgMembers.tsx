@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { KeycloakDataTable } from "../components/table-toolbar/KeycloakDataTable";
+import {
+  Action,
+  KeycloakDataTable,
+} from "../components/table-toolbar/KeycloakDataTable";
 import { ListEmptyState } from "../components/list-empty-state/ListEmptyState";
 import { useRealm } from "../context/realm-context/RealmContext";
 import { AddMember } from "./AddMember";
@@ -103,7 +106,7 @@ export default function OrgMembers({ org }: OrgMembersTypeProps) {
               // allow selecting roles and assigning to the user
               return Promise.resolve(true);
             },
-          },
+          } as Action<any>,
           {
             title: "Remove from Org",
             onRowClick: async (user: UserRepresentation): Promise<boolean> => {
@@ -111,7 +114,7 @@ export default function OrgMembers({ org }: OrgMembersTypeProps) {
               refresh();
               return Promise.resolve(true);
             },
-          },
+          } as Action<any>,
         ]}
         columns={[
           {

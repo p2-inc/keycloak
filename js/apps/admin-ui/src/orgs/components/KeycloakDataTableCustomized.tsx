@@ -11,8 +11,8 @@ import {
   TableVariant,
 } from "@patternfly/react-table";
 import { get, cloneDeep, differenceBy, omit, uniqBy } from "lodash-es";
-import { ListEmptyState } from "../list-empty-state/ListEmptyState";
-import { KeycloakSpinner } from "../keycloak-spinner/KeycloakSpinner";
+import { ListEmptyState } from "../../components/list-empty-state/ListEmptyState";
+import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinner";
 import { useFetch } from "../../context/auth/AdminClient";
 import { ButtonVariant } from "@patternfly/react-core";
 import type {
@@ -20,8 +20,8 @@ import type {
   DataListProps,
   DetailField,
   Field,
-} from "./KeycloakDataTable";
-import { TableToolbar } from "./TableToolbar";
+} from "../../components/table-toolbar/KeycloakDataTable";
+import { TableToolbar } from "../../components/table-toolbar/TableToolbar";
 
 type TitleCell = { title: JSX.Element };
 type Cell<T> = keyof T | JSX.Element | TitleCell;

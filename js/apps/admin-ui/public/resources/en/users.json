@@ -8,7 +8,6 @@
   "createUser": "Create user",
   "createNewUser": "Create new user",
   "noUsersFound": "No users found",
-  "noUsersAvailable": "No users available",
   "noUsersFoundError": "No users found due to {{error}}",
   "noUsersFoundErrorStorage": "No users found, could be due to wrongly configured federated provider {{error}}",
   "noGroups": "No groups",

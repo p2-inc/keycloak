@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Button,
   ButtonVariant,
@@ -11,7 +11,7 @@ import useOrgFetcher from "../useOrgFetcher";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import type UserRepresentation from "@keycloak/keycloak-admin-client/lib/defs/userRepresentation";
 import type RoleRepresentation from "@keycloak/keycloak-admin-client/lib/defs/roleRepresentation";
-import { KeycloakDataTableCustomized } from "../../components/table-toolbar/KeycloakDataTableCustomized";
+import { KeycloakDataTableCustomized } from "../components/KeycloakDataTableCustomized";
 import { differenceBy } from "lodash";
 
 type AssignRoleToMemberProps = {

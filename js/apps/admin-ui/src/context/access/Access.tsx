@@ -37,13 +37,19 @@ export const AccessContextProvider = ({ children }: PropsWithChildren) => {
   };
 
   const hasSomeAccessByString = (...types: string[]) => {
-    return types.some((type) => type === "anyone" || access.filter(a => {
-      return a.toString() === type;
-    }).length > 0);
+    return types.some(
+      (type) =>
+        type === "anyone" ||
+        access.filter((a) => {
+          return a.toString() === type;
+        }).length > 0
+    );
   };
 
   return (
-    <AccessContext.Provider value={{ hasAccess, hasSomeAccess, hasSomeAccessByString }}>
+    <AccessContext.Provider
+      value={{ hasAccess, hasSomeAccess, hasSomeAccessByString }}
+    >
       {children}
     </AccessContext.Provider>
   );

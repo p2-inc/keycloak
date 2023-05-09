@@ -10,16 +10,15 @@ export type StylesParams = {
   tab?: StylesTab;
 };
 
-
 const StylesSection = lazy(() => import("../StylesSection"));
 
 export const StylesRoute: AppRouteObject = {
   path: "/:realm/styles",
   element: <StylesSection />,
-  breadcrumb: (t) => t("styles"),
   handle: {
-    access: "view-realm",
-  }
+    access: "query-clients",
+  },
+  breadcrumb: (t) => t("styles"),
 };
 
 export const StylesRouteWithTab: AppRouteObject = {

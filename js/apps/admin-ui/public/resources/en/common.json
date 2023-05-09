@@ -79,7 +79,6 @@
   "allTypes": "All types",
   "home": "Home",
   "manage": "Manage",
-  "extensions": "Extensions",
   "clients": "Clients",
   "clientScopes": "Client scopes",
   "realmRoles": "Realm roles",
@@ -136,7 +135,6 @@
     }
   },
   "configure": "Configure",
-  "organizations": "Organizations",
   "realmSettings": "Realm settings",
   "authentication": "Authentication",
   "identityProviders": "Identity providers",
@@ -215,5 +213,6 @@
   "forbidden_one": "Forbidden, permission needed:",
   "forbidden_other": "Forbidden, permissions needed:",
   "noRealmRolesToAssign": "There are no realm roles to assign",
-  "loadingRealms": "Loading realms…"
+  "loadingRealms": "Loading realms…",
+  "extensions": "Extensions"
 }
