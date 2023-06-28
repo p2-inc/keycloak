@@ -192,7 +192,7 @@ public final class Database {
                 "postgres"
         ),
         COCKROACH(POSTGRES.databaseKind, //needs to be aligned with https://quarkus.io/guides/datasource#default-datasource
-                Enabled.MAP_STORE_ONLY,
+                Enabled.ENABLED,
                 POSTGRES.xaDriver,
                 POSTGRES.nonXaDriver,
                 "org.hibernate.dialect.CockroachDB201Dialect",
