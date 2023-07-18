@@ -69,6 +69,7 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
     private static final Logger logger = Logger.getLogger(LiquibaseJpaUpdaterProvider.class);
 
     public static final String CHANGELOG = "META-INF/jpa-changelog-master.xml";
+    public static final String CHANGELOG_CRDB = "META-INF/jpa-changelog-master-crdb.xml";
 
     public static final String DEPLOYMENT_ID_COLUMN = "DEPLOYMENT_ID";
 
