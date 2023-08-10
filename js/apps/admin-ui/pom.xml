@@ -53,7 +53,7 @@
                 <resources>
                     <resource>
                         <directory>dist</directory>
-                        <targetPath>theme/keycloak.v2/admin/resources</targetPath>
+                        <targetPath>theme/${admin-ui.theme.name}/admin/resources</targetPath>
                         <includes>
                             <include>locales/**</include>
                         </includes>
@@ -70,7 +70,7 @@
             </resource>
             <resource>
                 <directory>dist</directory>
-                <targetPath>theme/keycloak.v2/admin/resources</targetPath>
+                <targetPath>theme/${admin-ui.theme.name}/admin/resources</targetPath>
                 <excludes>
                     <exclude>index.html</exclude>
                     <exclude>locales/**</exclude>
