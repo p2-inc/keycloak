@@ -23,3 +23,4 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 - Help URLs
   - In the `/js/apps/admin-ui/src/help-urls.ts` file there are two links to the Phase Two docs for orgs and customizing the UI
 - Add `hasSomeAccessByString` to the `Access.tsx` file for use with `useAccess`
+- Make sure the `react-colorful` is added to support the `ColorPicker`

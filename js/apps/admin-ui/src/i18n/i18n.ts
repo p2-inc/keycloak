@@ -4,7 +4,6 @@ import { initReactI18next } from "react-i18next";
 import environment from "../environment";
 import { joinPath } from "../utils/joinPath";
 import { OverridesBackend } from "./OverridesBackend";
-// import HttpBackend from "i18next-http-backend";
 
 export const DEFAULT_LOCALE = "en";
 export const DEFAULT_NAMESPACE = "common";
@@ -52,5 +51,4 @@ export const i18n = createInstance({
 });
 
 i18n.use(OverridesBackend);
-// i18n.use(HttpBackend);
 i18n.use(initReactI18next);
