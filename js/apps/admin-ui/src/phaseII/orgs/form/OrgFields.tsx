@@ -45,7 +45,10 @@ export const OrgFields = () => {
         label={t("domains")}
         fieldId="domains"
         labelIcon={
-          <HelpItem helpText="orgs:domainHelp" fieldLabelId="orgs:domain" />
+          <HelpItem
+            helpText={t("orgs:domainHelp")}
+            fieldLabelId={t("orgs:domain")}
+          />
         }
       >
         <MultiLineInput
