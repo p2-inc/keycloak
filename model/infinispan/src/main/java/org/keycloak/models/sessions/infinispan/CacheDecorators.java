@@ -44,12 +44,17 @@ public class CacheDecorators {
         return cache.getAdvancedCache().withFlags(Flag.SKIP_CACHE_LOAD, Flag.SKIP_CACHE_STORE);
     }
 
+    private static final boolean IGNORE_SKIP_CACHE_STORE = Boolean.parseBoolean(System.getenv("KC_ISPN_IGNORE_SKIP_CACHE_STORE"));
+
     /**
      * Adds {@link Flag#SKIP_CACHE_STORE} flag to the cache.
      * @param cache
      * @return Cache with the flags applied.
      */
     public static <K, V> AdvancedCache<K, V> skipCacheStore(Cache<K, V> cache) {
+        if (IGNORE_SKIP_CACHE_STORE) {
+            return cache.getAdvancedCache();
+        }
         return cache.getAdvancedCache().withFlags(Flag.SKIP_CACHE_STORE);
     }
 
