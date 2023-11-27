@@ -1,5 +1,6 @@
 {
   "orgList": "Organizations",
+  "styles": "Styles",
   "orgExplain": "Explore, manage, and configure the organizations you have access to.",
   "searchForOrg": "Search for organization",
   "noOrgsInThisRealm": "No organizations in this realm",

@@ -93,3 +93,4 @@ node
 
 # SDKMAM environment file
 .sdkmanrc
+.vscode/settings.json

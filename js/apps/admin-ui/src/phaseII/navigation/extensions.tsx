@@ -17,8 +17,8 @@ const Extensions = () => {
 
   return !isOnAddRealm ? (
     <NavGroup aria-label={t("extensions")} title={t("extensions")}>
-      {showOrgs && <LeftNav title="Organizations" path="/organizations" />}
-      <LeftNav title="Styles" path="/styles" />
+      {showOrgs && <LeftNav title={t("orgList")} path="/organizations" />}
+      <LeftNav title={t("styles")} path="/styles" />
     </NavGroup>
   ) : null;
 };

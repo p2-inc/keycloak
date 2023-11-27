@@ -1,8 +1,6 @@
 import {
   AlertVariant,
   Checkbox,
-  Flex,
-  FlexItem,
   Form,
   FormGroup,
   PageSection,
@@ -11,21 +9,43 @@ import {
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { HelpItem } from "ui-shared";
-import { KeycloakTextInput } from "../../../components/keycloak-text-input/KeycloakTextInput";
 import { SaveReset } from "../components/SaveReset";
 import { useState, useEffect } from "react";
 import { useRealm } from "../../../context/realm-context/RealmContext";
 import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { get, mapKeys, pick } from "lodash-es";
 import { useAlerts } from "../../../components/alert/Alerts";
-import { ColorPicker } from "../components/ColorPicker";
 import { KeycloakTextArea } from "../../../components/keycloak-text-area/KeycloakTextArea";
 import { adminClient } from "../../../admin-client";
+import ColorFormGroup from "./components/color-form-group";
 
-type PortalStylesType = {
-  primaryColor: string;
-  secondaryColor: string;
-  backgroundColor: string;
+export type PortalStylesTypeColors = {
+  primaryColor100: string;
+  primaryColor200: string;
+  primaryColor400: string;
+  primaryColor500: string;
+  primaryColor600: string;
+  primaryColor700: string;
+  primaryColor900: string;
+  secondaryColor800: string;
+  secondaryColor900: string;
+};
+
+type PortalStylesTypeColorsKeys = keyof PortalStylesTypeColors;
+
+const colorKeys: PortalStylesTypeColorsKeys[] = [
+  "primaryColor100",
+  "primaryColor200",
+  "primaryColor400",
+  "primaryColor500",
+  "primaryColor600",
+  "primaryColor700",
+  "primaryColor900",
+  "secondaryColor800",
+  "secondaryColor900",
+];
+
+export type PortalStylesType = PortalStylesTypeColors & {
   css: string;
   portal_profile_enabled: boolean;
   portal_profile_password_enabled: boolean;
@@ -64,8 +84,6 @@ const visibilityItems = [
   ...visiblityOrganizationItems,
 ];
 
-const HexColorPattern = "^#([0-9a-f]{3}){1,2}$";
-
 export const PortalStyles = () => {
   const { t } = useTranslation("styles");
   const { realm } = useRealm();
@@ -79,9 +97,15 @@ export const PortalStyles = () => {
     formState: { errors },
   } = useForm<PortalStylesType>({
     defaultValues: {
-      primaryColor: "",
-      secondaryColor: "",
-      backgroundColor: "",
+      primaryColor100: "",
+      primaryColor200: "",
+      primaryColor400: "",
+      primaryColor500: "",
+      primaryColor600: "",
+      primaryColor700: "",
+      primaryColor900: "",
+      secondaryColor800: "",
+      secondaryColor900: "",
       css: "",
       portal_profile_enabled: false,
       portal_profile_password_enabled: false,
@@ -102,30 +126,13 @@ export const PortalStyles = () => {
     const realmInfo = await adminClient.realms.findOne({ realm });
     setFullRealm(realmInfo);
 
-    setValue(
-      "primaryColor",
-      get(
-        realmInfo?.attributes,
-        "_providerConfig.assets.portal.primaryColor",
-        ""
-      )
-    );
-    setValue(
-      "secondaryColor",
-      get(
-        realmInfo?.attributes,
-        "_providerConfig.assets.portal.secondaryColor",
-        ""
-      )
-    );
-    setValue(
-      "backgroundColor",
-      get(
-        realmInfo?.attributes,
-        "_providerConfig.assets.portal.backgroundColor",
-        ""
-      )
-    );
+    colorKeys.map((k) => {
+      setValue(
+        k,
+        get(realmInfo?.attributes, `_providerConfig.assets.portal.${k}`, "")
+      );
+    });
+
     setValue(
       "css",
       get(realmInfo?.attributes, "_providerConfig.assets.portal.css", "")
@@ -188,13 +195,8 @@ export const PortalStyles = () => {
   };
 
   const generateUpdatedRealm = () => {
-    const {
-      primaryColor,
-      secondaryColor,
-      backgroundColor,
-      css,
-      ...portalValues
-    } = getValues();
+    const { css, ...portalValues } = getValues();
+
     let updatedRealm = {
       ...fullRealm,
     };
@@ -202,21 +204,14 @@ export const PortalStyles = () => {
     // @ts-ignore
     updatedRealm = updatePortalValues(portalValues, updatedRealm);
 
-    updatedRealm = addOrRemoveItem(
-      "assets.portal.primaryColor",
-      primaryColor,
-      updatedRealm
-    );
-    updatedRealm = addOrRemoveItem(
-      "assets.portal.secondaryColor",
-      secondaryColor,
-      updatedRealm
-    );
-    updatedRealm = addOrRemoveItem(
-      "assets.portal.backgroundColor",
-      backgroundColor,
-      updatedRealm
-    );
+    colorKeys.map((k) => {
+      updatedRealm = addOrRemoveItem(
+        `assets.portal.${k}`,
+        getValues(k),
+        updatedRealm
+      );
+    });
+
     updatedRealm = addOrRemoveItem("assets.portal.css", css, updatedRealm);
 
     return updatedRealm;
@@ -236,16 +231,41 @@ export const PortalStyles = () => {
     }
   };
 
+  // To get color picker to update when text input is changed
   useWatch({
-    name: "primaryColor",
+    name: "primaryColor100",
     control,
   });
   useWatch({
-    name: "secondaryColor",
+    name: "primaryColor200",
     control,
   });
   useWatch({
-    name: "backgroundColor",
+    name: "primaryColor400",
+    control,
+  });
+  useWatch({
+    name: "primaryColor500",
+    control,
+  });
+  useWatch({
+    name: "primaryColor600",
+    control,
+  });
+  useWatch({
+    name: "primaryColor700",
+    control,
+  });
+  useWatch({
+    name: "primaryColor900",
+    control,
+  });
+  useWatch({
+    name: "secondaryColor800",
+    control,
+  });
+  useWatch({
+    name: "secondaryColor900",
     control,
   });
 
@@ -254,127 +274,13 @@ export const PortalStyles = () => {
       <Form isHorizontal>
         <h3 className="pf-c-title pf-m-xl">{t("branding")}</h3>
         {/* Primary Color */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText="styles:primaryColorHelp"
-              fieldLabelId="primaryColor"
-            />
-          }
-          label={t("primaryColor")}
-          fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:primaryColorHelpInvalid")}
-          validated={
-            errors.primaryColor
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
-        >
-          <Flex alignItems={{ default: "alignItemsCenter" }}>
-            <FlexItem>
-              <ColorPicker
-                color={getValues("primaryColor")}
-                onChange={(color) => setValue("primaryColor", color)}
-              />
-            </FlexItem>
-            <FlexItem grow={{ default: "grow" }}>
-              <KeycloakTextInput
-                {...register("primaryColor", { required: true })}
-                type="text"
-                id="kc-styles-logo-url"
-                data-testid="kc-styles-logo-url"
-                pattern={HexColorPattern}
-                validated={
-                  errors.primaryColor
-                    ? ValidatedOptions.error
-                    : ValidatedOptions.default
-                }
-              />
-            </FlexItem>
-          </Flex>
-        </FormGroup>
-
-        {/* Secondary Color */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText="styles:secondaryColorHelp"
-              fieldLabelId="secondaryColor"
-            />
-          }
-          label={t("secondaryColor")}
-          fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:secondaryColorHelpInvalid")}
-          validated={
-            errors.secondaryColor
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
-        >
-          <Flex alignItems={{ default: "alignItemsCenter" }}>
-            <FlexItem>
-              <ColorPicker
-                color={getValues("secondaryColor")}
-                onChange={(color) => setValue("secondaryColor", color)}
-              />
-            </FlexItem>
-            <FlexItem grow={{ default: "grow" }}>
-              <KeycloakTextInput
-                {...register("secondaryColor", { required: true })}
-                type="text"
-                id="kc-styles-logo-url"
-                data-testid="kc-styles-logo-url"
-                pattern={HexColorPattern}
-                validated={
-                  errors.secondaryColor
-                    ? ValidatedOptions.error
-                    : ValidatedOptions.default
-                }
-              />
-            </FlexItem>
-          </Flex>
-        </FormGroup>
-
-        {/* Background Color */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText="styles:backgroundColorHelp"
-              fieldLabelId="backgroundColor"
-            />
-          }
-          label={t("backgroundColor")}
-          fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:backgroundColorHelpInvalid")}
-          validated={
-            errors.backgroundColor
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
-        >
-          <Flex alignItems={{ default: "alignItemsCenter" }}>
-            <FlexItem>
-              <ColorPicker
-                color={getValues("backgroundColor")}
-                onChange={(color) => setValue("backgroundColor", color)}
-              />
-            </FlexItem>
-            <FlexItem grow={{ default: "grow" }}>
-              <KeycloakTextInput
-                {...register("backgroundColor", { required: true })}
-                type="text"
-                id="kc-styles-logo-url"
-                data-testid="kc-styles-logo-url"
-                pattern={HexColorPattern}
-                validated={
-                  errors.backgroundColor
-                    ? ValidatedOptions.error
-                    : ValidatedOptions.default
-                }
-              />
-            </FlexItem>
-          </Flex>
-        </FormGroup>
+        {colorKeys.map((k) => (
+          <ColorFormGroup
+            key={k}
+            colorKey={k}
+            {...{ register, errors, getValues, setValue }}
+          />
+        ))}
 
         {/* CSS */}
         <FormGroup
