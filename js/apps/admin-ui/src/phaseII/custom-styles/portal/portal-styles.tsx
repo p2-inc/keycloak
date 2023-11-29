@@ -17,7 +17,7 @@ import { get, mapKeys, pick } from "lodash-es";
 import { useAlerts } from "../../../components/alert/Alerts";
 import { KeycloakTextArea } from "../../../components/keycloak-text-area/KeycloakTextArea";
 import { adminClient } from "../../../admin-client";
-import ColorFormGroup from "./components/color-form-group";
+import ColorFormGroup from "../components/color-form-group";
 
 export type PortalStylesTypeColors = {
   primaryColor100: string;
@@ -273,6 +273,19 @@ export const PortalStyles = () => {
     <PageSection variant="light" className="keycloak__form">
       <Form isHorizontal>
         <h3 className="pf-c-title pf-m-xl">{t("branding")}</h3>
+        <p>
+          Follows Tailwind CSS{" "}
+          <a
+            href="https://tailwindcss.com/docs/theme#colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            color
+          </a>{" "}
+          naming convention. There are custom defined colors available for
+          configuration below.
+        </p>
+
         {/* Primary Color */}
         {colorKeys.map((k) => (
           <ColorFormGroup
@@ -284,7 +297,9 @@ export const PortalStyles = () => {
 
         {/* CSS */}
         <FormGroup
-          labelIcon={<HelpItem helpText="styles:cssHelp" fieldLabelId="css" />}
+          labelIcon={
+            <HelpItem helpText={t("styles:cssHelp")} fieldLabelId="css" />
+          }
           label={t("css")}
           fieldId="kc-styles-logo-url"
           helperTextInvalid={t("styles:cssHelpInvalid")}

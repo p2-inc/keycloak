@@ -167,7 +167,7 @@ export const LoginStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText="styles:primaryColorHelp"
+              helpText={t("styles:primaryColorHelp")}
               fieldLabelId="primaryColor"
             />
           }
@@ -208,7 +208,7 @@ export const LoginStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText="styles:secondaryColorHelp"
+              helpText={t("styles:secondaryColorHelp")}
               fieldLabelId="secondaryColor"
             />
           }
@@ -249,7 +249,7 @@ export const LoginStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText="styles:backgroundColorHelp"
+              helpText={t("styles:backgroundColorHelp")}
               fieldLabelId="backgroundColor"
             />
           }
@@ -288,7 +288,9 @@ export const LoginStyles = () => {
 
         {/* CSS */}
         <FormGroup
-          labelIcon={<HelpItem helpText="styles:cssHelp" fieldLabelId="css" />}
+          labelIcon={
+            <HelpItem helpText={t("styles:cssHelp")} fieldLabelId="css" />
+          }
           label={t("css")}
           fieldId="kc-styles-logo-url"
           helperTextInvalid={t("styles:cssHelpInvalid")}
