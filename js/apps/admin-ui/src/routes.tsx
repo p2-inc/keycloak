@@ -18,6 +18,8 @@ import realmRoutes from "./realm/routes";
 import sessionRoutes from "./sessions/routes";
 import userFederationRoutes from "./user-federation/routes";
 import userRoutes from "./user/routes";
+import orgRoutes from "./phaseII/orgs/routes";
+import stylesRoutes from "./phaseII/custom-styles/routes";
 
 export type AppRouteObjectHandle = {
   access: AccessType | AccessType[];
@@ -52,6 +54,8 @@ export const routes: AppRouteObject[] = [
   ...groupsRoutes,
   ...dashboardRoutes,
   NotFoundRoute,
+  ...orgRoutes,
+  ...stylesRoutes,
 ];
 
 export const RootRoute: RouteObject = {

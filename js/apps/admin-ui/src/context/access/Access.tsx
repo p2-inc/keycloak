@@ -4,9 +4,14 @@ import { useRealm } from "../../context/realm-context/RealmContext";
 import { useWhoAmI } from "../../context/whoami/WhoAmI";
 import { createNamedContext, useRequiredContext } from "ui-shared";
 
+type ExtendedAccessType =
+  | AccessType
+  | "view-organizations"
+  | "manage-organizations";
+
 type AccessContextProps = {
-  hasAccess: (...types: AccessType[]) => boolean;
-  hasSomeAccess: (...types: AccessType[]) => boolean;
+  hasAccess: (...types: ExtendedAccessType[]) => boolean;
+  hasSomeAccess: (...types: ExtendedAccessType[]) => boolean;
 };
 
 export const AccessContext = createNamedContext<AccessContextProps | undefined>(
@@ -19,7 +24,7 @@ export const useAccess = () => useRequiredContext(AccessContext);
 export const AccessContextProvider = ({ children }: PropsWithChildren) => {
   const { whoAmI } = useWhoAmI();
   const { realm } = useRealm();
-  const [access, setAccess] = useState<readonly AccessType[]>([]);
+  const [access, setAccess] = useState<readonly ExtendedAccessType[]>([]);
 
   useEffect(() => {
     if (whoAmI.getRealmAccess()[realm]) {
@@ -27,11 +32,11 @@ export const AccessContextProvider = ({ children }: PropsWithChildren) => {
     }
   }, [whoAmI, realm]);
 
-  const hasAccess = (...types: AccessType[]) => {
+  const hasAccess = (...types: ExtendedAccessType[]) => {
     return types.every((type) => type === "anyone" || access.includes(type));
   };
 
-  const hasSomeAccess = (...types: AccessType[]) => {
+  const hasSomeAccess = (...types: ExtendedAccessType[]) => {
     return types.some((type) => type === "anyone" || access.includes(type));
   };
 

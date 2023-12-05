@@ -66,16 +66,22 @@ function handleArgs(args) {
     strict: false,
     tokens: true,
   });
+  console.log("🚀 ~ file: start-server.js:69 ~ handleArgs ~ tokens:", tokens);
+  console.log(
+    "🚀 ~ file: start-server.js:69 ~ handleArgs ~ values, tokens:",
+    values,
+    tokens,
+  );
   // we need to remove the args that belong to the script so that we can pass the rest through to keycloak
-  tokens
-    .filter((token) => Object.hasOwn(options, token.name))
-    .forEach((token) => {
-      let tokenRaw = token.rawName;
-      if (token.value) {
-        tokenRaw += `=${token.value}`;
-      }
-      args.splice(args.indexOf(tokenRaw), 1);
-    });
+  // tokens
+  //   .filter((token) => Object.hasOwn(options, token.name))
+  //   .forEach((token) => {
+  //     let tokenRaw = token.rawName;
+  //     if (token.value) {
+  //       tokenRaw += `=${token.value}`;
+  //     }
+  //     args.splice(args.indexOf(tokenRaw), 1);
+  //   });
   return { scriptArgs: values, keycloakArgs: args };
 }
 

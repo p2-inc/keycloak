@@ -30,6 +30,7 @@ export const i18n = createInstance({
     },
   },
 });
+console.log("🚀 ~ file: i18n.ts:33 ~ i18n:", i18n);
 
 i18n.use(HttpBackend);
 i18n.use(initReactI18next);
