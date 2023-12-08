@@ -10,7 +10,7 @@ const Extensions = () => {
   const { hasSomeAccess } = useAccess();
   const isOnAddRealm = !!useMatch(AddRealmRoute.path);
 
-  const showOrgs = !hasSomeAccess("view-organizations", "manage-organizations");
+  const showOrgs = hasSomeAccess("view-organizations", "manage-organizations");
 
   return !isOnAddRealm ? (
     <NavGroup aria-label={t("extensions")} title={t("extensions")}>
