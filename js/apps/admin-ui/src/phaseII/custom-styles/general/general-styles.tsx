@@ -226,14 +226,11 @@ export const GeneralStyles = () => {
         {/* Logo Url */}
         <FormGroup
           labelIcon={
-            <HelpItem
-              helpText="styles:formHelpLogoUrl"
-              fieldLabelId="logoUrl"
-            />
+            <HelpItem helpText={t("formHelpLogoUrl")} fieldLabelId="logoUrl" />
           }
           label={t("logoUrl")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:formHelpImageInvalid")}
+          helperTextInvalid={t("formHelpImageInvalid")}
           validated={
             errors.logoUrl ? ValidatedOptions.error : ValidatedOptions.default
           }
@@ -263,13 +260,13 @@ export const GeneralStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText="styles:formHelpFaviconUrl"
+              helpText={t("formHelpFaviconUrl")}
               fieldLabelId="faviconUrl"
             />
           }
           label={t("faviconUrl")}
           fieldId="kc-styles-favicon-url"
-          helperTextInvalid={t("styles:formHelpImageInvalid")}
+          helperTextInvalid={t("formHelpImageInvalid")}
           validated={
             errors.faviconUrl
               ? ValidatedOptions.error
@@ -304,13 +301,13 @@ export const GeneralStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText="styles:formHelpAppIconUrl"
+              helpText={t("formHelpAppIconUrl")}
               fieldLabelId="appIconUrl"
             />
           }
           label={t("appIconUrl")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:formHelpImageInvalid")}
+          helperTextInvalid={t("formHelpImageInvalid")}
           validated={
             errors.appIconUrl
               ? ValidatedOptions.error

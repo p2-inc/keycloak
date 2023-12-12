@@ -50,8 +50,8 @@ export default function StylesSection() {
   return (
     <>
       <ViewHeader
-        titleKey="styles:styles"
-        subKey="styles:explain"
+        titleKey={t("styles")}
+        subKey={t("explain")}
         helpUrl={helpUrls.stylesUrl}
         divider={false}
       />

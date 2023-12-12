@@ -36,11 +36,11 @@ const ColorFormGroup: React.FC<ColorFormGroupProps> = ({
   return (
     <FormGroup
       labelIcon={
-        <HelpItem helpText={`styles:${colorKey}Help`} fieldLabelId={colorKey} />
+        <HelpItem helpText={t(`${colorKey}Help`)} fieldLabelId={colorKey} />
       }
       label={t(colorKey)}
       fieldId={`kc-styles-${colorKey}-url`}
-      helperTextInvalid={t(`styles:${colorKey}HelpInvalid`)}
+      helperTextInvalid={t(`${colorKey}HelpInvalid`)}
       validated={
         errors[colorKey] ? ValidatedOptions.error : ValidatedOptions.default
       }

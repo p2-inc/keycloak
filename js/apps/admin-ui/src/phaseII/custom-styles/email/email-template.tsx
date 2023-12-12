@@ -267,13 +267,13 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText="styles:formHelpHtmlTemplate"
+              helpText={t("formHelpHtmlTemplate")}
               fieldLabelId="htmlEmail"
             />
           }
           label={t("htmlEmail")}
           fieldId="htmlEmail"
-          helperTextInvalid={t("styles:formHelpHtmlTemplateInvalid")}
+          helperTextInvalid={t("formHelpHtmlTemplateInvalid")}
           validated={
             errors.htmlEmail ? ValidatedOptions.error : ValidatedOptions.default
           }
@@ -297,13 +297,13 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText="styles:formHelpTextTemplate"
+              helpText={t("formHelpTextTemplate")}
               fieldLabelId="textEmail"
             />
           }
           label={t("textEmail")}
           fieldId="textEmail"
-          helperTextInvalid={t("styles:formHelpTextTemplateInvalid")}
+          helperTextInvalid={t("formHelpTextTemplateInvalid")}
           validated={
             errors.textEmail ? ValidatedOptions.error : ValidatedOptions.default
           }
