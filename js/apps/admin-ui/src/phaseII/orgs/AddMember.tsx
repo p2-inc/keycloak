@@ -26,7 +26,7 @@ type MemberModalProps = {
 };
 
 export const AddMember = ({ orgId, onClose, refresh }: MemberModalProps) => {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const { getOrgMembers, addOrgMember } = useOrgFetcher(realm);
   const { addAlert, addError } = useAlerts();

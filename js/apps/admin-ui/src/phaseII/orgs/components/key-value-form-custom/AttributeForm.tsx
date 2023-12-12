@@ -26,7 +26,7 @@ export const AttributesForm = ({
   fineGrainedAccess,
   allowFullClear,
 }: AttributesFormProps) => {
-  const { t } = useTranslation("roles");
+  const { t } = useTranslation();
   const noSaveCancelButtons = !save && !reset;
   const {
     formState: { isDirty },

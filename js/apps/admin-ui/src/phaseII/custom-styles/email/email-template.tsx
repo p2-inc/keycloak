@@ -42,7 +42,7 @@ interface EmailTemplateMap {
 
 export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
   const { realm: realmName } = useRealm();
-  const { t } = useTranslation("styles");
+  const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
   const { getEmailTemplates, getEmailTemplateValue, updateEmailTemplateValue } =
     useStylesFetcher();

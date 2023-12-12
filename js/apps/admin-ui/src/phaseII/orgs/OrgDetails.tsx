@@ -28,7 +28,7 @@ import { toOrg, OrgTab } from "./routes/Org";
 
 export default function OrgDetails() {
   const { orgId } = useParams<OrgParams>();
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { addError } = useAlerts();
   const [portalLinkOpen, togglePortalLinkOpen] = useToggle(false);
 

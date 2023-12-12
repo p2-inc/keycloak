@@ -20,7 +20,7 @@ import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepres
 import { adminClient } from "../../admin-client";
 
 export default function StylesSection() {
-  const { t } = useTranslation("styles");
+  const { t } = useTranslation();
 
   const { realm: realmName } = useRealm();
   const [realm, setRealm] = useState<RealmRepresentation>();

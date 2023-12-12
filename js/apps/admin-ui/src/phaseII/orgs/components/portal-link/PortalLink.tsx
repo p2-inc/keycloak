@@ -23,7 +23,7 @@ type PortalLinkProps = {
 };
 
 export const PortalLink = ({ id, open, toggleDialog }: PortalLinkProps) => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   const { orgId } = useParams<OrgParams>();
   const { realm } = useRealm();
   const { getPortalLink } = useOrgFetcher(realm);

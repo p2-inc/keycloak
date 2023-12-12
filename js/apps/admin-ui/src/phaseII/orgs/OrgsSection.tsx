@@ -19,7 +19,7 @@ import type { OrgRepresentation } from "./routes";
 import { useAlerts } from "../../components/alert/Alerts";
 
 export default function OrgsSection() {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const { refreshOrgs, deleteOrg: deleteOrgApi } = useOrgFetcher(realm);
   const { addAlert } = useAlerts();

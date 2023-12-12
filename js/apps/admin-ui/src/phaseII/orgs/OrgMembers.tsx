@@ -33,7 +33,7 @@ const UserDetailLink = (user: MembersOf, realm: string) => (
 );
 
 export default function OrgMembers({ org }: OrgMembersTypeProps) {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const [key, setKey] = useState(0);
   const refresh = () => setKey(new Date().getTime());

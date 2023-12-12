@@ -30,7 +30,7 @@ export const EditOrgRoleModal = ({
   refresh,
   role,
 }: EditOrgRoleProps) => {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const { updateRoleForOrg } = useOrgFetcher(realm);
   const { addAlert, addError } = useAlerts();

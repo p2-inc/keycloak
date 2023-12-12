@@ -30,7 +30,7 @@ export const AssignRoleToMemberModal = ({
   user,
   orgRoles,
 }: AssignRoleToMemberProps) => {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const { setOrgRoleForUser, listOrgRolesForUser, revokeOrgRoleForUser } =
     useOrgFetcher(realm);

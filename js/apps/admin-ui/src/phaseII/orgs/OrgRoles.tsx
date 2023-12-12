@@ -40,7 +40,7 @@ export default function OrgRoles({ org }: OrgRolesProps) {
   // Data Table
   const { realm } = useRealm();
   const { getRolesForOrg, deleteRoleFromOrg } = useOrgFetcher(realm);
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { addAlert } = useAlerts();
 
   const [key, setKey] = useState(0);

@@ -54,7 +54,7 @@ const ImageInstruction = ({ name }: { name: string }) => (
 );
 
 export const GeneralStyles = () => {
-  const { t } = useTranslation("styles");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const {

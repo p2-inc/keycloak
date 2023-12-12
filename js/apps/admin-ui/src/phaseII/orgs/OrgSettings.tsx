@@ -22,7 +22,7 @@ type OrgSettingsProps = {
 
 export default function OrgSettings({ org }: OrgSettingsProps) {
   const { realm } = useRealm();
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { addAlert } = useAlerts();
   const organizationForm = useForm<OrgFormType>({
     defaultValues: defaultOrgState,

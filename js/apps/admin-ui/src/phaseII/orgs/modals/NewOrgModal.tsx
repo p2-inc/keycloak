@@ -38,7 +38,7 @@ export const NewOrgModal = ({
   toggleVisibility,
   refresh,
 }: NewOrgModalProps) => {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
   const { realm } = useRealm();
   const { createOrg } = useOrgFetcher(realm);

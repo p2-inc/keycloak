@@ -6,7 +6,7 @@ import { useAccess } from "../../context/access/Access";
 import { AddRealmRoute } from "../../realm/routes/AddRealm";
 
 const Extensions = () => {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { hasSomeAccess } = useAccess();
   const isOnAddRealm = !!useMatch(AddRealmRoute.path);
 

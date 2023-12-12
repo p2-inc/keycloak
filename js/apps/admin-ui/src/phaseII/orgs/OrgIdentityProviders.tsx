@@ -45,7 +45,7 @@ export default function OrgIdentityProviders({
   const { realm } = useRealm();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { updateIdentityProvider } = useOrgFetcher(realm);
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const [idps, setIdps] = useState<IdentityProviderRepresentationP2[]>([]);
   const disabledSelectorText = "please choose";
   const [isUpdatingIdP, setisUpdatingIdP] = useState(false);

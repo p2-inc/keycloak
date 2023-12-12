@@ -31,7 +31,7 @@ type LoginStylesType = {
 const HexColorPattern = "^#([0-9a-f]{3}){1,2}$";
 
 export const LoginStyles = () => {
-  const { t } = useTranslation("styles");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const {

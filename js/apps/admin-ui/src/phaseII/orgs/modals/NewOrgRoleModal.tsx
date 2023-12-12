@@ -28,7 +28,7 @@ export const NewOrgRoleModal = ({
   orgId,
   refresh,
 }: NewOrgRoleProps) => {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const { realm } = useRealm();
   const { createRoleForOrg } = useOrgFetcher(realm);
   const { addAlert, addError } = useAlerts();

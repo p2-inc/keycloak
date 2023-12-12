@@ -32,7 +32,7 @@ const ColorFormGroup: React.FC<ColorFormGroupProps> = ({
   setValue,
   register,
 }) => {
-  const { t } = useTranslation("styles");
+  const { t } = useTranslation();
   return (
     <FormGroup
       labelIcon={

@@ -5,7 +5,7 @@ import { MultiLineInput } from "../../../components/multi-line-input/MultiLineIn
 import { HelpItem } from "ui-shared";
 
 export const NewOrg = () => {
-  const { t } = useTranslation("orgs");
+  const { t } = useTranslation();
   const {
     formState: { errors },
     control,

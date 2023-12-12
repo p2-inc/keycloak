@@ -15,7 +15,7 @@ export const SaveReset = ({
   isActive = true,
   ...rest
 }: SaveResetProps) => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   return (
     <ActionGroup {...rest}>
       <Button isDisabled={!isActive} data-testid={name + "Save"} onClick={save}>
