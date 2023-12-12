@@ -79,7 +79,7 @@ export default function OrgDetails() {
         <RoutableTabs data-testid="orgs-tabs" isBox mountOnEnter>
           <Tab
             id="settings"
-            title={<TabTitleText>{t("common:settings")}</TabTitleText>}
+            title={<TabTitleText>{t("settings")}</TabTitleText>}
             {...settingsTab}
           >
             <OrgSettings org={org} />

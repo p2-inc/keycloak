@@ -16,7 +16,7 @@ export const NewOrg = () => {
       {/*Name*/}
       <FormGroup
         name="create-modal-org"
-        label={t("common:name")}
+        label={t("name")}
         fieldId="name"
         helperTextInvalid={t("common:required")}
         validated={
@@ -67,16 +67,13 @@ export const NewOrg = () => {
         label={t("domains")}
         fieldId="domains"
         labelIcon={
-          <HelpItem
-            helpText={t("orgs:domainHelp")}
-            fieldLabelId={t("orgs:domain")}
-          />
+          <HelpItem helpText={t("domainHelp")} fieldLabelId={t("domain")} />
         }
       >
         <MultiLineInput
           name="domains"
           aria-label={t("domains")}
-          addButtonLabel="orgs:addDomain"
+          addButtonLabel={t("addDomain")}
         />
       </FormGroup>
 

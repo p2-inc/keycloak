@@ -11,7 +11,7 @@ const OrgsSection = lazy(() => import("../OrgsSection"));
 export const OrgsRoute: AppRouteObject = {
   path: "/:realm/organizations",
   element: <OrgsSection />,
-  breadcrumb: (t) => t("orgs:orgList"),
+  breadcrumb: (t) => t("orgList"),
   handle: {
     access: "query-clients",
   },

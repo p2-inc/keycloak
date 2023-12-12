@@ -92,7 +92,7 @@ export const AddMember = ({ orgId, onClose, refresh }: MemberModalProps) => {
             }
           }}
         >
-          {t("common:add")}
+          {t("add")}
         </Button>,
         <Button
           data-testid="cancel"
@@ -100,7 +100,7 @@ export const AddMember = ({ orgId, onClose, refresh }: MemberModalProps) => {
           variant="link"
           onClick={onClose}
         >
-          {t("common:cancel")}
+          {t("cancel")}
         </Button>,
       ]}
     >

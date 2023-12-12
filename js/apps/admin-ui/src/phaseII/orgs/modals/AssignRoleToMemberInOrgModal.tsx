@@ -133,7 +133,7 @@ export const AssignRoleToMemberModal = ({
           type="submit"
           onClick={saveRoles}
         >
-          {t("common:save")}
+          {t("save")}
         </Button>,
         <Button
           id="modal-cancel"
@@ -144,7 +144,7 @@ export const AssignRoleToMemberModal = ({
             handleModalToggle();
           }}
         >
-          {t("common:cancel")}
+          {t("cancel")}
         </Button>,
       ]}
     >

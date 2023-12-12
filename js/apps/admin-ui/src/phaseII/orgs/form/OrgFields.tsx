@@ -45,16 +45,13 @@ export const OrgFields = () => {
         label={t("domains")}
         fieldId="domains"
         labelIcon={
-          <HelpItem
-            helpText={t("orgs:domainHelp")}
-            fieldLabelId={t("orgs:domain")}
-          />
+          <HelpItem helpText={t("domainHelp")} fieldLabelId={t("domain")} />
         }
       >
         <MultiLineInput
           name="domains"
           aria-label={t("domains")}
-          addButtonLabel="orgs:addDomain"
+          addButtonLabel={t("addDomain")}
         />
       </FormGroup>
 

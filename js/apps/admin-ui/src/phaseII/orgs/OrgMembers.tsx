@@ -85,7 +85,7 @@ export default function OrgMembers({ org }: OrgMembersTypeProps) {
         key={key}
         //@ts-ignore
         loader={loader}
-        ariaLabelKey="orgs:members"
+        ariaLabelKey={t("members")}
         toolbarItem={
           <ToolbarItem>
             <Button

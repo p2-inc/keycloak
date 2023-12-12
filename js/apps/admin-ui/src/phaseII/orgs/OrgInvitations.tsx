@@ -10,12 +10,14 @@ import { Button, ToolbarItem } from "@patternfly/react-core";
 import { ListEmptyState } from "../../components/list-empty-state/ListEmptyState";
 import AddInvitation from "./AddInvitation";
 import { useAlerts } from "../../components/alert/Alerts";
+import { useTranslation } from "react-i18next";
 
 type OrgInvitationsTypeProps = {
   org: OrgRepresentation;
 };
 
 export default function OrgInvitations(props: OrgInvitationsTypeProps) {
+  const { t } = useTranslation();
   // Table Refresh
   const [key, setKey] = useState(0);
   const refresh = () => setKey(new Date().getTime());
@@ -61,7 +63,7 @@ export default function OrgInvitations(props: OrgInvitationsTypeProps) {
         data-testid="invitations-org-table"
         key={key}
         loader={loader}
-        ariaLabelKey="orgs:invitations"
+        ariaLabelKey={t("invitations")}
         toolbarItem={
           <ToolbarItem>
             <Button

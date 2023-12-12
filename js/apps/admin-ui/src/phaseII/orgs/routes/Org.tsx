@@ -22,7 +22,7 @@ const OrgDetails = lazy(() => import("../OrgDetails"));
 export const OrgRoute: AppRouteObject = {
   path: "/:realm/organizations/:orgId/:tab",
   element: <OrgDetails />,
-  breadcrumb: (t) => t("orgs:orgDetails"),
+  breadcrumb: (t) => t("orgDetails"),
   handle: {
     access: "view-clients",
   },

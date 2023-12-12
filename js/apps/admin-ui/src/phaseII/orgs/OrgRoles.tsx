@@ -111,7 +111,7 @@ export default function OrgRoles({ org }: OrgRolesProps) {
       refresh();
     } else {
       addAlert(
-        `${t("orgs:removeRoleFromOrgFail")} ${resp.message}`,
+        `${t("removeRoleFromOrgFail")} ${resp.message}`,
         AlertVariant.danger,
       );
     }
@@ -125,7 +125,7 @@ export default function OrgRoles({ org }: OrgRolesProps) {
         data-testid="roles-org-table"
         key={`${org.id}${key}`}
         loader={loader}
-        ariaLabelKey="orgs:invitations"
+        ariaLabelKey="invitations"
         isRowDisabled={(value) => {
           return defaultRoles.includes(value.name!);
         }}

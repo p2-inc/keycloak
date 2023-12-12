@@ -57,10 +57,10 @@ export const NewOrgModal = ({
         refresh();
         toggleVisibility();
       } else {
-        addError("orgs:couldNotCreateOrg", new Error(res.message));
+        addError(t("couldNotCreateOrg"), new Error(res.message));
       }
     } catch (error) {
-      addError("orgs:couldNotCreateOrg", error);
+      addError(t("couldNotCreateOrg"), error);
     }
   };
 
@@ -88,7 +88,7 @@ export const NewOrgModal = ({
             toggleVisibility();
           }}
         >
-          {t("common:cancel")}
+          {t("cancel")}
         </Button>,
       ]}
     >

@@ -67,7 +67,7 @@ export default function OrgsSection() {
       addAlert(resp.message, AlertVariant.success);
     } else {
       addAlert(
-        `${t("orgs:couldNotDeleteOrg")} ${resp.message}`,
+        `${t("couldNotDeleteOrg")} ${resp.message}`,
         AlertVariant.danger,
       );
     }
@@ -78,8 +78,8 @@ export default function OrgsSection() {
   return (
     <>
       <ViewHeader
-        titleKey="orgs:orgList"
-        subKey="orgs:orgExplain"
+        titleKey={t("orgList")}
+        subKey={t("orgExplain")}
         helpUrl={helpUrls.orgsUrl}
       />
       <PageSection variant="light" className="pf-u-p-0">
@@ -89,8 +89,8 @@ export default function OrgsSection() {
           isSearching={true}
           //@ts-ignore
           loader={loader}
-          ariaLabelKey="orgs:orgList"
-          searchPlaceholderKey="orgs:searchForOrg"
+          ariaLabelKey={t("orgList")}
+          searchPlaceholderKey={t("searchForOrg")}
           toolbarItem={
             <ToolbarItem>
               <Button
