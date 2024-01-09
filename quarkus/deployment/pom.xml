@@ -170,6 +170,19 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Dependencies used by keycloak extensions -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-keycloak-admin-client-common-deployment</artifactId>
+            <version>3.2.9.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-keycloak-admin-client-reactive-deployment</artifactId>
+            <version>3.2.9.Final</version>
+        </dependency>
+
     </dependencies>
 
     <build>
