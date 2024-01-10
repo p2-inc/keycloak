@@ -66,7 +66,7 @@ export default function OrgDetails() {
   return (
     <>
       <ViewHeader
-        titleKey={org.displayName}
+        titleKey={org.displayName || org.name || org.id}
         divider={false}
         dropdownItems={dropdownItems}
       />
