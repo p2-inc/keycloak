@@ -107,35 +107,35 @@ export const AddMember = ({ orgId, onClose, refresh }: MemberModalProps) => {
       <KeycloakDataTable
         loader={loader}
         isPaginated
-        ariaLabelKey="users:title"
-        searchPlaceholderKey="users:searchForUser"
+        ariaLabelKey="title"
+        searchPlaceholderKey="searchForUser"
         canSelectAll
         onSelect={(rows: UserRepresentation[]) => setSelectedRows([...rows])}
         emptyState={
           <ListEmptyState
-            message={t("users:noUsersAvailable")}
-            instructions={t("users:emptyInstructions")}
-            primaryActionText={t("users:createNewUser")}
+            message={t("noUsersAvailable")}
+            instructions={t("emptyInstructions")}
+            primaryActionText={t("createNewUser")}
             onPrimaryAction={goToCreate}
           />
         }
         columns={[
           {
             name: "username",
-            displayKey: "users:username",
+            displayKey: "username",
           },
           {
             name: "email",
-            displayKey: "users:email",
+            displayKey: "email",
           },
           {
             name: "lastName",
-            displayKey: "users:lastName",
+            displayKey: "lastName",
             cellFormatters: [emptyFormatter()],
           },
           {
             name: "firstName",
-            displayKey: "users:firstName",
+            displayKey: "firstName",
             cellFormatters: [emptyFormatter()],
           },
         ]}

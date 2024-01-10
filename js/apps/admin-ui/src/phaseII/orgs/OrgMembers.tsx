@@ -138,8 +138,8 @@ export default function OrgMembers({ org }: OrgMembersTypeProps) {
         ]}
         emptyState={
           <ListEmptyState
-            message={t("users:noUsersFound")}
-            instructions={t("users:emptyInstructions")}
+            message={t("noUsersFound")}
+            instructions={t("emptyInstructions")}
             primaryActionText={t("addMember")}
             onPrimaryAction={toggleAddMembersVisibility}
           />

@@ -167,13 +167,13 @@ export const LoginStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText={t("styles:primaryColorHelp")}
+              helpText={t("primaryColorHelp")}
               fieldLabelId="primaryColor"
             />
           }
           label={t("primaryColor")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:primaryColorHelpInvalid")}
+          helperTextInvalid={t("primaryColorHelpInvalid")}
           validated={
             errors.primaryColor
               ? ValidatedOptions.error
@@ -208,13 +208,13 @@ export const LoginStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText={t("styles:secondaryColorHelp")}
+              helpText={t("secondaryColorHelp")}
               fieldLabelId="secondaryColor"
             />
           }
           label={t("secondaryColor")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:secondaryColorHelpInvalid")}
+          helperTextInvalid={t("secondaryColorHelpInvalid")}
           validated={
             errors.secondaryColor
               ? ValidatedOptions.error
@@ -249,13 +249,13 @@ export const LoginStyles = () => {
         <FormGroup
           labelIcon={
             <HelpItem
-              helpText={t("styles:backgroundColorHelp")}
+              helpText={t("backgroundColorHelp")}
               fieldLabelId="backgroundColor"
             />
           }
           label={t("backgroundColor")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:backgroundColorHelpInvalid")}
+          helperTextInvalid={t("backgroundColorHelpInvalid")}
           validated={
             errors.backgroundColor
               ? ValidatedOptions.error
@@ -288,12 +288,10 @@ export const LoginStyles = () => {
 
         {/* CSS */}
         <FormGroup
-          labelIcon={
-            <HelpItem helpText={t("styles:cssHelp")} fieldLabelId="css" />
-          }
+          labelIcon={<HelpItem helpText={t("cssHelp")} fieldLabelId="css" />}
           label={t("css")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:cssHelpInvalid")}
+          helperTextInvalid={t("cssHelpInvalid")}
           validated={
             errors.css ? ValidatedOptions.error : ValidatedOptions.default
           }

@@ -297,12 +297,10 @@ export const PortalStyles = () => {
 
         {/* CSS */}
         <FormGroup
-          labelIcon={
-            <HelpItem helpText={t("styles:cssHelp")} fieldLabelId="css" />
-          }
+          labelIcon={<HelpItem helpText={t("cssHelp")} fieldLabelId="css" />}
           label={t("css")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("styles:cssHelpInvalid")}
+          helperTextInvalid={t("cssHelpInvalid")}
           validated={
             errors.css ? ValidatedOptions.error : ValidatedOptions.default
           }
