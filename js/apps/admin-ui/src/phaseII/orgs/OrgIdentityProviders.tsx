@@ -48,7 +48,7 @@ export default function OrgIdentityProviders({
   const { t } = useTranslation();
   const [idps, setIdps] = useState<IdentityProviderRepresentationP2[]>([]);
   const disabledSelectorText = "please choose";
-  const [isUpdatingIdP, setisUpdatingIdP] = useState(false);
+  const [isUpdatingIdP, setIsUpdatingIdP] = useState(false);
   const [selectedIdP, setSelectedIdP] = useState<string>(disabledSelectorText);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [enabledIdP, setEnabledIdP] =
@@ -85,13 +85,16 @@ export default function OrgIdentityProviders({
   const onChange = (value: string) => setSelectedIdP(value);
 
   const save = async () => {
-    setisUpdatingIdP(true);
+    setIsUpdatingIdP(true);
     const fullSelectedIdp = idps.find((i) => i.internalId === selectedIdP)!;
     try {
       // enabledIdP? Set org to empty
       if (enabledIdP) {
         const respE = await updateIdentityProvider(
-          { ...enabledIdP, config: { "home.idp.discovery.org": "" } },
+          {
+            ...enabledIdP,
+            config: { ...enabledIdP.config, "home.idp.discovery.org": "" },
+          },
           enabledIdP.alias!,
         );
         if (respE.error) {
@@ -105,7 +108,7 @@ export default function OrgIdentityProviders({
           postBrokerLoginFlowAlias: "post org broker login",
           config: {
             ...fullSelectedIdp.config,
-            syncmode: "FORCE",
+            syncMode: "FORCE",
             hideOnLoginPage: "true",
             "home.idp.discovery.org": org.id,
           },
@@ -136,7 +139,7 @@ export default function OrgIdentityProviders({
         },
       ]);
     }
-    setisUpdatingIdP(false);
+    setIsUpdatingIdP(false);
   };
 
   const options = [
@@ -149,7 +152,9 @@ export default function OrgIdentityProviders({
           : idp.config["home.idp.discovery.org"] === org.id,
       )
       .map((idp) => {
-        let label = `${idp.displayName} (${idp.alias})`;
+        let label = idp.displayName
+          ? `${idp.displayName} (${idp.alias})`
+          : `${idp.alias}`;
         if (!isNil(idp.config["home.idp.discovery.org"])) {
           label = `${label} - ${org.displayName}`;
         }
