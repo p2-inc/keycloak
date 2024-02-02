@@ -413,29 +413,68 @@ export default function useOrgFetcher(realm: string) {
     }
   }
 
+  // POST /:realm/orgs/:orgId/idps/link
+  async function linkIDPtoOrg(
+    orgId: OrgRepresentation["id"],
+    idpInformation: {
+      alias: IdentityProviderRepresentation["alias"];
+      post_broker_flow?: IdentityProviderRepresentation["postBrokerLoginFlowAlias"];
+      sync_mode?: IdentityProviderRepresentation["syncMode"];
+    },
+  ) {
+    try {
+      const resp = await fetchPost(
+        `${baseUrl}/orgs/${orgId}/idps/link`,
+        idpInformation,
+      );
+      console.log("resp", resp);
+      if (!resp.ok) {
+        throw new Error("Failed to link IDP to org.");
+      }
+      if (resp.status === 201) {
+        return {
+          success: true,
+          message: `${idpInformation.alias} updated for this org.`,
+        };
+      }
+      if (resp.status === 409) {
+        return {
+          error: true,
+          message: "Identity Provider already linked to this org.",
+        };
+      }
+    } catch (error) {
+      return {
+        error: true,
+        message: error,
+      };
+    }
+  }
+
   return {
-    refreshOrgs,
-    orgs,
-    getOrgMembers,
-    createOrg,
-    deleteOrg,
-    getOrg,
-    updateOrg,
     addOrgMember,
-    removeMemberFromOrg,
-    getOrgInvitations,
-    createInvitation,
-    deleteOrgInvitation,
-    getRolesForOrg,
-    deleteRoleFromOrg,
-    createRoleForOrg,
-    updateRoleForOrg,
     checkOrgRoleForUser,
-    setOrgRoleForUser,
-    revokeOrgRoleForUser,
-    listOrgRolesForUser,
+    createInvitation,
+    createOrg,
+    createRoleForOrg,
+    deleteOrg,
+    deleteOrgInvitation,
+    deleteRoleFromOrg,
+    getOrg,
+    getOrgInvitations,
+    getOrgMembers,
     getPortalLink,
-    updateIdentityProvider,
+    getRolesForOrg,
+    linkIDPtoOrg,
+    listOrgRolesForUser,
     org,
+    orgs,
+    refreshOrgs,
+    removeMemberFromOrg,
+    revokeOrgRoleForUser,
+    setOrgRoleForUser,
+    updateIdentityProvider,
+    updateOrg,
+    updateRoleForOrg,
   };
 }
