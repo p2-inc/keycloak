@@ -7,6 +7,7 @@ import type RoleRepresentation from "@keycloak/keycloak-admin-client/lib/defs/ro
 import environment from "../../environment";
 import IdentityProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { adminClient } from "../../admin-client";
+import { SyncMode } from "./OrgIdentityProviders";
 
 type MembersOf = UserRepresentation & {
   membership: GroupRepresentation[];
@@ -419,7 +420,7 @@ export default function useOrgFetcher(realm: string) {
     idpInformation: {
       alias: IdentityProviderRepresentation["alias"];
       post_broker_flow?: IdentityProviderRepresentation["postBrokerLoginFlowAlias"];
-      sync_mode?: IdentityProviderRepresentation["syncMode"];
+      sync_mode?: SyncMode;
     },
   ) {
     try {

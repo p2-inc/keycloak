@@ -18,7 +18,7 @@ import {
   Form,
 } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
-import IdentityProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation";
+// import IdentityProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { isNil } from "lodash-es";
 import { generatePath } from "react-router-dom";
 import { adminClient } from "../../admin-client";
@@ -33,6 +33,12 @@ import { fetchWithError } from "@keycloak/keycloak-admin-client";
 import { addTrailingSlash } from "../../util";
 import { getAuthorizationHeaders } from "../../utils/getAuthorizationHeaders";
 import { AuthenticationType } from "../../authentication/AuthenticationSection";
+import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
+
+export type SyncMode = "FORCE" | "IMPORT" | "LEGACY";
+export interface idpRep extends IdentityProviderRepresentation {
+  syncMode?: SyncMode;
+}
 
 type OrgIdentityProvidersProps = {
   org: OrgRepresentation;
@@ -45,18 +51,10 @@ interface AlertInfo {
   key: number;
 }
 
-interface AdditionalConfig {
-  "home.idp.discovery.org"?: string;
-}
-
-type IdentityProviderRepresentationP2 = IdentityProviderRepresentation & {
-  config?: Partial<IdentityProviderRepresentation["config"] & AdditionalConfig>;
-};
-
 type idpFormValues = {
-  idpSelector: string;
-  postBrokerLoginFlowAlias: string;
-  syncMode: string;
+  idpSelector: IdentityProviderRepresentation["alias"];
+  postBrokerLoginFlowAlias: IdentityProviderRepresentation["postBrokerLoginFlowAlias"];
+  syncMode: SyncMode;
 };
 const syncModeOptions = [
   { value: "please choose", label: "Select one", disabled: true },
@@ -73,15 +71,14 @@ export default function OrgIdentityProviders({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { linkIDPtoOrg } = useOrgFetcher(realm);
   const { t } = useTranslation();
-  const [idps, setIdps] = useState<IdentityProviderRepresentationP2[]>([]);
-  const [authFlowOptions, setAuthFlowOptions] = useState<AuthenticationType[]>(
-    [],
-  );
+  const [idps, setIdps] = useState<idpRep[]>([]);
+  const [authFlowOptions, setAuthFlowOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
   const disabledSelectorText = "please choose";
   const [isUpdatingIdP, setIsUpdatingIdP] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [enabledIdP, setEnabledIdP] =
-    useState<IdentityProviderRepresentationP2>();
+  const [enabledIdP, setEnabledIdP] = useState<idpRep>();
   const [alerts, setAlerts] = useState<AlertInfo[]>([]);
   const getUniqueId: () => number = () => new Date().getTime();
 
@@ -103,7 +100,7 @@ export default function OrgIdentityProviders({
   async function getIDPs() {
     const identityProviders = (await adminClient.identityProviders.find({
       realm,
-    })) as IdentityProviderRepresentationP2[];
+    })) as idpRep[];
     setIdps(identityProviders);
 
     // at least one IdP?
@@ -111,7 +108,7 @@ export default function OrgIdentityProviders({
     const enabledIdP = identityProviders.find((idp) => {
       // if the key `home.idp.discovery.org` exists
       // and the key is equal to the org id and idp is enabled
-      if (isNil(idp.config["home.idp.discovery.org"])) {
+      if (isNil(idp.config?.["home.idp.discovery.org"])) {
         return false;
       }
       return idp.config["home.idp.discovery.org"] === org.id && idp.enabled;
@@ -168,7 +165,7 @@ export default function OrgIdentityProviders({
     ...idps
       .filter((idp) => idp.internalId !== enabledIdP?.internalId)
       .filter((idp) =>
-        isNil(idp.config["home.idp.discovery.org"])
+        isNil(idp.config?.["home.idp.discovery.org"])
           ? true
           : idp.config["home.idp.discovery.org"] === org.id,
       )
@@ -176,7 +173,7 @@ export default function OrgIdentityProviders({
         let label = idp.displayName
           ? `${idp.displayName} (${idp.alias})`
           : `${idp.alias}`;
-        if (!isNil(idp.config["home.idp.discovery.org"])) {
+        if (!isNil(idp.config?.["home.idp.discovery.org"])) {
           label = `${label} - ${org.displayName}`;
         }
         return {
@@ -320,7 +317,6 @@ export default function OrgIdentityProviders({
                       >
                         {authFlowOptions.map((option, index) => (
                           <FormSelectOption
-                            isDisabled={option.disabled}
                             key={index}
                             value={option.value}
                             label={option.label}
