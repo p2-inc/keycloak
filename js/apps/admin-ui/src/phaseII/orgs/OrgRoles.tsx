@@ -21,6 +21,7 @@ import { EditOrgRoleModal } from "./modals/EditOrgRoleModal";
 
 type OrgRolesProps = {
   org: OrgRepresentation;
+  refresh: () => void;
 };
 
 const defaultRoles = [
@@ -36,7 +37,7 @@ const defaultRoles = [
   "manage-identity-providers",
 ];
 
-export default function OrgRoles({ org }: OrgRolesProps) {
+export default function OrgRoles({ org, refresh: orgRefresh }: OrgRolesProps) {
   // Data Table
   const { realm } = useRealm();
   const { getRolesForOrg, deleteRoleFromOrg } = useOrgFetcher(realm);
@@ -44,7 +45,10 @@ export default function OrgRoles({ org }: OrgRolesProps) {
   const { addAlert } = useAlerts();
 
   const [key, setKey] = useState(0);
-  const refresh = () => setKey(new Date().getTime());
+  const refresh = () => {
+    setKey(new Date().getTime());
+    orgRefresh();
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const loader = async (first?: number, max?: number, search?: string) => {

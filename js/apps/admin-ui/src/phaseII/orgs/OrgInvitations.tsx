@@ -14,13 +14,20 @@ import { useTranslation } from "react-i18next";
 
 type OrgInvitationsTypeProps = {
   org: OrgRepresentation;
+  refresh: () => void;
 };
 
-export default function OrgInvitations(props: OrgInvitationsTypeProps) {
+export default function OrgInvitations({
+  org,
+  refresh: refreshOrg,
+}: OrgInvitationsTypeProps) {
   const { t } = useTranslation();
   // Table Refresh
   const [key, setKey] = useState(0);
-  const refresh = () => setKey(new Date().getTime());
+  const refresh = () => {
+    setKey(new Date().getTime());
+    refreshOrg();
+  };
 
   // Needed State
   const { realm } = useRealm();
@@ -28,7 +35,7 @@ export default function OrgInvitations(props: OrgInvitationsTypeProps) {
   const { addAlert } = useAlerts();
 
   const loader = async () => {
-    return await getOrgInvitations(props.org.id);
+    return await getOrgInvitations(org.id);
   };
 
   // Invite User Modal
@@ -44,7 +51,7 @@ export default function OrgInvitations(props: OrgInvitationsTypeProps) {
   }
 
   async function removeInvitation(row: any): Promise<boolean> {
-    await deleteOrgInvitation(props.org.id, row.id);
+    await deleteOrgInvitation(org.id, row.id);
     addAlert("Pending invitation removed");
     refresh();
     return true;
@@ -55,7 +62,7 @@ export default function OrgInvitations(props: OrgInvitationsTypeProps) {
       {invitationModalVisibility && (
         <AddInvitation
           refresh={refresh}
-          org={props.org}
+          org={org}
           toggleVisibility={toggleInvitationModalVisibility}
         />
       )}

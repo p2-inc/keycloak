@@ -20,6 +20,7 @@ import type RoleRepresentation from "@keycloak/keycloak-admin-client/lib/defs/ro
 
 type OrgMembersTypeProps = {
   org: OrgRepresentation;
+  refresh: () => void;
 };
 
 type MembersOf = UserRepresentation & {
@@ -32,11 +33,17 @@ const UserDetailLink = (user: MembersOf, realm: string) => (
   </Link>
 );
 
-export default function OrgMembers({ org }: OrgMembersTypeProps) {
+export default function OrgMembers({
+  org,
+  refresh: refreshOrg,
+}: OrgMembersTypeProps) {
   const { t } = useTranslation();
   const { realm } = useRealm();
   const [key, setKey] = useState(0);
-  const refresh = () => setKey(new Date().getTime());
+  const refresh = () => {
+    setKey(new Date().getTime());
+    refreshOrg();
+  };
   const { getOrgMembers, removeMemberFromOrg, getRolesForOrg } =
     useOrgFetcher(realm);
   const [assignRoleModalOpen, setAssignRoleModalOpen] = useState<

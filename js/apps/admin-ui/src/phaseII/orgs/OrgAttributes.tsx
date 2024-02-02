@@ -13,13 +13,14 @@ import { useAlerts } from "../../components/alert/Alerts";
 
 type OrgAttributesProps = {
   org: OrgRepresentation;
+  refresh: () => void;
 };
 
 type AttributesForm = {
   attributes?: KeyValueType[];
 };
 
-export default function OrgAttributes({ org }: OrgAttributesProps) {
+export default function OrgAttributes({ org, refresh }: OrgAttributesProps) {
   const { addAlert } = useAlerts();
   const { realm } = useRealm();
   const { updateOrg } = useOrgFetcher(realm);
@@ -49,6 +50,7 @@ export default function OrgAttributes({ org }: OrgAttributesProps) {
       const updatedData: OrgRepresentation = { ...org, attributes };
       await updateOrg(updatedData);
       addAlert("Attributes updated for organization");
+      refresh();
     }
   }
 

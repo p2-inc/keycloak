@@ -18,9 +18,10 @@ import { useAlerts } from "../../components/alert/Alerts";
 
 type OrgSettingsProps = {
   org: OrgRepresentation;
+  refresh: () => void;
 };
 
-export default function OrgSettings({ org }: OrgSettingsProps) {
+export default function OrgSettings({ org, refresh }: OrgSettingsProps) {
   const { realm } = useRealm();
   const { t } = useTranslation();
   const { addAlert } = useAlerts();
@@ -59,6 +60,7 @@ export default function OrgSettings({ org }: OrgSettingsProps) {
       } else {
         addAlert(res.message, AlertVariant.danger);
       }
+      refresh();
     }
   };
 

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   PageSection,
   Tab,
@@ -31,13 +31,18 @@ export default function OrgDetails() {
   const { t } = useTranslation();
   const { addError } = useAlerts();
   const [portalLinkOpen, togglePortalLinkOpen] = useToggle(false);
+  const [key, setKey] = useState(0);
 
   const { realm } = useRealm();
   const { getOrg, org } = useOrgFetcher(realm);
 
+  const refresh = () => {
+    setKey(key + 1);
+  };
+
   useEffect(() => {
     getOrg(orgId!).catch((e) => addError(t("errorFetching"), e));
-  }, []);
+  }, [key]);
 
   const useTab = (tab: OrgTab) =>
     useRoutableTab(
@@ -82,42 +87,42 @@ export default function OrgDetails() {
             title={<TabTitleText>{t("settings")}</TabTitleText>}
             {...settingsTab}
           >
-            <OrgSettings org={org} />
+            <OrgSettings org={org} refresh={refresh} />
           </Tab>
           <Tab
             id="attributes"
             title={<TabTitleText>Attributes</TabTitleText>}
             {...attributesTab}
           >
-            <OrgAttributes org={org} />
+            <OrgAttributes org={org} refresh={refresh} />
           </Tab>
           <Tab
             id="members"
             title={<TabTitleText>Members</TabTitleText>}
             {...membersTab}
           >
-            <OrgMembers org={org} />
+            <OrgMembers org={org} refresh={refresh} />
           </Tab>
           <Tab
             id="invitations"
             title={<TabTitleText>Invitations</TabTitleText>}
             {...invitationsTab}
           >
-            <OrgInvitations org={org} />
+            <OrgInvitations org={org} refresh={refresh} />
           </Tab>
           <Tab
             id="roles"
             title={<TabTitleText>Roles</TabTitleText>}
             {...rolesTab}
           >
-            <OrgRoles org={org} />
+            <OrgRoles org={org} refresh={refresh} />
           </Tab>
           <Tab
             id="identityproviders"
             title={<TabTitleText>Identity Providers</TabTitleText>}
             {...identityProvidersTab}
           >
-            <OrgIdentityProviders org={org} />
+            <OrgIdentityProviders org={org} refresh={refresh} />
           </Tab>
         </RoutableTabs>
       </PageSection>
