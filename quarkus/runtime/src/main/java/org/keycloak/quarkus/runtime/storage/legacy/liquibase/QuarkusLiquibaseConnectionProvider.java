@@ -38,6 +38,7 @@ import org.keycloak.provider.EnvironmentDependentProviderFactory;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.database.core.CockroachDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.parser.ChangeLogParser;
@@ -127,6 +128,9 @@ public class QuarkusLiquibaseConnectionProvider implements LiquibaseConnectionPr
         }
 
         String changelog = QuarkusJpaUpdaterProvider.CHANGELOG;
+        if (database instanceof CockroachDatabase) {
+            changelog = QuarkusJpaUpdaterProvider.CHANGELOG_CRDB;
+        }
 
         logger.debugf("Using changelog file %s and changelogTableName %s", changelog, database.getDatabaseChangeLogTableName());
 
