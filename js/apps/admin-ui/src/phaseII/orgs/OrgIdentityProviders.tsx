@@ -57,8 +57,8 @@ type idpFormValues = {
   syncMode: SyncMode;
 };
 const syncModeOptions = [
-  { value: "please choose", label: "Select one", disabled: true },
-  { value: "IMPORT", label: "IMPORT", disabled: false },
+  { value: null, label: "Select one", disabled: false },
+  { value: "FORCE", label: "FORCE", disabled: false },
   { value: "LEGACY", label: "LEGACY", disabled: false },
   { value: "IMPORT", label: "IMPORT", disabled: false },
 ];
