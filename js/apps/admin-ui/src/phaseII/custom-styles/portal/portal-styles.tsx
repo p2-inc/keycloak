@@ -63,6 +63,10 @@ export type PortalStylesType = PortalStylesTypeColors & {
 
 type PortalStylesKeys = keyof PortalStylesType;
 
+type PortalStylesArgs = {
+  refresh: () => void;
+};
+
 const visiblityProfileItems: PortalStylesKeys[] = [
   "portal_profile_enabled",
   "portal_profile_password_enabled",
@@ -84,7 +88,7 @@ const visibilityItems = [
   ...visiblityOrganizationItems,
 ];
 
-export const PortalStyles = () => {
+export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
   const { t } = useTranslation();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
@@ -225,6 +229,7 @@ export const PortalStyles = () => {
     try {
       await adminClient.realms.update({ realm }, updatedRealm);
       addAlert("Attributes for realm have been updated.", AlertVariant.success);
+      refresh();
     } catch (e) {
       console.error("Could not update realm with attributes.", e);
       addError("Failed to update realm.", e);

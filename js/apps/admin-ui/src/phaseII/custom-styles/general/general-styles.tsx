@@ -28,6 +28,10 @@ type GeneralStylesType = {
   appIconUrl: string;
 };
 
+type GeneralStylesArgs = {
+  refresh: () => void;
+};
+
 const LogoContainer = ({
   title,
   children,
@@ -53,7 +57,7 @@ const ImageInstruction = ({ name }: { name: string }) => (
   <div>Enter a custom URL for the {name} to preview the image.</div>
 );
 
-export const GeneralStyles = () => {
+export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   const { t } = useTranslation();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
@@ -160,6 +164,7 @@ export const GeneralStyles = () => {
     try {
       await adminClient.realms.update({ realm }, updatedRealm);
       addAlert("Attributes for realm have been updated.", AlertVariant.success);
+      refresh();
     } catch (e) {
       console.error("Could not update realm with attributes.", e);
       addError("Failed to update realm.", e);

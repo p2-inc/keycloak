@@ -28,9 +28,13 @@ type LoginStylesType = {
   css: string;
 };
 
+type LoginStylesArgs = {
+  refresh: () => void;
+};
+
 const HexColorPattern = "^#([0-9a-f]{3}){1,2}$";
 
-export const LoginStyles = () => {
+export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
   const { t } = useTranslation();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
@@ -141,6 +145,7 @@ export const LoginStyles = () => {
     try {
       await adminClient.realms.update({ realm }, updatedRealm);
       addAlert("Attributes for realm have been updated.", AlertVariant.success);
+      refresh();
     } catch (e) {
       console.error("Could not update realm with attributes.", e);
       addError("Failed to update realm.", e);
