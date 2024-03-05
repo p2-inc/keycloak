@@ -18,10 +18,11 @@ import { AddRealmRoute } from "./realm/routes/AddRealm";
 import { routes } from "./routes";
 
 import "./page-nav.css";
+import Extensions from "./phaseII/navigation/extensions";
 
 type LeftNavProps = { title: string; path: string; id?: string };
 
-const LeftNav = ({ title, path, id }: LeftNavProps) => {
+export const LeftNav = ({ title, path, id }: LeftNavProps) => {
   const { t } = useTranslation();
   const { hasAccess } = useAccess();
   const { realm } = useRealm();
@@ -131,6 +132,7 @@ export const PageNav = () => {
               ))}
             </NavGroup>
           )}
+          <Extensions />
         </Nav>
       }
     />

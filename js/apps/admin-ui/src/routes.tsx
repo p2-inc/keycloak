@@ -19,6 +19,8 @@ import sessionRoutes from "./sessions/routes";
 import userFederationRoutes from "./user-federation/routes";
 import userRoutes from "./user/routes";
 import pageRoutes from "./page/routes";
+import orgRoutes from "./phaseII/orgs/routes";
+import stylesRoutes from "./phaseII/custom-styles/routes";
 
 export type AppRouteObjectHandle = {
   access: AccessType | AccessType[];
@@ -53,6 +55,8 @@ export const routes: AppRouteObject[] = [
   ...groupsRoutes,
   ...dashboardRoutes,
   ...pageRoutes,
+  ...orgRoutes,
+  ...stylesRoutes,
   NotFoundRoute,
 ];
 
