@@ -69,14 +69,14 @@ export default function StylesSection() {
             title={<TabTitleText>{t("general")}</TabTitleText>}
             {...generalTab}
           >
-            <GeneralStyles />
+            <GeneralStyles refresh={refresh} />
           </Tab>
           <Tab
             data-testid="login"
             title={<TabTitleText>{t("login")}</TabTitleText>}
             {...loginTab}
           >
-            <LoginStyles />
+            <LoginStyles refresh={refresh} />
           </Tab>
           <Tab
             data-testid="email"
@@ -90,7 +90,7 @@ export default function StylesSection() {
             title={<TabTitleText>{t("portal")}</TabTitleText>}
             {...portalTab}
           >
-            <PortalStyles />
+            <PortalStyles refresh={refresh} />
           </Tab>
         </RoutableTabs>
       </PageSection>
