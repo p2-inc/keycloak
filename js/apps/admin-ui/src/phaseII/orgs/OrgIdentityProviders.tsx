@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from "react";
 import type { OrgRepresentation } from "./routes";
 import useOrgFetcher from "./useOrgFetcher";
@@ -19,10 +21,9 @@ import {
 } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
 // import IdentityProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation";
-import { isNil } from "lodash-es";
+import { first, isNil } from "lodash-es";
 import { generatePath } from "react-router-dom";
 import { adminClient } from "../../admin-client";
-import environment from "../../environment";
 import {
   Controller,
   FormProvider,
@@ -68,16 +69,15 @@ export default function OrgIdentityProviders({
   refresh,
 }: OrgIdentityProvidersProps) {
   const { realm } = useRealm();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { linkIDPtoOrg } = useOrgFetcher(realm);
+  const { linkIDPtoOrg, getIdpsForOrg } = useOrgFetcher(realm);
   const { t } = useTranslation();
+  const [orgIdps, setOrgIdps] = useState<IdentityProviderRepresentation[]>([]);
   const [idps, setIdps] = useState<idpRep[]>([]);
   const [authFlowOptions, setAuthFlowOptions] = useState<
     { label: string; value: string }[]
   >([]);
   const disabledSelectorText = "please choose";
   const [isUpdatingIdP, setIsUpdatingIdP] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [enabledIdP, setEnabledIdP] = useState<idpRep>();
   const [alerts, setAlerts] = useState<AlertInfo[]>([]);
   const getUniqueId: () => number = () => new Date().getTime();
@@ -102,33 +102,6 @@ export default function OrgIdentityProviders({
       realm,
     })) as idpRep[];
     setIdps(identityProviders);
-
-    // at least one IdP?
-    // find the enabled IdP applicable to this org
-    const enabledIdP = identityProviders.find((idp) => {
-      // if the key `home.idp.discovery.org` exists
-      // and the key is equal to the org id and idp is enabled
-      if (isNil(idp.config?.["home.idp.discovery.org"])) {
-        return false;
-      }
-      return idp.config["home.idp.discovery.org"] === org.id && idp.enabled;
-    });
-    if (enabledIdP) {
-      console.log("🚀 ~ getIDPs ~ enabledIdP:", enabledIdP);
-      setEnabledIdP(enabledIdP);
-      // Set the values for the form since there is an enabled IDP
-      setValue("idpSelector", enabledIdP.internalId!);
-
-      if (enabledIdP.postBrokerLoginFlowAlias) {
-        setValue(
-          "postBrokerLoginFlowAlias",
-          enabledIdP.postBrokerLoginFlowAlias,
-        );
-      }
-      if (enabledIdP.syncMode) {
-        setValue("syncMode", enabledIdP.syncMode);
-      }
-    }
   }
 
   async function getAuthFlowOptions() {
@@ -155,9 +128,41 @@ export default function OrgIdentityProviders({
     );
   }
 
+  async function fetchOrgIdps() {
+    const orgIdps = await getIdpsForOrg(org.id);
+    if ("error" in orgIdps && orgIdps.error) {
+      console.error("Error fetching org IdPs", orgIdps.error);
+      return;
+    }
+    setOrgIdps(orgIdps as IdentityProviderRepresentation[]);
+
+    if (Array.isArray(orgIdps) && orgIdps.length > 0) {
+      const activeIdP = first(orgIdps);
+
+      if (
+        activeIdP &&
+        activeIdP.config?.["home.idp.discovery.org"] === org.id &&
+        activeIdP.enabled
+      ) {
+        setEnabledIdP(activeIdP);
+        setValue("idpSelector", activeIdP.internalId!);
+        if (activeIdP.postBrokerLoginFlowAlias) {
+          setValue(
+            "postBrokerLoginFlowAlias",
+            activeIdP.postBrokerLoginFlowAlias,
+          );
+        }
+        if (activeIdP.config.syncMode) {
+          setValue("syncMode", activeIdP.config.syncMode);
+        }
+      }
+    }
+  }
+
   useEffect(() => {
     getIDPs();
     getAuthFlowOptions();
+    fetchOrgIdps();
   }, []);
 
   const idpOptions = [
@@ -253,18 +258,19 @@ export default function OrgIdentityProviders({
             <>
               <strong>{t("idpAssignedToOrg")}</strong>: {enabledIdP.displayName}{" "}
               ({enabledIdP.alias})
-              <Button
-                variant="link"
-                href={generatePath(
-                  `/auth/${environment.consoleBaseUrl}/#/:realm/identity-providers/:providerId/:alias/settings`,
-                  {
-                    realm,
-                    providerId: enabledIdP.providerId!,
-                    alias: enabledIdP.alias!,
-                  },
-                )}
-              >
-                {t("edit")}
+              <Button variant="link">
+                <a
+                  href={generatePath(
+                    `?realm=${realm}#/:realm/identity-providers/:providerId/:alias/settings`,
+                    {
+                      realm,
+                      providerId: enabledIdP.providerId!,
+                      alias: enabledIdP.alias!,
+                    },
+                  )}
+                >
+                  {t("edit")}
+                </a>
               </Button>
             </>
           ) : (
