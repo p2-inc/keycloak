@@ -414,6 +414,24 @@ export default function useOrgFetcher(realm: string) {
     }
   }
 
+  async function getIdpsForOrg(orgId: OrgRepresentation["id"]) {
+    try {
+      const resp = await fetchGet(`${baseUrl}/orgs/${orgId}/idps`);
+      if (resp.ok) {
+        return (await resp.json()) as IdentityProviderRepresentation[];
+      }
+      return {
+        error: true,
+        message: "Failed to fetch IDPs for org.",
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error,
+      };
+    }
+  }
+
   // POST /:realm/orgs/:orgId/idps/link
   async function linkIDPtoOrg(
     orgId: OrgRepresentation["id"],
@@ -461,6 +479,7 @@ export default function useOrgFetcher(realm: string) {
     deleteOrg,
     deleteOrgInvitation,
     deleteRoleFromOrg,
+    getIdpsForOrg,
     getOrg,
     getOrgInvitations,
     getOrgMembers,
