@@ -12,7 +12,7 @@ import { useRealm } from "../../../context/realm-context/RealmContext";
 import type UserRepresentation from "@keycloak/keycloak-admin-client/lib/defs/userRepresentation";
 import type RoleRepresentation from "@keycloak/keycloak-admin-client/lib/defs/roleRepresentation";
 import { KeycloakDataTableCustomized } from "../components/KeycloakDataTableCustomized";
-import { differenceBy } from "lodash";
+import { differenceBy } from "lodash-es";
 
 type AssignRoleToMemberProps = {
   orgId: string;

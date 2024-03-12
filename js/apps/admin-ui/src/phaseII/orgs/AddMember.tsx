@@ -16,7 +16,7 @@ import { ListEmptyState } from "../../components/list-empty-state/ListEmptyState
 import { emptyFormatter } from "../../util";
 import { toAddUser } from "../../user/routes/AddUser";
 import useOrgFetcher from "./useOrgFetcher";
-import { differenceBy } from "lodash";
+import { differenceBy } from "lodash-es";
 import { adminClient } from "../../admin-client";
 
 type MemberModalProps = {
