@@ -21,6 +21,7 @@ export default function useOrgFetcher(realm: string) {
 
   const authUrl = environment.authServerUrl;
   const baseUrl = `${authUrl}/realms/${realm}`;
+  const adminUrl = `${authUrl}/admin/realms/${realm}`;
 
   async function fetchGet(url: string) {
     const token = await adminClient.getAccessToken();
@@ -414,9 +415,42 @@ export default function useOrgFetcher(realm: string) {
     }
   }
 
+  // GET /:realm/identity-provider/instances
   async function getIdpsForOrg(orgId: OrgRepresentation["id"]) {
     try {
       const resp = await fetchGet(`${baseUrl}/orgs/${orgId}/idps`);
+      if (resp.ok) {
+        return (await resp.json()) as IdentityProviderRepresentation[];
+      }
+      return {
+        error: true,
+        message: "Failed to fetch IDPs for org.",
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error,
+      };
+    }
+  }
+
+  async function getIdpsForRealm({
+    first = 0,
+    max = 100,
+    search,
+  }: {
+    first: number;
+    max: number;
+    search?: string;
+  }) {
+    try {
+      let query = `first=${first}&max=${max}`;
+      if (search && search.length > 0) {
+        query = `${query}&search=${search}`;
+      }
+      const resp = await fetchGet(
+        `${adminUrl}/identity-provider/instances?${query}`,
+      );
       if (resp.ok) {
         return (await resp.json()) as IdentityProviderRepresentation[];
       }
@@ -480,6 +514,7 @@ export default function useOrgFetcher(realm: string) {
     deleteOrgInvitation,
     deleteRoleFromOrg,
     getIdpsForOrg,
+    getIdpsForRealm,
     getOrg,
     getOrgInvitations,
     getOrgMembers,

@@ -28,8 +28,8 @@ const realm = new URLSearchParams(window.location.search).get("realm");
 const defaultEnvironment: Environment = {
   loginRealm: realm ?? "master",
   clientId: "security-admin-console-v2",
-  authServerUrl: "http://localhost:8180",
-  authUrl: "http://localhost:8180",
+  authServerUrl: "https://app-staging.phasetwo.io/auth",
+  authUrl: "https://app-staging.phasetwo.io/auth",
   consoleBaseUrl: "/admin/master/console/",
   resourceUrl: ".",
   masterRealm: "master",
