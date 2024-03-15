@@ -205,11 +205,11 @@ export default function OrgIdentityProviders({
         <Flex>
           <FlexItem>
             <Button
-              data-testid="idpAssign"
+              data-testid="assign"
               variant="primary"
               onClick={() => setShowAssignIdpModal(true)}
             >
-              {t("idpAssign")}
+              {t("assign")}
             </Button>
           </FlexItem>
           {enabledIdP && (
@@ -217,7 +217,7 @@ export default function OrgIdentityProviders({
               <Button
                 data-testid="idpUnassign"
                 variant="secondary"
-                onClick={() => unlinkIDPtoOrg(org.id)}
+                onClick={() => unlinkIDPtoOrg(org.id, enabledIdP.alias!)}
               >
                 {t("idpUnassign")}
               </Button>
