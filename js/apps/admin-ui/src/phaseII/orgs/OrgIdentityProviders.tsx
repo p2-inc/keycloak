@@ -11,12 +11,20 @@ import {
   Alert,
   AlertGroup,
   AlertVariant,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  Flex,
+  FlexItem,
 } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
-import { first } from "lodash-es";
-import { generatePath } from "react-router-dom";
+import { first, startCase } from "lodash-es";
+import { Link, NavLink, generatePath } from "react-router-dom";
 import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { AssignIdentityProvider } from "./modals/AssignIdentityProvider";
+import environment from "../../environment";
+import { toIdentityProvider } from "../../identity-providers/routes/IdentityProvider";
 
 export type SyncMode = "FORCE" | "IMPORT" | "LEGACY";
 export interface idpRep extends IdentityProviderRepresentation {
@@ -39,7 +47,8 @@ export default function OrgIdentityProviders({
   refresh,
 }: OrgIdentityProvidersProps) {
   const { realm } = useRealm();
-  const { linkIDPtoOrg, getIdpsForOrg, getIdpsForRealm } = useOrgFetcher(realm);
+  const { linkIDPtoOrg, getIdpsForOrg, getIdpsForRealm, unlinkIDPtoOrg } =
+    useOrgFetcher(realm);
   const { t } = useTranslation();
   const [orgIdps, setOrgIdps] = useState<IdentityProviderRepresentation[]>([]);
   const [idps, setIdps] = useState<idpRep[]>([]);
@@ -126,7 +135,14 @@ export default function OrgIdentityProviders({
     }
   };
 
-  let body = <Text component={TextVariants.h1}>{t("noIDPsAvailable")}</Text>;
+  let body = (
+    <div>
+      <h1 className="pf-u-font-size-xl">{t("noIDPsAvailable")}</h1>
+      <NavLink to={`/${realm}/identity-providers`}>
+        Add Identity Provider
+      </NavLink>
+    </div>
+  );
 
   if (idps.length > 0) {
     body = (
@@ -150,39 +166,64 @@ export default function OrgIdentityProviders({
             ))}
         </AlertGroup>
 
-        <Text component={TextVariants.h1}>
-          {enabledIdP ? (
-            <>
-              <strong>{t("idpAssignedToOrg")}</strong>: {enabledIdP.displayName}{" "}
-              ({enabledIdP.alias})
-              <Button variant="link">
-                <a
-                  href={generatePath(
-                    `?realm=${realm}#/:realm/identity-providers/:providerId/:alias/settings`,
-                    {
+        {enabledIdP ? (
+          <>
+            <h1 className="pf-u-font-size-xl pf-u-mb-lg">
+              {t("idpAssignedToOrg")}
+            </h1>
+            <DescriptionList isHorizontal>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t("name")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {enabledIdP.displayName || t("noName")} (
+                  <Link
+                    to={toIdentityProvider({
                       realm,
                       providerId: enabledIdP.providerId!,
                       alias: enabledIdP.alias!,
-                    },
-                  )}
-                >
-                  {t("edit")}
-                </a>
-              </Button>
-            </>
-          ) : (
-            <div>{t("noIDPAssigned")}</div>
-          )}
-        </Text>
+                      tab: "settings",
+                    })}
+                  >
+                    {t("edit").toLowerCase()}
+                  </Link>
+                  )
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t("alias")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {enabledIdP.alias || t("noAlias")}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </DescriptionList>
+          </>
+        ) : (
+          <div>{t("noIDPAssigned")}</div>
+        )}
 
-        <Text component={TextVariants.h2}>{t("assignNewIdp")}</Text>
-        <Button
-          data-testid="idpAssign"
-          variant="secondary"
-          onClick={() => setShowAssignIdpModal(true)}
-        >
-          {t("idpAssign")}
-        </Button>
+        <h2 className="pf-u-font-size-lg pf-u-mt-lg">{t("assignNewIdp")}</h2>
+        <Flex>
+          <FlexItem>
+            <Button
+              data-testid="assign"
+              variant="primary"
+              onClick={() => setShowAssignIdpModal(true)}
+            >
+              {t("assign")}
+            </Button>
+          </FlexItem>
+          {enabledIdP && (
+            <FlexItem>
+              <Button
+                data-testid="idpUnassign"
+                variant="secondary"
+                onClick={() => unlinkIDPtoOrg(org.id, enabledIdP.alias!)}
+              >
+                {t("idpUnassign")}
+              </Button>
+            </FlexItem>
+          )}
+        </Flex>
 
         {showAssignIdpModal && (
           <AssignIdentityProvider

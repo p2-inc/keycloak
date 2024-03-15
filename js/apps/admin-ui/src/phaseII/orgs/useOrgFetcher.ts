@@ -480,7 +480,6 @@ export default function useOrgFetcher(realm: string) {
         `${baseUrl}/orgs/${orgId}/idps/link`,
         idpInformation,
       );
-      console.log("resp", resp);
       if (!resp.ok) {
         throw new Error("Failed to link IDP to org.");
       }
@@ -494,6 +493,33 @@ export default function useOrgFetcher(realm: string) {
         return {
           error: true,
           message: "Identity Provider already linked to this org.",
+        };
+      }
+    } catch (error) {
+      return {
+        error: true,
+        message: error,
+      };
+    }
+  }
+
+  // POST /:realm/orgs/:orgId/idps/unlink
+  async function unlinkIDPtoOrg(
+    orgId: OrgRepresentation["id"],
+    idpAlias: IdentityProviderRepresentation["alias"],
+  ) {
+    try {
+      const resp = await fetchPost(
+        `${baseUrl}/orgs/${orgId}/idps/${idpAlias}/unlink`,
+        {},
+      );
+      if (!resp.ok) {
+        throw new Error("Failed to unlink Identity Provider.");
+      }
+      if (resp.status === 201) {
+        return {
+          success: true,
+          message: `Unlinked Identity Provider.`,
         };
       }
     } catch (error) {
@@ -528,6 +554,7 @@ export default function useOrgFetcher(realm: string) {
     removeMemberFromOrg,
     revokeOrgRoleForUser,
     setOrgRoleForUser,
+    unlinkIDPtoOrg,
     updateIdentityProvider,
     updateOrg,
     updateRoleForOrg,
