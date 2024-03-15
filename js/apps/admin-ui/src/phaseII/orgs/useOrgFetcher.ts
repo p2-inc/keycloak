@@ -470,9 +470,15 @@ export default function useOrgFetcher(realm: string) {
   }
 
   // POST /:realm/orgs/:orgId/idps/unlink
-  async function unlinkIDPtoOrg(orgId: OrgRepresentation["id"]) {
+  async function unlinkIDPtoOrg(
+    orgId: OrgRepresentation["id"],
+    idpAlias: IdentityProviderRepresentation["alias"],
+  ) {
     try {
-      const resp = await fetchPost(`${baseUrl}/orgs/${orgId}/idps/unlink`, {});
+      const resp = await fetchPost(
+        `${baseUrl}/orgs/${orgId}/idps/${idpAlias}/unlink`,
+        {},
+      );
       if (!resp.ok) {
         throw new Error("Failed to unlink Identity Provider.");
       }
