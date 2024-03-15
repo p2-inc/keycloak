@@ -48,7 +48,6 @@ const IdentityProviderList = ({
   setValue,
   org,
 }: IdentityProviderListProps) => {
-  console.log("🚀 ~ list:", list);
   const { t } = useTranslation();
   return (
     <PageSection variant="light" className="pf-u-py-lg">
@@ -56,17 +55,30 @@ const IdentityProviderList = ({
         {list?.map((identityProvider) => {
           const idpAssignedToThisOrg =
             identityProvider.config?.["home.idp.discovery.org"] === org.id;
+          const isIdPLinked =
+            identityProvider.config?.["home.idp.discovery.org"];
+          const isIdPEnabled = identityProvider.enabled;
+
+          let label = `${identityProvider.displayName || t("noName")}`;
+          if (idpAssignedToThisOrg) {
+            label += ` (${t("idpAssignedToThisOrg")})`;
+          } else if (isIdPLinked) {
+            label += ` (${t("idpLinkedToOrg")})`;
+          }
+
+          let description = identityProvider.alias;
+          description += isIdPEnabled
+            ? ` (${t("enabled").toLowerCase()})`
+            : ` (${t("disabled").toLowerCase()})`;
 
           return (
             <Radio
               id={identityProvider.internalId!}
               key={identityProvider.internalId}
               name="identityProvider"
-              label={`${identityProvider.displayName} ${
-                identityProvider.enabled ? "(enabled)" : ""
-              } ${idpAssignedToThisOrg ? `[${t("idpAssignedToOrg")}]` : ""}`}
+              label={label}
               data-testid={identityProvider.internalId}
-              description={identityProvider.alias}
+              description={description}
               onChange={() => {
                 setValue(identityProvider);
               }}
@@ -167,8 +179,9 @@ export function AssignIdentityProvider({
     const normalizedSearch = search.trim().toLowerCase();
     return localeSort(identityProviders ?? [], mapByKey("displayName"))
       .filter(
-        ({ displayName }) =>
-          displayName?.toLowerCase().includes(normalizedSearch),
+        ({ displayName, alias }) =>
+          displayName?.toLowerCase().includes(normalizedSearch) ||
+          alias?.toLowerCase().includes(normalizedSearch),
       )
       .slice(first, first + max + 1);
   }, [identityProviders, search, first, max]);
@@ -187,6 +200,11 @@ export function AssignIdentityProvider({
     },
     [search],
   );
+
+  let warning;
+  if (value?.config?.["home.idp.discovery.org"]) {
+    warning = t("idpWarningTextLinkedToAnotherOrg");
+  }
 
   return (
     <Modal
@@ -309,6 +327,14 @@ export function AssignIdentityProvider({
           </FormGroup>
         </Form>
       </FormProvider>
+      {warning && (
+        <Alert
+          variant={AlertVariant.warning}
+          isInline
+          title={warning}
+          className="pf-u-mt-lg"
+        />
+      )}
     </Modal>
   );
 }
