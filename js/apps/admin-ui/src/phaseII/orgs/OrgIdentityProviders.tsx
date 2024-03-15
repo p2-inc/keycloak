@@ -17,24 +17,20 @@ import {
   Alert,
   AlertGroup,
   AlertVariant,
-  Form,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  Flex,
+  FlexItem,
 } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
-// import IdentityProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation";
-import { first, isNil } from "lodash-es";
-import { generatePath } from "react-router-dom";
-import { adminClient } from "../../admin-client";
-import {
-  Controller,
-  FormProvider,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
-import { fetchWithError } from "@keycloak/keycloak-admin-client";
-import { addTrailingSlash } from "../../util";
-import { getAuthorizationHeaders } from "../../utils/getAuthorizationHeaders";
-import { AuthenticationType } from "../../authentication/AuthenticationSection";
+import { first, startCase } from "lodash-es";
+import { Link, NavLink, generatePath } from "react-router-dom";
 import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
+import { AssignIdentityProvider } from "./modals/AssignIdentityProvider";
+import environment from "../../environment";
+import { toIdentityProvider } from "../../identity-providers/routes/IdentityProvider";
 
 export type SyncMode = "FORCE" | "IMPORT" | "LEGACY";
 export interface idpRep extends IdentityProviderRepresentation {
@@ -69,7 +65,8 @@ export default function OrgIdentityProviders({
   refresh,
 }: OrgIdentityProvidersProps) {
   const { realm } = useRealm();
-  const { linkIDPtoOrg, getIdpsForOrg } = useOrgFetcher(realm);
+  const { linkIDPtoOrg, getIdpsForOrg, getIdpsForRealm, unlinkIDPtoOrg } =
+    useOrgFetcher(realm);
   const { t } = useTranslation();
   const [orgIdps, setOrgIdps] = useState<IdentityProviderRepresentation[]>([]);
   const [idps, setIdps] = useState<idpRep[]>([]);
@@ -232,7 +229,14 @@ export default function OrgIdentityProviders({
     }
   };
 
-  let body = <Text component={TextVariants.h1}>{t("noIDPsAvailable")}</Text>;
+  let body = (
+    <div>
+      <h1 className="pf-u-font-size-xl">{t("noIDPsAvailable")}</h1>
+      <NavLink to={`/${realm}/identity-providers`}>
+        Add Identity Provider
+      </NavLink>
+    </div>
+  );
 
   if (idps.length > 0) {
     body = (
@@ -253,128 +257,83 @@ export default function OrgIdentityProviders({
             />
           ))}
         </AlertGroup>
-        <Text component={TextVariants.h1}>
-          {enabledIdP ? (
-            <>
-              <strong>{t("idpAssignedToOrg")}</strong>: {enabledIdP.displayName}{" "}
-              ({enabledIdP.alias})
-              <Button variant="link">
-                <a
-                  href={generatePath(
-                    `?realm=${realm}#/:realm/identity-providers/:providerId/:alias/settings`,
-                    {
+
+        {enabledIdP ? (
+          <>
+            <h1 className="pf-u-font-size-xl pf-u-mb-lg">
+              {t("idpAssignedToOrg")}
+            </h1>
+            <DescriptionList isHorizontal>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t("name")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {enabledIdP.displayName || t("noName")} (
+                  <Link
+                    to={toIdentityProvider({
                       realm,
                       providerId: enabledIdP.providerId!,
                       alias: enabledIdP.alias!,
-                    },
-                  )}
-                >
-                  {t("edit")}
-                </a>
-              </Button>
-            </>
-          ) : (
-            <div>{t("noIDPAssigned")}</div>
-          )}
-        </Text>
+                      tab: "settings",
+                    })}
+                  >
+                    {t("edit").toLowerCase()}
+                  </Link>
+                  )
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t("alias")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {enabledIdP.alias || t("noAlias")}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </DescriptionList>
+          </>
+        ) : (
+          <div>{t("noIDPAssigned")}</div>
+        )}
 
-        <Grid hasGutter className="pf-u-mt-xl">
-          <GridItem span={8}>
-            <FormProvider {...idpSelectionForm}>
-              <Form onSubmit={handleSubmit(saveIdpForm)}>
-                <FormGroup label="Identity Providers*" fieldId="idpSelector">
-                  <Controller
-                    name="idpSelector"
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => (
-                      <FormSelect
-                        value={field.value}
-                        onChange={field.onChange}
-                        aria-label="Identity Providers"
-                        ouiaId="Identity Providers"
-                        isRequired
-                      >
-                        {idpOptions.map((option, index) => (
-                          <FormSelectOption
-                            isDisabled={option.disabled}
-                            key={index}
-                            value={option.value}
-                            label={option.label}
-                          />
-                        ))}
-                      </FormSelect>
-                    )}
-                  />
-                </FormGroup>
-                <FormGroup
-                  label="Post Broker Login"
-                  fieldId="postBrokerLoginFlowAlias"
-                >
-                  <Controller
-                    name="postBrokerLoginFlowAlias"
-                    control={control}
-                    render={({ field }) => (
-                      <FormSelect
-                        value={field.value}
-                        onChange={field.onChange}
-                        aria-label="Post Broker Login Flow Alias Input"
-                        ouiaId="Post Broker Login Flow Alias Input"
-                      >
-                        {authFlowOptions.map((option, index) => (
-                          <FormSelectOption
-                            key={index}
-                            value={option.value}
-                            label={option.label}
-                          />
-                        ))}
-                      </FormSelect>
-                    )}
-                  />
-                </FormGroup>
-                <FormGroup label="Sync Mode" fieldId="syncMode">
-                  <Controller
-                    name="syncMode"
-                    control={control}
-                    render={({ field }) => (
-                      <FormSelect
-                        value={field.value}
-                        onChange={field.onChange}
-                        aria-label="SyncMode Input"
-                        ouiaId="SyncMode Input"
-                      >
-                        {syncModeOptions.map((option, index) => (
-                          <FormSelectOption
-                            isDisabled={option.disabled}
-                            key={index}
-                            value={option.value}
-                            label={option.label}
-                          />
-                        ))}
-                      </FormSelect>
-                    )}
-                  />
-                </FormGroup>
-                <ActionGroup className="pf-u-mt-xl">
-                  <Button
-                    type="submit"
-                    isDisabled={isUpdatingIdP}
-                    isLoading={isUpdatingIdP}
-                  >
-                    {t("save")}
-                  </Button>
-                  <Button
-                    variant="link"
-                    onClick={() => reset()}
-                    isDisabled={!isDirty}
-                  >
-                    {t("cancel")}
-                  </Button>
-                </ActionGroup>
-              </Form>
-            </FormProvider>
-          </GridItem>
-        </Grid>
+        <h2 className="pf-u-font-size-lg pf-u-mt-lg">{t("assignNewIdp")}</h2>
+        <Flex>
+          <FlexItem>
+            <Button
+              data-testid="idpAssign"
+              variant="primary"
+              onClick={() => setShowAssignIdpModal(true)}
+            >
+              {t("idpAssign")}
+            </Button>
+          </FlexItem>
+          {enabledIdP && (
+            <FlexItem>
+              <Button
+                data-testid="idpUnassign"
+                variant="secondary"
+                onClick={() => unlinkIDPtoOrg(org.id)}
+              >
+                {t("idpUnassign")}
+              </Button>
+            </FlexItem>
+          )}
+        </Flex>
+
+        {showAssignIdpModal && (
+          <AssignIdentityProvider
+            onSelect={(identityProvider, idpConfig) => {
+              assignIdentityProvider({
+                identityProvider,
+                idpConfig: {
+                  ...idpConfig,
+                  postBrokerLoginFlowAlias:
+                    idpConfig.postBrokerLoginFlowAlias || "",
+                },
+              });
+            }}
+            onClear={() => setShowAssignIdpModal(false)}
+            organization={org}
+            alerts={alerts}
+          />
+        )}
       </div>
     );
   }
