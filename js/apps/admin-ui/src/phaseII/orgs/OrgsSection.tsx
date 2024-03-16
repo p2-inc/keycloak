@@ -85,8 +85,8 @@ export default function OrgsSection() {
       <PageSection variant="light" className="pf-u-p-0">
         <KeycloakDataTable
           key={key}
-          isPaginated={true}
-          isSearching={true}
+          isPaginated
+          isSearching
           //@ts-ignore
           loader={loader}
           ariaLabelKey={t("orgList")}

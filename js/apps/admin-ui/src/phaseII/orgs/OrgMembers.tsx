@@ -61,8 +61,12 @@ export default function OrgMembers({
     fetchData();
   }, []);
 
-  const loader = async (first: number, max: number): Promise<MembersOf[]> =>
-    await getOrgMembers(org.id, { first, max });
+  const loader = async (
+    first: number,
+    max: number,
+    search: string,
+  ): Promise<MembersOf[]> =>
+    await getOrgMembers(org.id, { first, max, search });
 
   const [addMembersVisibility, setAddMembersVisibility] = useState(false);
   const toggleAddMembersVisibility = () =>
@@ -89,10 +93,12 @@ export default function OrgMembers({
       <KeycloakDataTable
         data-testid="members-org-table"
         isPaginated
+        isSearching
         key={key}
         //@ts-ignore
         loader={loader}
         ariaLabelKey={t("members")}
+        searchPlaceholderKey={t("search")}
         toolbarItem={
           <ToolbarItem>
             <Button
