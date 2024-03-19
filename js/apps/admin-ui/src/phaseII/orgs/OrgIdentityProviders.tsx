@@ -5,14 +5,8 @@ import type { OrgRepresentation } from "./routes";
 import useOrgFetcher from "./useOrgFetcher";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import {
-  ActionGroup,
   Button,
   Text,
-  FormGroup,
-  FormSelect,
-  FormSelectOption,
-  Grid,
-  GridItem,
   TextVariants,
   Alert,
   AlertGroup,
@@ -42,23 +36,11 @@ type OrgIdentityProvidersProps = {
   refresh: () => void;
 };
 
-interface AlertInfo {
+export interface AlertInfo {
   title: string;
   variant: AlertVariant;
   key: number;
 }
-
-type idpFormValues = {
-  idpSelector: IdentityProviderRepresentation["alias"];
-  postBrokerLoginFlowAlias: IdentityProviderRepresentation["postBrokerLoginFlowAlias"];
-  syncMode: SyncMode;
-};
-const syncModeOptions = [
-  { value: null, label: "Select one", disabled: false },
-  { value: "FORCE", label: "FORCE", disabled: false },
-  { value: "LEGACY", label: "LEGACY", disabled: false },
-  { value: "IMPORT", label: "IMPORT", disabled: false },
-];
 
 export default function OrgIdentityProviders({
   org,
@@ -70,59 +52,19 @@ export default function OrgIdentityProviders({
   const { t } = useTranslation();
   const [orgIdps, setOrgIdps] = useState<IdentityProviderRepresentation[]>([]);
   const [idps, setIdps] = useState<idpRep[]>([]);
-  const [authFlowOptions, setAuthFlowOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const disabledSelectorText = "please choose";
-  const [isUpdatingIdP, setIsUpdatingIdP] = useState(false);
+
   const [enabledIdP, setEnabledIdP] = useState<idpRep>();
   const [alerts, setAlerts] = useState<AlertInfo[]>([]);
   const getUniqueId: () => number = () => new Date().getTime();
 
-  const idpSelectionForm = useForm<idpFormValues>({
-    defaultValues: {
-      postBrokerLoginFlowAlias: "post org broker login",
-      syncMode: "FORCE",
-    },
-  });
-
-  const {
-    handleSubmit,
-    reset,
-    control,
-    setValue,
-    formState: { isDirty },
-  } = idpSelectionForm;
+  const [showAssignIdpModal, setShowAssignIdpModal] = useState<boolean>();
 
   async function getIDPs() {
-    const identityProviders = (await adminClient.identityProviders.find({
-      realm,
+    const identityProviders = (await getIdpsForRealm({
+      first: 0,
+      max: 100,
     })) as idpRep[];
     setIdps(identityProviders);
-  }
-
-  async function getAuthFlowOptions() {
-    const flowsRequest = await fetchWithError(
-      `${addTrailingSlash(
-        adminClient.baseUrl,
-      )}admin/realms/${realm}/ui-ext/authentication-management/flows`,
-      {
-        method: "GET",
-        headers: getAuthorizationHeaders(await adminClient.getAccessToken()),
-      },
-    );
-    const flows = await flowsRequest.json();
-
-    if (!flows) {
-      return;
-    }
-
-    setAuthFlowOptions(
-      flows.map((flow: AuthenticationType) => ({
-        value: flow.alias,
-        label: flow.alias,
-      })),
-    );
   }
 
   async function fetchOrgIdps() {
@@ -142,63 +84,27 @@ export default function OrgIdentityProviders({
         activeIdP.enabled
       ) {
         setEnabledIdP(activeIdP);
-        setValue("idpSelector", activeIdP.internalId!);
-        if (activeIdP.postBrokerLoginFlowAlias) {
-          setValue(
-            "postBrokerLoginFlowAlias",
-            activeIdP.postBrokerLoginFlowAlias,
-          );
-        }
-        if (activeIdP.config.syncMode) {
-          setValue("syncMode", activeIdP.config.syncMode);
-        }
       }
     }
   }
 
   useEffect(() => {
     getIDPs();
-    getAuthFlowOptions();
     fetchOrgIdps();
   }, []);
 
-  const idpOptions = [
-    { value: disabledSelectorText, label: "Select one", disabled: false },
-    ...idps
-      .filter((idp) => idp.internalId !== enabledIdP?.internalId)
-      .filter((idp) =>
-        isNil(idp.config?.["home.idp.discovery.org"])
-          ? true
-          : idp.config["home.idp.discovery.org"] === org.id,
-      )
-      .map((idp) => {
-        let label = idp.displayName
-          ? `${idp.displayName} (${idp.alias})`
-          : `${idp.alias}`;
-        if (!isNil(idp.config?.["home.idp.discovery.org"])) {
-          label = `${label} - ${org.displayName}`;
-        }
-        return {
-          value: idp.internalId,
-          label: label,
-          disabled: false,
-        };
-      }),
-  ];
-
-  const saveIdpForm: SubmitHandler<idpFormValues> = async ({
-    idpSelector,
-    postBrokerLoginFlowAlias,
-    syncMode,
+  const assignIdentityProvider = async ({
+    identityProvider,
+    idpConfig,
+  }: {
+    identityProvider: IdentityProviderRepresentation;
+    idpConfig: { syncMode: SyncMode; postBrokerLoginFlowAlias: string };
   }) => {
-    setIsUpdatingIdP(true);
-    const fullSelectedIdp = idps.find((i) => i.internalId === idpSelector)!;
-
     try {
       const resp = await linkIDPtoOrg(org.id, {
-        alias: fullSelectedIdp.alias!,
-        post_broker_flow: postBrokerLoginFlowAlias,
-        sync_mode: syncMode,
+        alias: identityProvider.alias!,
+        post_broker_flow: idpConfig.postBrokerLoginFlowAlias,
+        sync_mode: idpConfig.syncMode,
       });
 
       if (resp!.error) {
@@ -213,6 +119,7 @@ export default function OrgIdentityProviders({
           key: getUniqueId(),
         },
       ]);
+      setShowAssignIdpModal(false);
     } catch (e) {
       console.log("Error during IdP assignment", e);
       setAlerts((prevAlertInfo) => [
@@ -224,7 +131,6 @@ export default function OrgIdentityProviders({
         },
       ]);
     } finally {
-      setIsUpdatingIdP(false);
       refresh();
     }
   };
@@ -247,15 +153,17 @@ export default function OrgIdentityProviders({
           aria-relevant="additions text"
           aria-atomic="false"
         >
-          {alerts.map(({ title, variant, key }) => (
-            <Alert
-              variant={variant}
-              title={title}
-              key={key}
-              timeout={8000}
-              className="pf-u-mb-lg"
-            />
-          ))}
+          {alerts
+            .filter(({ variant }) => variant === AlertVariant.success)
+            .map(({ title, variant, key }) => (
+              <Alert
+                variant={variant}
+                title={title}
+                key={key}
+                timeout={8000}
+                className="pf-u-mb-lg"
+              />
+            ))}
         </AlertGroup>
 
         {enabledIdP ? (
