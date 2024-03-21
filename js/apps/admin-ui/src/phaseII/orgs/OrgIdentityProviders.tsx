@@ -88,9 +88,13 @@ export default function OrgIdentityProviders({
     }
   }
 
-  useEffect(() => {
+  const refreshIdPs = () => {
     getIDPs();
     fetchOrgIdps();
+  };
+
+  useEffect(() => {
+    refreshIdPs();
   }, []);
 
   const assignIdentityProvider = async ({
@@ -132,6 +136,48 @@ export default function OrgIdentityProviders({
       ]);
     } finally {
       refresh();
+      refreshIdPs();
+    }
+  };
+
+  const unassignIdentityProvider = async (idpAlias: string) => {
+    try {
+      const resp = await unlinkIDPtoOrg(org.id, idpAlias);
+      console.log("🚀 ~ unassignIdentityProvider ~ resp:", resp);
+
+      if (resp!.error) {
+        setAlerts((prevAlertInfo) => [
+          ...prevAlertInfo,
+          {
+            title: resp!.message as string,
+            variant: AlertVariant.danger,
+            key: getUniqueId(),
+          },
+        ]);
+      } else {
+        setAlerts((prevAlertInfo) => [
+          ...prevAlertInfo,
+          {
+            title: resp!.message as string,
+            variant: AlertVariant.success,
+            key: getUniqueId(),
+          },
+        ]);
+      }
+    } catch (e) {
+      console.log("Error during IdP unassignment", e);
+      setAlerts((prevAlertInfo) => [
+        ...prevAlertInfo,
+        {
+          title: "IdP failed to unassign for this org. Please try again.",
+          variant: AlertVariant.danger,
+          key: getUniqueId(),
+        },
+      ]);
+    } finally {
+      setEnabledIdP(undefined);
+      refresh();
+      refreshIdPs();
     }
   };
 
@@ -201,7 +247,9 @@ export default function OrgIdentityProviders({
           <div>{t("noIDPAssigned")}</div>
         )}
 
-        <h2 className="pf-u-font-size-lg pf-u-mt-lg">{t("assignNewIdp")}</h2>
+        <h2 className="pf-u-font-size-lg pf-u-mt-2xl pf-u-mb-md">
+          {t("assignNewIdp")}
+        </h2>
         <Flex>
           <FlexItem>
             <Button
@@ -217,7 +265,7 @@ export default function OrgIdentityProviders({
               <Button
                 data-testid="idpUnassign"
                 variant="secondary"
-                onClick={() => unlinkIDPtoOrg(org.id, enabledIdP.alias!)}
+                onClick={() => unassignIdentityProvider(enabledIdP.alias!)}
               >
                 {t("idpUnassign")}
               </Button>
