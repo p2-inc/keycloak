@@ -521,7 +521,7 @@ export default function useOrgFetcher(realm: string) {
       if (!resp.ok) {
         throw new Error("Failed to unlink Identity Provider.");
       }
-      if (resp.status === 201) {
+      if (resp.status === 204) {
         return {
           success: true,
           message: `Unlinked Identity Provider.`,
