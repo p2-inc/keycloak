@@ -61,7 +61,7 @@ export const RealmSettingsAttributeTab = ({
       );
 
       setRealm({ ...realm, attributes });
-      addAlert(t("saveSuccess"), AlertVariant.success);
+      addAlert(t("saveRealmSettingsSuccess"), AlertVariant.success);
     } catch (error) {
       addError("groups:groupUpdateError", error);
     }
