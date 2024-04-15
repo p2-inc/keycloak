@@ -116,12 +116,12 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-keycloak-admin-client-common</artifactId>
-            <version>3.2.10.Final</version>
+            <version>${quarkus.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-keycloak-admin-client-reactive</artifactId>
-            <version>3.2.10.Final</version>
+            <version>${quarkus.version}</version>
         </dependency>
 
         <!-- Keycloak -->
