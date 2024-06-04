@@ -1,10 +1,13 @@
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
+import io.smallrye.config.ConfigValue;
 
 import org.keycloak.config.TransactionOptions;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
 
 import static java.util.Optional.of;
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.fromOption;
 
 import java.util.Optional;
@@ -18,14 +21,25 @@ public class TransactionPropertyMappers {
     public static PropertyMapper<?>[] getTransactionPropertyMappers() {
         return new PropertyMapper[] {
                 fromOption(TransactionOptions.TRANSACTION_XA_ENABLED)
-                        .to(QUARKUS_TXPROP_TARGET)
-                        .transformer(TransactionPropertyMappers::getQuarkusTransactionsValue)
-                        .build()
+                .to(QUARKUS_TXPROP_TARGET)
+                .paramLabel(Boolean.TRUE + "|" + Boolean.FALSE)
+                .transformer(TransactionPropertyMappers::getQuarkusTransactionsValue)
+                .build(),
+                fromOption(TransactionOptions.TRANSACTION_JTA_ENABLED)
+                .paramLabel(Boolean.TRUE + "|" + Boolean.FALSE)
+                .transformer(TransactionPropertyMappers::getQuarkusTransactionsValue)
+                .build()
         };
     }
 
     private static Optional<String> getQuarkusTransactionsValue(Optional<String> txValue, ConfigSourceInterceptorContext context) {
         boolean isXaEnabled = Boolean.parseBoolean(txValue.get());
+
+        boolean isJtaEnabled = getBooleanValue("kc.transaction-jta-enabled", context, true);
+
+        if (!isJtaEnabled) {
+          return of("disabled");
+        }
 
         if (isXaEnabled) {
             return of("xa");
@@ -33,4 +47,14 @@ public class TransactionPropertyMappers {
 
         return of("enabled");
     }
+
+  private static boolean getBooleanValue(String key, ConfigSourceInterceptorContext context, boolean defaultValue) {
+    boolean returnValue = defaultValue;
+    ConfigValue configValue = context.proceed(key);
+
+    if (configValue != null) {
+      returnValue = Boolean.parseBoolean(configValue.getValue());
+    }
+    return returnValue;
+  }
 }
