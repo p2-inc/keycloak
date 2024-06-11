@@ -20,6 +20,7 @@ import { routes } from "./routes";
 import useIsFeatureEnabled, { Feature } from "./utils/useIsFeatureEnabled";
 
 import "./page-nav.css";
+import Extensions from "./phaseII/navigation/extensions";
 
 type LeftNavProps = { title: string; path: string; id?: string };
 
@@ -139,6 +140,7 @@ export const PageNav = () => {
                 ))}
             </NavGroup>
           )}
+          <Extensions />
         </Nav>
       </PageSidebarBody>
     </PageSidebar>
