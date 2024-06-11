@@ -16,11 +16,12 @@ import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinn
 import { useFetch } from "../../utils/useFetch";
 import { useState } from "react";
 import { useRealm } from "../../context/realm-context/RealmContext";
-import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
-import { adminClient } from "../../admin-client";
+import RealmRepresentation from "js/libs/keycloak-admin-client/lib/defs/realmRepresentation";
+import { useAdminClient } from "../../admin-client";
 
 export default function StylesSection() {
   const { t } = useTranslation();
+  const { adminClient } = useAdminClient();
 
   const { realm: realmName } = useRealm();
   const [realm, setRealm] = useState<RealmRepresentation>();

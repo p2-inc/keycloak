@@ -16,7 +16,7 @@ import { ListEmptyState } from "../../components/list-empty-state/ListEmptyState
 import { emptyFormatter } from "../../util";
 import { toAddUser } from "../../user/routes/AddUser";
 import useOrgFetcher from "./useOrgFetcher";
-import { adminClient } from "../../admin-client";
+import { useAdminClient } from "../../admin-client";
 import { differenceBy } from "lodash-es";
 
 type MemberModalProps = {
@@ -31,6 +31,7 @@ export const AddMember = ({ orgId, onClose, refresh }: MemberModalProps) => {
   const { getOrgMembers, addOrgMember } = useOrgFetcher(realm);
   const { addAlert, addError } = useAlerts();
   const [selectedRows, setSelectedRows] = useState<UserRepresentation[]>([]);
+  const { adminClient } = useAdminClient();
 
   const navigate = useNavigate();
 

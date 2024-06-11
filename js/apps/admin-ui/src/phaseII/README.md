@@ -2,6 +2,7 @@
 
 P// has added a lot of additional functionality to the Admin UI. Those are cordoned off as much as possible from the main Admin UI repo to keep them from being clobbered by various updates to the main Admin UI repo. The list below is the area of customizations.
 
+- Copy the `phaseII` folder into the new fork made from the newest KC tag release.
 - Building
   - Make sure to merge all changes in the `admin-ui/pom.xml` file so that the correct name and resources are built.
 - Install
@@ -15,6 +16,7 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 - Include the routes for the Phase II orgs and styles in `admin-ui/src/routes`
 - Translations
   - In `maven-resources/theme/keycloak.v2/` and `maven-resources-community/theme/keycloak.v2/` change the directory name to `phasetwo.v2`
+  - In `maven-resources/META-INF/keycloak-themes.json` rename `keycloak.v2` to `phasetwo.v2`
   - At the bottom of `maven-resources/theme/phasetwo.v2/admin/messages/messages_en.properties` append the section called "phasetwo additions". This must be **added** to the current Keycloak version, as they change a lot of things every release.
 - Orgs
   - This folder contains all the Orgs UI. It exists mostly independent of other code, but does import components from the `ui-shared` and the `src/components` folder.

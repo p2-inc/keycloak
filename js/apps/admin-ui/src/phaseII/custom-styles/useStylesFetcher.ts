@@ -1,4 +1,4 @@
-import { adminClient } from "../../admin-client";
+import { useAdminClient } from "../../admin-client";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import environment from "../../environment";
 
@@ -13,6 +13,7 @@ interface Errors {
 
 export default function useStylesFetcher() {
   const { realm: realmName } = useRealm();
+  const { adminClient } = useAdminClient();
 
   const authUrl = environment.authServerUrl;
   const baseUrl = `${authUrl}/realms/${realmName}`;
@@ -36,7 +37,7 @@ export default function useStylesFetcher() {
     url: string,
     body: any,
     verb: "POST" | "PUT",
-    headers: RequestInit["headers"] = {},
+    headers: RequestInit["headers"] = {}
   ) {
     const token = await adminClient.getAccessToken();
     return await fetch(url, {
@@ -72,7 +73,7 @@ export default function useStylesFetcher() {
   }): Promise<{ error: boolean; message: string }> {
     const resp = await fetchG(
       `${baseUrl}/emails/templates/${templateType}/${templateName}`,
-      { Accept: "text/plain" },
+      { Accept: "text/plain" }
     )
       .then(async (r) => {
         if (r.ok) return { error: false, message: await r.text() };
@@ -102,7 +103,7 @@ export default function useStylesFetcher() {
     const resp = await fetchM(
       `${baseUrl}/emails/templates/${templateType}/${templateName}`,
       formData,
-      "PUT",
+      "PUT"
     )
       .then((r) => {
         if (r.ok) return { error: false, message: "Email template updated." };

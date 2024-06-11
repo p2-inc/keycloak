@@ -27,7 +27,7 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { AuthenticationType } from "../../../authentication/AuthenticationSection";
 import { fetchWithError } from "../../../../../../libs/keycloak-admin-client/lib/utils/fetchWithError";
 import { addTrailingSlash } from "../../../util";
-import { adminClient } from "../../../admin-client";
+import { useAdminClient } from "../../../admin-client";
 import { getAuthorizationHeaders } from "../../../utils/getAuthorizationHeaders";
 
 type IdentityProviderListProps = {
@@ -113,6 +113,7 @@ export function AssignIdentityProvider({
   organization,
   alerts,
 }: AssignIdentityProviderProps) {
+  const { adminClient } = useAdminClient();
   const { t } = useTranslation();
   const { realm } = useRealm();
   const { getIdpsForRealm } = useOrgFetcher(realm);

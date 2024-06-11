@@ -14,7 +14,7 @@ import {
   AttributesForm,
 } from "../orgs/components/key-value-form-custom/AttributeForm";
 import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
-import { adminClient } from "../../admin-client";
+import { useAdminClient } from "../../admin-client";
 
 type RealmSettingsAttributeTabProps = {
   realm: RealmRepresentation;
@@ -27,6 +27,7 @@ export const RealmSettingsAttributeTab = ({
   const { addAlert, addError } = useAlerts();
   const [realm, setRealm] = useState<RealmRepresentation>(defaultRealm);
   const form = useForm<AttributeForm>({ mode: "onChange" });
+  const { adminClient } = useAdminClient();
 
   const convertAttributes = () => {
     const attributes: { key: string; value: string }[] = Object.entries(
