@@ -4,10 +4,12 @@ import {
   Button,
   Form,
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   PageSection,
   Select,
   SelectOption,
-  SelectVariant,
   Spinner,
   ValidatedOptions,
 } from "@patternfly/react-core";
@@ -15,12 +17,11 @@ import { BaseSyntheticEvent, ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useAlerts } from "../../../components/alert/Alerts";
-import { HelpItem } from "ui-shared";
-import { KeycloakTextArea } from "../../../components/keycloak-text-area/KeycloakTextArea";
+import { HelpItem, TextAreaControl, TextControl } from "ui-shared";
 import { useRealm } from "../../../context/realm-context/RealmContext";
 import { SaveReset } from "../components/SaveReset";
 import useStylesFetcher from "../useStylesFetcher";
-import { adminClient } from "../../../admin-client";
+import { useAdminClient } from "../../../admin-client";
 
 type EmailTemplateTabProps = {
   realm: RealmRepresentation;
@@ -33,7 +34,7 @@ type EmailTemplateFormType = {
 };
 
 const PlaceholderSelectOption = () => (
-  <SelectOption key="plcSlcOption" value="Clear selection" isPlaceholder />
+  <SelectOption key="plcSlcOption" value="Clear selection" />
 );
 
 interface EmailTemplateMap {
@@ -42,6 +43,7 @@ interface EmailTemplateMap {
 
 export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
   const { realm: realmName } = useRealm();
+  const { adminClient } = useAdminClient();
   const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
   const { getEmailTemplates, getEmailTemplateValue, updateEmailTemplateValue } =
@@ -149,9 +151,8 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
   const selectTemplate = (
     event: MouseEvent | ChangeEvent | BaseSyntheticEvent,
     value: string,
-    isPlaceholder?: boolean | undefined,
   ) => {
-    if (isPlaceholder) clearSelection();
+    if (value === "Clear selection") clearSelection();
     else {
       setSelectedTemplate(value);
       setSelectedTemplateId(event.target?.getAttribute("itemid"));
@@ -220,7 +221,7 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
             changes to take effect.
           </p>
           <Button
-            isSmall
+            size="sm"
             className="pf-u-mt-sm"
             onClick={() => updateRealmTheme()}
             isLoading={updatingEmailTheme}
@@ -245,7 +246,6 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
           }
         >
           <Select
-            variant={SelectVariant.single}
             aria-label="Select email template"
             onToggle={setIsTemplateSelectOpen}
             // @ts-ignore
@@ -273,13 +273,9 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
           }
           label={t("htmlEmail")}
           fieldId="htmlEmail"
-          helperTextInvalid={t("formHelpHtmlTemplateInvalid")}
-          validated={
-            errors.htmlEmail ? ValidatedOptions.error : ValidatedOptions.default
-          }
         >
-          <KeycloakTextArea
-            {...register("htmlEmail", { required: true })}
+          <TextControl
+            label=""
             id="htmlEmail"
             data-testid="htmlEmail"
             name="htmlEmail"
@@ -291,6 +287,15 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
                 : ValidatedOptions.default
             }
           />
+          {errors.htmlEmail && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("formHelpHtmlTemplateInvalid")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </FormGroup>
 
         {/* Text Template */}
@@ -303,16 +308,12 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
           }
           label={t("textEmail")}
           fieldId="textEmail"
-          helperTextInvalid={t("formHelpTextTemplateInvalid")}
-          validated={
-            errors.textEmail ? ValidatedOptions.error : ValidatedOptions.default
-          }
         >
-          <KeycloakTextArea
-            {...register("textEmail", { required: true })}
+          <TextAreaControl
             id="textEmail"
             data-testid="textEmail"
             name="textEmail"
+            label=""
             rows={7}
             isDisabled={templateSelectDisabled}
             validated={
@@ -320,7 +321,17 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
                 ? ValidatedOptions.error
                 : ValidatedOptions.default
             }
+            rules={{ required: true }}
           />
+          {errors.textEmail && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("formHelpTextTemplateInvalid")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </FormGroup>
 
         <SaveReset

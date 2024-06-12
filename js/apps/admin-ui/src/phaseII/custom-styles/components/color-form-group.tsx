@@ -3,10 +3,16 @@ import type {
   PortalStylesType,
 } from "../portal/portal-styles";
 import { useTranslation } from "react-i18next";
-import { FormGroup, Flex, FlexItem } from "@patternfly/react-core";
+import {
+  FormGroup,
+  Flex,
+  FlexItem,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+} from "@patternfly/react-core";
 import { HelpItem, TextControl } from "ui-shared";
 import { ValidatedOptions } from "@patternfly/react-core/dist/js/helpers/constants";
-import { KeycloakTextInput } from "../../../components/keycloak-text-input/KeycloakTextInput";
 import type {
   FieldErrors,
   UseFormGetValues,
@@ -43,10 +49,6 @@ const ColorFormGroup: React.FC<ColorFormGroupProps> = ({
       }
       label={t(colorKey)}
       fieldId={`kc-styles-${colorKey}-url`}
-      helperTextInvalid={t(`styles:colorHelpInvalid`)}
-      validated={
-        errors[colorKey] ? ValidatedOptions.error : ValidatedOptions.default
-      }
     >
       <Flex alignItems={{ default: "alignItemsCenter" }}>
         <FlexItem>
@@ -56,18 +58,6 @@ const ColorFormGroup: React.FC<ColorFormGroupProps> = ({
           />
         </FlexItem>
         <FlexItem grow={{ default: "grow" }}>
-          <KeycloakTextInput
-            {...register(colorKey, { required: true })}
-            type="text"
-            id={`kc-styles-${colorKey}-url`}
-            data-testid={`kc-styles-${colorKey}-url`}
-            pattern={HexColorPattern}
-            validated={
-              errors[colorKey]
-                ? ValidatedOptions.error
-                : ValidatedOptions.default
-            }
-          />
           <TextControl
             type="text"
             id={`kc-styles-${colorKey}-url`}
@@ -75,12 +65,22 @@ const ColorFormGroup: React.FC<ColorFormGroupProps> = ({
             label=""
             data-testid={`kc-styles-${colorKey}-url`}
             pattern={HexColorPattern}
+            rules={{ required: true }}
             validated={
               errors[colorKey]
                 ? ValidatedOptions.error
                 : ValidatedOptions.default
             }
           />
+          {errors[colorKey] && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t(`styles:colorHelpInvalid`)}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </FlexItem>
       </Flex>
     </FormGroup>

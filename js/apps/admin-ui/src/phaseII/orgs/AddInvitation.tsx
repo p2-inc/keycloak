@@ -3,6 +3,9 @@ import {
   ButtonVariant,
   Form,
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   Modal,
   ModalVariant,
   TextInput,
@@ -86,10 +89,6 @@ export default function AddInvitation({
           name="create-modal-org-invitation"
           label="Email"
           fieldId="email"
-          helperTextInvalid="Required"
-          validated={
-            errors.email ? ValidatedOptions.error : ValidatedOptions.default
-          }
           isRequired
         >
           <Controller
@@ -106,6 +105,15 @@ export default function AddInvitation({
               />
             )}
           />
+          {errors.email && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("required")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </FormGroup>
         <FormGroup
           name="create-modal-org-invitation"
@@ -116,11 +124,6 @@ export default function AddInvitation({
               helpText={t("redirectUriHelp")}
               fieldLabelId={t("redirectUri")}
             />
-          }
-          validated={
-            errors.redirectUri
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
           }
         >
           <Controller
@@ -136,6 +139,15 @@ export default function AddInvitation({
               />
             )}
           />
+          {errors.redirectUri && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("addRedirectUri")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </FormGroup>
       </Form>
     </Modal>

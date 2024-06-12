@@ -3,20 +3,22 @@ import {
   Checkbox,
   Form,
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   PageSection,
   ValidatedOptions,
 } from "@patternfly/react-core";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { HelpItem } from "ui-shared";
+import { HelpItem, TextAreaControl } from "ui-shared";
 import { SaveReset } from "../components/SaveReset";
 import { useState, useEffect } from "react";
 import { useRealm } from "../../../context/realm-context/RealmContext";
 import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { get, mapKeys, pick } from "lodash-es";
 import { useAlerts } from "../../../components/alert/Alerts";
-import { KeycloakTextArea } from "../../../components/keycloak-text-area/KeycloakTextArea";
-import { adminClient } from "../../../admin-client";
+import { useAdminClient } from "../../../admin-client";
 import ColorFormGroup from "../components/color-form-group";
 
 export type PortalStylesTypeColors = {
@@ -90,6 +92,7 @@ const visibilityItems = [
 
 export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
   const { t } = useTranslation();
+  const { adminClient } = useAdminClient();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const {
@@ -305,20 +308,27 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
           labelIcon={<HelpItem helpText={t("cssHelp")} fieldLabelId="css" />}
           label={t("css")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("cssHelpInvalid")}
-          validated={
-            errors.css ? ValidatedOptions.error : ValidatedOptions.default
-          }
         >
-          <KeycloakTextArea
+          <TextAreaControl
             id="kc-styles-logo-url"
-            {...register("css", { required: true })}
+            name="css"
+            label=""
             type="text"
             data-testid="kc-styles-logo-url"
             validated={
               errors.css ? ValidatedOptions.error : ValidatedOptions.default
             }
+            rules={{ required: true }}
           />
+          {errors.css && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("cssHelpInvalid")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </FormGroup>
 
         {/* Visibility  */}

@@ -1,6 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
-import { FormGroup, TextInput, ValidatedOptions } from "@patternfly/react-core";
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+  ValidatedOptions,
+} from "@patternfly/react-core";
 import { MultiLineInput } from "../../../components/multi-line-input/MultiLineInput";
 import { HelpItem } from "ui-shared";
 
@@ -18,10 +25,6 @@ export const NewOrg = () => {
         name="create-modal-org"
         label={t("name")}
         fieldId="name"
-        helperTextInvalid={t("required")}
-        validated={
-          errors.name ? ValidatedOptions.error : ValidatedOptions.default
-        }
         isRequired
       >
         <Controller
@@ -40,6 +43,15 @@ export const NewOrg = () => {
             />
           )}
         />
+        {errors.name && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={ValidatedOptions.error}>
+                {t("required")}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
 
       {/*Display name*/}

@@ -9,9 +9,8 @@ import { MinusCircleIcon, PlusCircleIcon } from "@patternfly/react-icons";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-
 import { KeyValueType } from "./key-value-convert";
-import { KeycloakTextInput } from "../../../../../src/components/keycloak-text-input/KeycloakTextInput";
+import { TextControl } from "js/libs/ui-shared";
 
 type KeyValueInputProps = {
   name: string;
@@ -63,24 +62,26 @@ export const KeyValueInput = ({ name, allowFullClear }: KeyValueInputProps) => {
         {fields.map((attribute, index) => (
           <Flex key={attribute.id} data-testid="row">
             <FlexItem grow={{ default: "grow" }}>
-              <KeycloakTextInput
+              <TextControl
                 placeholder={t("keyPlaceholder")}
                 aria-label={t("key")}
                 defaultValue=""
                 data-testid={`${name}[${index}].key`}
-                {...register(`${name}[${index}].key`)}
+                name={`${name}[${index}].key`}
+                label=""
               />
             </FlexItem>
             <FlexItem
               grow={{ default: "grow" }}
               spacer={{ default: "spacerNone" }}
             >
-              <KeycloakTextInput
+              <TextControl
                 placeholder={t("valuePlaceholder")}
                 aria-label={t("value")}
                 defaultValue=""
                 data-testid={`${name}[${index}].value`}
-                {...register(`${name}[${index}].value`)}
+                name={`${name}[${index}].value`}
+                label=""
               />
             </FlexItem>
             <FlexItem>

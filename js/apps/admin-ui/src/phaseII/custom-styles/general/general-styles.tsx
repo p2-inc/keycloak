@@ -3,6 +3,9 @@ import {
   Brand,
   Form,
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   PageSection,
   Panel,
   PanelHeader,
@@ -12,15 +15,14 @@ import {
 } from "@patternfly/react-core";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { HelpItem } from "ui-shared";
-import { KeycloakTextInput } from "../../../components/keycloak-text-input/KeycloakTextInput";
+import { HelpItem, TextControl } from "ui-shared";
 import { SaveReset } from "../components/SaveReset";
 import { useState, ReactElement, useEffect } from "react";
 import { useRealm } from "../../../context/realm-context/RealmContext";
 import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { get, isEqual } from "lodash-es";
 import { useAlerts } from "../../../components/alert/Alerts";
-import { adminClient } from "../../../admin-client";
+import { useAdminClient } from "../../../admin-client";
 
 type GeneralStylesType = {
   logoUrl: string;
@@ -59,6 +61,7 @@ const ImageInstruction = ({ name }: { name: string }) => (
 
 export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   const { t } = useTranslation();
+  const { adminClient } = useAdminClient();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const {
@@ -235,21 +238,33 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
           }
           label={t("logoUrl")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("formHelpImageInvalid")}
-          validated={
-            errors.logoUrl ? ValidatedOptions.error : ValidatedOptions.default
-          }
         >
-          <KeycloakTextInput
-            {...register("logoUrl", { required: true })}
+          <TextControl
             type="text"
+            label=""
             id="kc-styles-logo-url"
             data-testid="kc-styles-logo-url"
             name="logoUrl"
             validated={
               errors.logoUrl ? ValidatedOptions.error : ValidatedOptions.default
             }
+            rules={{ required: true }}
           />
+          {errors.logoUrl && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem
+                  variant={
+                    errors.logoUrl
+                      ? ValidatedOptions.error
+                      : ValidatedOptions.default
+                  }
+                >
+                  {t("formHelpImageInvalid")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
           {LogoUrlBrand}
           {logoUrl && (
             <img
@@ -271,24 +286,35 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
           }
           label={t("faviconUrl")}
           fieldId="kc-styles-favicon-url"
-          helperTextInvalid={t("formHelpImageInvalid")}
-          validated={
-            errors.faviconUrl
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
         >
-          <KeycloakTextInput
-            {...register("faviconUrl", { required: true })}
+          <TextControl
             type="text"
             id="kc-styles-favicon-url"
+            name="kc-styles-favicon-url"
+            label=""
             data-testid="kc-styles-favicon-url"
             validated={
               errors.faviconUrl
                 ? ValidatedOptions.error
                 : ValidatedOptions.default
             }
+            rules={{ required: true }}
           />
+          {errors.faviconUrl && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem
+                  variant={
+                    errors.faviconUrl
+                      ? ValidatedOptions.error
+                      : ValidatedOptions.default
+                  }
+                >
+                  {t("formHelpImageInvalid")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
           {FaviconUrlBrand}
           {faviconUrl && (
             <img
@@ -312,17 +338,11 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
           }
           label={t("appIconUrl")}
           fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("formHelpImageInvalid")}
-          validated={
-            errors.appIconUrl
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
         >
-          <KeycloakTextInput
-            {...register("appIconUrl", { required: true })}
+          <TextControl
             type="text"
             id="kc-styles-logo-url"
+            label=""
             data-testid="kc-styles-logo-url"
             name="appIconUrl"
             validated={
@@ -330,7 +350,18 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
                 ? ValidatedOptions.error
                 : ValidatedOptions.default
             }
+            rules={{ required: true }}
           />
+          {errors.appIconUrl && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("formHelpImageInvalid")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
+
           {AppIconUrlBrand}
           {appIconUrl && (
             <img

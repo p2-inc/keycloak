@@ -4,6 +4,9 @@ import {
   ButtonVariant,
   Form,
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   Modal,
   ModalVariant,
   TextInput,
@@ -96,11 +99,6 @@ export const NewOrgRoleModal = ({
           name="create-role-name"
           label={t("roleName")}
           fieldId="role-name"
-          helperText="All lowercase, no spaces."
-          helperTextInvalid={t("required")}
-          validated={
-            errors.name ? ValidatedOptions.error : ValidatedOptions.default
-          }
           isRequired
         >
           <Controller
@@ -121,17 +119,24 @@ export const NewOrgRoleModal = ({
               />
             )}
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{t("orgRoleHelperText")}</HelperTextItem>
+            </HelperText>
+            {errors.htmlEmail && (
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("required")}
+                </HelperTextItem>
+              </HelperText>
+            )}
+          </FormHelperText>
         </FormGroup>
 
         <FormGroup
           name="role-description"
           label={t("description")}
           fieldId="role-description"
-          validated={
-            errors.description
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
         >
           <Controller
             name="description"
@@ -150,6 +155,13 @@ export const NewOrgRoleModal = ({
               />
             )}
           />
+          {errors.description && (
+            <HelperText>
+              <HelperTextItem variant={ValidatedOptions.error}>
+                {t("orgRoleErrorDescription")}
+              </HelperTextItem>
+            </HelperText>
+          )}
         </FormGroup>
       </Form>
     </Modal>

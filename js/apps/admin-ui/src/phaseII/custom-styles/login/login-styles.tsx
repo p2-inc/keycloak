@@ -4,13 +4,15 @@ import {
   FlexItem,
   Form,
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   PageSection,
   ValidatedOptions,
 } from "@patternfly/react-core";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { HelpItem } from "ui-shared";
-import { KeycloakTextInput } from "../../../components/keycloak-text-input/KeycloakTextInput";
+import { HelpItem, TextAreaControl, TextControl } from "ui-shared";
 import { SaveReset } from "../components/SaveReset";
 import { useState, useEffect } from "react";
 import { useRealm } from "../../../context/realm-context/RealmContext";
@@ -18,8 +20,7 @@ import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmR
 import { get } from "lodash-es";
 import { useAlerts } from "../../../components/alert/Alerts";
 import { ColorPicker } from "../components/ColorPicker";
-import { KeycloakTextArea } from "../../../components/keycloak-text-area/KeycloakTextArea";
-import { adminClient } from "../../../admin-client";
+import { useAdminClient } from "../../../admin-client";
 
 type LoginStylesType = {
   primaryColor: string;
@@ -36,6 +37,7 @@ const HexColorPattern = "^#([0-9a-f]{3}){1,2}$";
 
 export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
   const { t } = useTranslation();
+  const { adminClient } = useAdminClient();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const {
@@ -177,13 +179,7 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             />
           }
           label={t("primaryColor")}
-          fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("primaryColorHelpInvalid")}
-          validated={
-            errors.primaryColor
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
+          fieldId="primaryColor"
         >
           <Flex alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
@@ -193,18 +189,29 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
               />
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
-              <KeycloakTextInput
-                {...register("primaryColor", { required: true })}
+              <TextControl
                 type="text"
-                id="kc-styles-logo-url"
-                data-testid="kc-styles-logo-url"
+                id="primaryColor"
+                name="primaryColor"
+                label=""
+                data-testid="primaryColor"
                 pattern={HexColorPattern}
                 validated={
                   errors.primaryColor
                     ? ValidatedOptions.error
                     : ValidatedOptions.default
                 }
+                rules={{ required: true }}
               />
+              {errors.primaryColor && (
+                <FormHelperText>
+                  <HelperText>
+                    <HelperTextItem variant={ValidatedOptions.error}>
+                      {t("primaryColorHelpInvalid")}
+                    </HelperTextItem>
+                  </HelperText>
+                </FormHelperText>
+              )}
             </FlexItem>
           </Flex>
         </FormGroup>
@@ -218,13 +225,7 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             />
           }
           label={t("secondaryColor")}
-          fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("secondaryColorHelpInvalid")}
-          validated={
-            errors.secondaryColor
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
+          fieldId="secondaryColor"
         >
           <Flex alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
@@ -234,11 +235,13 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
               />
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
-              <KeycloakTextInput
+              <TextControl
                 {...register("secondaryColor", { required: true })}
                 type="text"
-                id="kc-styles-logo-url"
-                data-testid="kc-styles-logo-url"
+                id="secondaryColor"
+                name="secondaryColor"
+                label=""
+                data-testid="secondaryColor"
                 pattern={HexColorPattern}
                 validated={
                   errors.secondaryColor
@@ -246,6 +249,15 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
                     : ValidatedOptions.default
                 }
               />
+              {errors.secondaryColor && (
+                <FormHelperText>
+                  <HelperText>
+                    <HelperTextItem variant={ValidatedOptions.error}>
+                      {t("secondaryColorHelpInvalid")}
+                    </HelperTextItem>
+                  </HelperText>
+                </FormHelperText>
+              )}
             </FlexItem>
           </Flex>
         </FormGroup>
@@ -259,13 +271,7 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             />
           }
           label={t("backgroundColor")}
-          fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("backgroundColorHelpInvalid")}
-          validated={
-            errors.backgroundColor
-              ? ValidatedOptions.error
-              : ValidatedOptions.default
-          }
+          fieldId="backgroundColor"
         >
           <Flex alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
@@ -275,11 +281,13 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
               />
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
-              <KeycloakTextInput
+              <TextControl
                 {...register("backgroundColor", { required: true })}
                 type="text"
-                id="kc-styles-logo-url"
-                data-testid="kc-styles-logo-url"
+                id="backgroundColor"
+                name="backgroundColor"
+                label=""
+                data-testid="backgroundColor"
                 pattern={HexColorPattern}
                 validated={
                   errors.backgroundColor
@@ -287,6 +295,15 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
                     : ValidatedOptions.default
                 }
               />
+              {errors.backgroundColor && (
+                <FormHelperText>
+                  <HelperText>
+                    <HelperTextItem variant={ValidatedOptions.error}>
+                      {t("backgroundColorHelpInvalid")}
+                    </HelperTextItem>
+                  </HelperText>
+                </FormHelperText>
+              )}
             </FlexItem>
           </Flex>
         </FormGroup>
@@ -295,21 +312,27 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
         <FormGroup
           labelIcon={<HelpItem helpText={t("cssHelp")} fieldLabelId="css" />}
           label={t("css")}
-          fieldId="kc-styles-logo-url"
-          helperTextInvalid={t("cssHelpInvalid")}
-          validated={
-            errors.css ? ValidatedOptions.error : ValidatedOptions.default
-          }
+          fieldId="css"
         >
-          <KeycloakTextArea
-            id="kc-styles-logo-url"
-            {...register("css", { required: true })}
+          <TextAreaControl
+            id="css"
+            name="css"
             type="text"
-            data-testid="kc-styles-logo-url"
+            label=""
+            data-testid="css"
             validated={
               errors.css ? ValidatedOptions.error : ValidatedOptions.default
             }
           />
+          {errors.css && (
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={ValidatedOptions.error}>
+                  {t("cssHelpInvalid")}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </FormGroup>
 
         <SaveReset name="generalStyles" save={save} reset={reset} isActive />
