@@ -79,7 +79,7 @@ export default function OrgRoles({ org, refresh: orgRefresh }: OrgRolesProps) {
         key={role.id}
         variant="link"
         onClick={() => setEditRoleModalVisibility(role)}
-        isSmall
+        size="sm"
         isInline
       >
         <Badge isRead className="keycloak-admin--role-mapping__client-name">

@@ -1,6 +1,6 @@
 import { useAdminClient } from "../../admin-client";
 import { useRealm } from "../../context/realm-context/RealmContext";
-import environment from "../../environment";
+import { environment } from "../../environment";
 
 export interface EmailTemplateMap {
   [key: string]: string;

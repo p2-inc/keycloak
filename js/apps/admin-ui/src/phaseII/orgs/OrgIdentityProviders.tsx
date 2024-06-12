@@ -23,7 +23,7 @@ import { first, startCase } from "lodash-es";
 import { Link, NavLink, generatePath } from "react-router-dom";
 import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { AssignIdentityProvider } from "./modals/AssignIdentityProvider";
-import environment from "../../environment";
+import { environment } from "../../environment";
 import { toIdentityProvider } from "../../identity-providers/routes/IdentityProvider";
 
 export type SyncMode = "FORCE" | "IMPORT" | "LEGACY";

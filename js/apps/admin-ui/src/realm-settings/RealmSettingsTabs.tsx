@@ -413,7 +413,7 @@ export const RealmSettingsTabs = () => {
             data-testid="rs-realm-attributes-tab"
             {...attributesTab}
           >
-            <RealmSettingsAttributeTab realm={realm} />
+            <RealmSettingsAttributeTab realm={realm!} />
           </Tab>
           {isFeatureEnabled(Feature.ClientPolicies) && (
             <Tab
