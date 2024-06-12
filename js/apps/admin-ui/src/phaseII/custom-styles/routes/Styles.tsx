@@ -13,7 +13,7 @@ export type StylesParams = {
 const StylesSection = lazy(() => import("../StylesSection"));
 
 export const StylesRoute: AppRouteObject = {
-  path: "/:realm/styles",
+  path: "/:realm/ext-styles",
   element: <StylesSection />,
   handle: {
     access: "query-clients",
@@ -23,7 +23,7 @@ export const StylesRoute: AppRouteObject = {
 
 export const StylesRouteWithTab: AppRouteObject = {
   ...StylesRoute,
-  path: "/:realm/styles/:tab",
+  path: "/:realm/ext-styles/:tab",
 };
 
 export const toStyles = (params: StylesParams): Partial<Path> => {

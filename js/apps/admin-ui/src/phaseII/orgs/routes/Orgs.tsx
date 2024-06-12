@@ -9,7 +9,7 @@ export type OrgsParams = {
 const OrgsSection = lazy(() => import("../OrgsSection"));
 
 export const OrgsRoute: AppRouteObject = {
-  path: "/:realm/organizations",
+  path: "/:realm/ext-organizations",
   element: <OrgsSection />,
   breadcrumb: (t) => t("orgList"),
   handle: {
