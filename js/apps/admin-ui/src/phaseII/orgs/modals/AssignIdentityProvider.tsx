@@ -50,7 +50,7 @@ const IdentityProviderList = ({
 }: IdentityProviderListProps) => {
   const { t } = useTranslation();
   return (
-    <PageSection variant="light" className="pf-u-py-lg">
+    <PageSection variant="light" className="pf-v5-u-py-lg">
       <Form isHorizontal>
         {list?.map((identityProvider) => {
           const idpAssignedToThisOrg =
@@ -59,7 +59,7 @@ const IdentityProviderList = ({
             identityProvider.config?.["home.idp.discovery.org"];
           const isIdPEnabled = identityProvider.enabled;
 
-          let label = `${identityProvider.displayName || t("noName")}`;
+          let label = identityProvider.displayName || t("noName");
           if (idpAssignedToThisOrg) {
             label += ` (${t("idpAssignedToThisOrg")})`;
           } else if (isIdPLinked) {
@@ -250,7 +250,7 @@ export function AssignIdentityProvider({
               title={title}
               key={key}
               timeout={8000}
-              className="pf-u-mb-lg"
+              className="pf-v5-u-mb-lg"
             />
           ))}
       </AlertGroup>
@@ -333,7 +333,7 @@ export function AssignIdentityProvider({
           variant={AlertVariant.warning}
           isInline
           title={warning}
-          className="pf-u-mt-lg"
+          className="pf-v5-u-mt-lg"
         />
       )}
     </Modal>
