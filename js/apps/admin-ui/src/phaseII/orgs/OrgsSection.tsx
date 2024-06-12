@@ -40,20 +40,6 @@ export default function OrgsSection() {
     return val ? <div>{val}</div> : <div>--</div>;
   }
 
-  const OrgName = (org: OrgRepresentation) =>
-    org.name ? (
-      <Link
-        key={org.id}
-        to={toOrg({ realm, orgId: org.id as string, tab: "settings" })}
-      >
-        {org.name}
-      </Link>
-    ) : (
-      <div>--</div>
-    );
-
-  const OrgDetailLink = (org: OrgRepresentation) => emptyVal(org.displayName);
-
   const deleteOrg = async (org: OrgRepresentation) => {
     if (
       !confirm(
@@ -82,7 +68,7 @@ export default function OrgsSection() {
         subKey={t("orgExplain")}
         helpUrl={helpUrls.orgsUrl}
       />
-      <PageSection variant="light" className="pf-u-p-0">
+      <PageSection variant="light" className="pf-v5-u-p-0 pf-v5-u-pt-lg">
         <KeycloakDataTable
           key={key}
           isPaginated
@@ -114,12 +100,27 @@ export default function OrgsSection() {
             {
               name: "name",
               displayKey: "Name",
-              cellRenderer: OrgName,
+              cellRenderer: (org: OrgRepresentation) =>
+                org.name ? (
+                  <Link
+                    key={org.id}
+                    to={toOrg({
+                      realm,
+                      orgId: org.id as string,
+                      tab: "settings",
+                    })}
+                  >
+                    {org.name}
+                  </Link>
+                ) : (
+                  <div>--</div>
+                ),
             },
             {
               name: "displayName",
               displayKey: "Display Name",
-              cellRenderer: OrgDetailLink,
+              cellRenderer: (org: OrgRepresentation) =>
+                emptyVal(org.displayName),
             },
           ]}
           emptyState={

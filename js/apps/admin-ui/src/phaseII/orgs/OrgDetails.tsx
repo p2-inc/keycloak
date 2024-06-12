@@ -80,7 +80,7 @@ export default function OrgDetails() {
         open={portalLinkOpen}
         toggleDialog={togglePortalLinkOpen}
       />
-      <PageSection variant="light" className="pf-u p-0">
+      <PageSection variant="light" className="pf-v5-u p-0">
         <RoutableTabs data-testid="orgs-tabs" isBox mountOnEnter>
           <Tab
             id="settings"

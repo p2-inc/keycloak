@@ -42,7 +42,7 @@ const LogoContainer = ({
   children: ReactElement<any, any>;
 }) => {
   return (
-    <Panel variant="bordered" className="pf-u-mt-lg">
+    <Panel variant="bordered" className="pf-v5-u-mt-lg">
       <PanelHeader>{title}</PanelHeader>
       <PanelMain>
         <PanelMainBody>{children}</PanelMainBody>
@@ -65,7 +65,6 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const {
-    register,
     control,
     reset,
     getValues,
@@ -268,7 +267,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
           {LogoUrlBrand}
           {logoUrl && (
             <img
-              className="pf-u-display-none"
+              className="pf-v5-u-display-none"
               src={logoUrl}
               onError={() => isValidUrl(false, "logoUrl", setLogoUrlError)}
               onLoad={() => isValidUrl(true, "logoUrl", setLogoUrlError)}
@@ -318,7 +317,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
           {FaviconUrlBrand}
           {faviconUrl && (
             <img
-              className="pf-u-display-none"
+              className="pf-v5-u-display-none"
               src={faviconUrl}
               onError={() =>
                 isValidUrl(false, "faviconUrl", setFaviconUrlError)
@@ -365,7 +364,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
           {AppIconUrlBrand}
           {appIconUrl && (
             <img
-              className="pf-u-display-none"
+              className="pf-v5-u-display-none"
               src={appIconUrl}
               onError={() =>
                 isValidUrl(false, "appIconUrl", setAppIconUrlError)

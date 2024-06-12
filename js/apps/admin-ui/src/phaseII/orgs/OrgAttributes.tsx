@@ -59,7 +59,7 @@ export default function OrgAttributes({ org, refresh }: OrgAttributesProps) {
   }
 
   return (
-    <div className="pf-u-pt-lg">
+    <div className="pf-v5-u-pt-lg">
       <AttributesForm
         form={attributesForm}
         save={saveAttributes}

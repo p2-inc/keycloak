@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { KeyValueType } from "./key-value-convert";
-import { TextControl } from "js/libs/ui-shared";
+import { TextControl } from "../../../../../../../libs/ui-shared/src/controls/TextControl";
 
 type KeyValueInputProps = {
   name: string;
@@ -19,7 +19,7 @@ type KeyValueInputProps = {
 
 export const KeyValueInput = ({ name, allowFullClear }: KeyValueInputProps) => {
   const { t } = useTranslation();
-  const { control, register } = useFormContext();
+  const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name,
@@ -65,10 +65,9 @@ export const KeyValueInput = ({ name, allowFullClear }: KeyValueInputProps) => {
               <TextControl
                 placeholder={t("keyPlaceholder")}
                 aria-label={t("key")}
-                defaultValue=""
                 data-testid={`${name}[${index}].key`}
                 name={`${name}[${index}].key`}
-                label=""
+                label=" "
               />
             </FlexItem>
             <FlexItem
@@ -78,10 +77,9 @@ export const KeyValueInput = ({ name, allowFullClear }: KeyValueInputProps) => {
               <TextControl
                 placeholder={t("valuePlaceholder")}
                 aria-label={t("value")}
-                defaultValue=""
                 data-testid={`${name}[${index}].value`}
                 name={`${name}[${index}].value`}
-                label=""
+                label=" "
               />
             </FlexItem>
             <FlexItem>
@@ -102,7 +100,7 @@ export const KeyValueInput = ({ name, allowFullClear }: KeyValueInputProps) => {
         <ActionListItem>
           <Button
             data-testid={`${name}-add-row`}
-            className="pf-u-px-0 pf-u-mt-sm"
+            className="pf-v5-u-px-0 pf-v5-u-mt-sm"
             variant="link"
             icon={<PlusCircleIcon />}
             isDisabled={!isValid}

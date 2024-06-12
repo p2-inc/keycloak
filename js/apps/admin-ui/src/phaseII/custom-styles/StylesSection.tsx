@@ -56,7 +56,7 @@ export default function StylesSection() {
         helpUrl={helpUrls.stylesUrl}
         divider={false}
       />
-      <PageSection variant="light" className="pf-u-p-0">
+      <PageSection variant="light" className="pf-v5-u-p-0">
         <RoutableTabs
           mountOnEnter
           isBox

@@ -6,8 +6,6 @@ import useOrgFetcher from "./useOrgFetcher";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import {
   Button,
-  Text,
-  TextVariants,
   Alert,
   AlertGroup,
   AlertVariant,
@@ -19,11 +17,10 @@ import {
   FlexItem,
 } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
-import { first, startCase } from "lodash-es";
-import { Link, NavLink, generatePath } from "react-router-dom";
+import { first } from "lodash-es";
+import { Link, NavLink } from "react-router-dom";
 import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { AssignIdentityProvider } from "./modals/AssignIdentityProvider";
-import { environment } from "../../environment";
 import { toIdentityProvider } from "../../identity-providers/routes/IdentityProvider";
 
 export type SyncMode = "FORCE" | "IMPORT" | "LEGACY";
@@ -183,7 +180,7 @@ export default function OrgIdentityProviders({
 
   let body = (
     <div>
-      <h1 className="pf-u-font-size-xl">{t("noIDPsAvailable")}</h1>
+      <h1 className="pf-v5-u-font-size-xl">{t("noIDPsAvailable")}</h1>
       <NavLink to={`/${realm}/identity-providers`}>
         Add Identity Provider
       </NavLink>
@@ -207,14 +204,14 @@ export default function OrgIdentityProviders({
                 title={title}
                 key={key}
                 timeout={8000}
-                className="pf-u-mb-lg"
+                className="pf-v5-u-mb-lg"
               />
             ))}
         </AlertGroup>
 
         {enabledIdP ? (
           <>
-            <h1 className="pf-u-font-size-xl pf-u-mb-lg">
+            <h1 className="pf-v5-u-font-size-xl pf-v5-u-mb-lg">
               {t("idpAssignedToOrg")}
             </h1>
             <DescriptionList isHorizontal>
@@ -247,7 +244,7 @@ export default function OrgIdentityProviders({
           <div>{t("noIDPAssigned")}</div>
         )}
 
-        <h2 className="pf-u-font-size-lg pf-u-mt-2xl pf-u-mb-md">
+        <h2 className="pf-v5-u-font-size-lg pf-v5-u-mt-2xl pf-v5-u-mb-md">
           {t("assignNewIdp")}
         </h2>
         <Flex>
@@ -294,5 +291,5 @@ export default function OrgIdentityProviders({
     );
   }
 
-  return <div className="pf-u-p-lg">{body}</div>;
+  return <div className="pf-v5-u-p-lg">{body}</div>;
 }

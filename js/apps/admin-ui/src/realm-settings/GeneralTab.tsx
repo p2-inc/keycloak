@@ -151,7 +151,7 @@ function RealmSettingsGeneralTabForm({
         <FormAccess
           isHorizontal
           role="manage-realm"
-          className="pf-u-mt-lg"
+          className="pf-v5-u-mt-lg"
           onSubmit={onSubmit}
         >
           <FormGroup label={t("realmId")} fieldId="kc-realm-id" isRequired>

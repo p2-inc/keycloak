@@ -54,12 +54,9 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
   const [updatingEmailTheme, setUpdatingEmailTheme] = useState(false);
 
   const {
-    register,
-    // control,
     reset: resetForm,
     getValues,
     setError,
-    // clearErrors,
     setValue,
     formState: { errors },
   } = useForm<EmailTemplateFormType>({
@@ -222,7 +219,7 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
           </p>
           <Button
             size="sm"
-            className="pf-u-mt-sm"
+            className="pf-v5-u-mt-sm"
             onClick={() => updateRealmTheme()}
             isLoading={updatingEmailTheme}
             isDisabled={updatingEmailTheme}
@@ -231,11 +228,11 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
           </Button>
         </Alert>
       )}
-      <p className="pf-u-mt-lg">
+      <p className="pf-v5-u-mt-lg">
         Use these templates to override the default content of your emails.
       </p>
 
-      <Form className="pf-u-mt-lg pf-u-pb-lg">
+      <Form className="pf-v5-u-mt-lg pf-v5-u-pb-lg">
         <FormGroup
           fieldId="emailTemplateSelect"
           label={
@@ -262,7 +259,7 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
         </FormGroup>
       </Form>
 
-      <Form isHorizontal className="pf-u-mt-lg">
+      <Form isHorizontal className="pf-v5-u-mt-lg">
         {/* HTML Template */}
         <FormGroup
           labelIcon={

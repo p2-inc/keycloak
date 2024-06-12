@@ -73,14 +73,14 @@ export const RealmSettingsAttributeTab = ({
       <Alert
         variant="danger"
         title="Expert mode customization for Phase Two extensions."
-        className="pf-u-mb-lg pf-u-w-75-on-md"
+        className="pf-v5-u-mb-lg pf-v5-u-w-75-on-md"
       >
         <p>
           This may override configuration changes elsewhere and cause unexpected
           behavior. Use this only if you are sure what you are doing.
         </p>
       </Alert>
-      <div className="pf-u-mb-lg pf-u-w-75-on-md">
+      <div className="pf-v5-u-mb-lg pf-v5-u-w-75-on-md">
         <AttributesForm
           form={form}
           save={save}

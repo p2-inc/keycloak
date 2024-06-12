@@ -73,7 +73,7 @@ export default function OrgSettings({ org, refresh }: OrgSettingsProps) {
   }
 
   return (
-    <Grid hasGutter className="pf-u-px-lg pf-u-mt-xl">
+    <Grid hasGutter className="pf-v5-u-px-lg pf-v5-u-mt-xl">
       <GridItem span={8}>
         <FormProvider {...organizationForm}>
           <Form
