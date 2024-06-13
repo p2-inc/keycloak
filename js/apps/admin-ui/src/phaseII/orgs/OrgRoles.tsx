@@ -73,33 +73,6 @@ export default function OrgRoles({ org, refresh: orgRefresh }: OrgRolesProps) {
     RoleRepresentation | boolean
   >(false);
 
-  const RoleName = (role: RoleRepresentation) =>
-    !defaultRoles.includes(role.name!) ? (
-      <Button
-        key={role.id}
-        variant="link"
-        onClick={() => setEditRoleModalVisibility(role)}
-        size="sm"
-        isInline
-      >
-        <Badge isRead className="keycloak-admin--role-mapping__client-name">
-          defined
-        </Badge>
-        {role.name}
-      </Button>
-    ) : (
-      <div>
-        <Badge
-          key={role.id}
-          isRead
-          className="keycloak-admin--role-mapping__client-name"
-        >
-          default
-        </Badge>
-        {role.name}
-      </div>
-    );
-
   // TODO: change this to a confirm dialog for the built in option
   async function deleteRole(role: RoleRepresentation): Promise<boolean> {
     if (
@@ -158,7 +131,35 @@ export default function OrgRoles({ org, refresh: orgRefresh }: OrgRolesProps) {
           {
             name: "name",
             displayKey: "name",
-            cellRenderer: RoleName,
+            cellRenderer: (role: RoleRepresentation) =>
+              !defaultRoles.includes(role.name!) ? (
+                <Button
+                  key={role.id}
+                  variant="link"
+                  onClick={() => setEditRoleModalVisibility(role)}
+                  size="sm"
+                  isInline
+                >
+                  <Badge
+                    isRead
+                    className="keycloak-admin--role-mapping__client-name"
+                  >
+                    defined
+                  </Badge>
+                  {role.name}
+                </Button>
+              ) : (
+                <div>
+                  <Badge
+                    key={role.id}
+                    isRead
+                    className="keycloak-admin--role-mapping__client-name"
+                  >
+                    default
+                  </Badge>
+                  {role.name}
+                </div>
+              ),
           },
           {
             name: "description",

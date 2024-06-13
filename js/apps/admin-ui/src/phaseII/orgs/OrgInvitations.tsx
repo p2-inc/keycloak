@@ -45,11 +45,6 @@ export default function OrgInvitations({
     setInvitationModalVisibility(!invitationModalVisibility);
   }
 
-  function DateFormatter(data: any) {
-    const date = new Date(data?.createdAt);
-    return <div>{date.toLocaleString()}</div>;
-  }
-
   async function removeInvitation(row: any): Promise<boolean> {
     await deleteOrgInvitation(org.id, row.id);
     addAlert("Pending invitation removed");
@@ -96,7 +91,10 @@ export default function OrgInvitations({
           {
             name: "createdAt",
             displayKey: "Invited at",
-            cellRenderer: DateFormatter,
+            cellRenderer: (data: any) => {
+              const date = new Date(data?.createdAt);
+              return <div>{date.toLocaleString()}</div>;
+            },
           },
         ]}
         emptyState={
