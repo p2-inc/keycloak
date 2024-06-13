@@ -29,3 +29,5 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
   - Add `attributes` as a tab option to the type def in `../realm-settings/routes/RealmSettings.tsx`
 - Help URLs
   - In the `/js/apps/admin-ui/src/help-urls.ts` file import `PhaseTwoHelpUrls` and spread it into the object
+- TextAreaControl
+  - `rows={props.rows}` to the `TextArea` to allow passing through

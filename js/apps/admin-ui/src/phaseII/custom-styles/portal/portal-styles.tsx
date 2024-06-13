@@ -2,14 +2,10 @@ import {
   AlertVariant,
   Checkbox,
   Form,
-  FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
   PageSection,
-  ValidatedOptions,
+  Title,
 } from "@patternfly/react-core";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { HelpItem, TextAreaControl } from "@keycloak/keycloak-ui-shared";
 import { SaveReset } from "../components/SaveReset";
@@ -95,14 +91,7 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
   const { adminClient } = useAdminClient();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
-  const {
-    register,
-    control,
-    reset,
-    getValues,
-    setValue,
-    formState: { errors },
-  } = useForm<PortalStylesType>({
+  const form = useForm<PortalStylesType>({
     defaultValues: {
       primaryColor100: "",
       primaryColor200: "",
@@ -128,6 +117,14 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
       portal_org_events_enabled: false,
     },
   });
+  const {
+    register,
+    control,
+    reset,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = form;
 
   async function loadRealm() {
     const realmInfo = await adminClient.realms.findOne({ realm });
@@ -280,95 +277,88 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
   return (
     <PageSection variant="light" className="keycloak__form">
       <Form isHorizontal>
-        <h3 className="pf-c-title pf-m-xl">{t("branding")}</h3>
-        <p>
-          Follows Tailwind CSS{" "}
-          <a
-            href="https://tailwindcss.com/docs/theme#colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            color
-          </a>{" "}
-          naming convention. There are custom defined colors available for
-          configuration below.
-        </p>
+        <FormProvider {...form}>
+          <Title headingLevel="h3" className="pf-c-title pf-m-xl">
+            {t("branding")}
+          </Title>
+          <p>
+            Follows Tailwind CSS{" "}
+            <a
+              href="https://tailwindcss.com/docs/theme#colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              color
+            </a>{" "}
+            naming convention. There are custom defined colors available for
+            configuration below.
+          </p>
 
-        {/* Primary Color */}
-        {colorKeys.map((k) => (
-          <ColorFormGroup
-            key={k}
-            colorKey={k}
-            {...{ register, errors, getValues, setValue }}
-          />
-        ))}
+          {/* Primary Color */}
+          {colorKeys.map((k) => (
+            <ColorFormGroup
+              key={k}
+              colorKey={k}
+              {...{ register, errors, getValues, setValue }}
+            />
+          ))}
 
-        {/* CSS */}
-        <FormGroup
-          labelIcon={<HelpItem helpText={t("cssHelp")} fieldLabelId="css" />}
-          label={t("css")}
-          fieldId="kc-styles-logo-url"
-        >
+          {/* CSS */}
           <TextAreaControl
             id="kc-styles-logo-url"
             name="css"
-            label=""
+            label={t("css")}
+            labelIcon={t("cssHelp")}
             type="text"
             data-testid="kc-styles-logo-url"
-            validated={
-              errors.css ? ValidatedOptions.error : ValidatedOptions.default
-            }
             rules={{ required: true }}
           />
-          {errors.css && (
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem variant={ValidatedOptions.error}>
-                  {t("cssHelpInvalid")}
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          )}
-        </FormGroup>
 
-        {/* Visibility  */}
-        <h3 className="pf-c-title pf-m-xl">{t("visibility")}</h3>
+          {/* Visibility  */}
+          <Title headingLevel="h3" className="pf-c-title pf-m-xl">
+            {t("visibility")}
+          </Title>
 
-        {/*   Profile */}
-        <h4 className="pf-c-title pf-m-lg">{t("profile")}</h4>
-        {visiblityProfileItems.map((i) => (
-          <Controller
-            name={i}
-            key={i}
-            control={control}
-            render={({ field, field: { value } }) => (
-              <div className="pf-l-flex pf-m-align-items-center">
-                {/* @ts-ignore */}
-                <Checkbox id={i} label={t(i)} isChecked={value} {...field} />
-                <HelpItem helpText={t(`${i}_tooltip`)} fieldLabelId={i} />
-              </div>
-            )}
-          />
-        ))}
+          {/*   Profile */}
+          <Title headingLevel="h4" className="pf-c-title pf-m-lg">
+            {t("profile")}
+          </Title>
+          {visiblityProfileItems.map((i) => (
+            <Controller
+              name={i}
+              key={i}
+              control={control}
+              render={({ field, field: { value } }) => (
+                <div className="pf-v5-l-flex pf-m-align-items-center">
+                  {/* @ts-ignore */}
+                  <Checkbox id={i} label={t(i)} isChecked={value} {...field} />
+                  <HelpItem helpText={t(`${i}_tooltip`)} fieldLabelId={i} />
+                </div>
+              )}
+            />
+          ))}
 
-        {/*   Organizations */}
-        <h4 className="pf-c-title pf-m-lg">{t("organizations")}</h4>
-        {visiblityOrganizationItems.map((i) => (
-          <Controller
-            name={i}
-            key={i}
-            control={control}
-            render={({ field, field: { value } }) => (
-              <div className="pf-l-flex pf-m-align-items-center">
-                {/* @ts-ignore */}
-                <Checkbox id={i} label={t(i)} isChecked={value} {...field} />
-                <HelpItem helpText={t(`${i}_tooltip`)} fieldLabelId={i} />
-              </div>
-            )}
-          />
-        ))}
+          {/*   Organizations */}
+          <Title headingLevel="h4" className="pf-c-title pf-m-lg">
+            {t("organizations")}
+          </Title>
+          {visiblityOrganizationItems.map((i) => (
+            <Controller
+              name={i}
+              key={i}
+              control={control}
+              render={({ field, field: { value } }) => (
+                <div className="pf-v5-l-flex pf-m-align-items-center">
+                  {/* @ts-ignore */}
+                  <Checkbox id={i} label={t(i)} isChecked={value} {...field} />
+                  <HelpItem helpText={t(`${i}_tooltip`)} fieldLabelId={i} />
+                </div>
+              )}
+            />
+          ))}
 
-        <SaveReset name="generalStyles" save={save} reset={reset} isActive />
+          <SaveReset name="generalStyles" save={save} reset={reset} isActive />
+        </FormProvider>
       </Form>
     </PageSection>
   );

@@ -3,20 +3,11 @@ import {
   Flex,
   FlexItem,
   Form,
-  FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
   PageSection,
-  ValidatedOptions,
 } from "@patternfly/react-core";
-import { useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import {
-  HelpItem,
-  TextAreaControl,
-  TextControl,
-} from "@keycloak/keycloak-ui-shared";
+import { TextAreaControl, TextControl } from "@keycloak/keycloak-ui-shared";
 import { SaveReset } from "../components/SaveReset";
 import { useState, useEffect } from "react";
 import { useRealm } from "../../../context/realm-context/RealmContext";
@@ -37,21 +28,14 @@ type LoginStylesArgs = {
   refresh: () => void;
 };
 
-const HexColorPattern = "^#([0-9a-f]{3}){1,2}$";
+const HexColorPattern = /^#([0-9a-f]{3}){1,2}$/;
 
 export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
   const { t } = useTranslation();
   const { adminClient } = useAdminClient();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
-  const {
-    register,
-    control,
-    reset,
-    getValues,
-    setValue,
-    formState: { errors },
-  } = useForm<LoginStylesType>({
+  const form = useForm<LoginStylesType>({
     defaultValues: {
       primaryColor: "",
       secondaryColor: "",
@@ -59,6 +43,7 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
       css: "",
     },
   });
+  const { control, reset, getValues, setValue } = form;
 
   async function loadRealm() {
     const realmInfo = await adminClient.realms.findOne({ realm });
@@ -174,17 +159,8 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
   return (
     <PageSection variant="light" className="keycloak__form">
       <Form isHorizontal>
-        {/* Primary Color */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText={t("primaryColorHelp")}
-              fieldLabelId="primaryColor"
-            />
-          }
-          label={t("primaryColor")}
-          fieldId="primaryColor"
-        >
+        <FormProvider {...form}>
+          {/* Primary Color */}
           <Flex alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
               <ColorPicker
@@ -197,40 +173,22 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
                 type="text"
                 id="primaryColor"
                 name="primaryColor"
-                label=""
                 data-testid="primaryColor"
-                pattern={HexColorPattern}
-                validated={
-                  errors.primaryColor
-                    ? ValidatedOptions.error
-                    : ValidatedOptions.default
-                }
-                rules={{ required: true }}
+                label={t("primaryColor")}
+                labelIcon={t("primaryColorHelp")}
+                rules={{
+                  required: true,
+                  pattern: {
+                    value: HexColorPattern,
+                    message: t("primaryColorHelp"),
+                  },
+                }}
+                placeholder="#000000"
               />
-              {errors.primaryColor && (
-                <FormHelperText>
-                  <HelperText>
-                    <HelperTextItem variant={ValidatedOptions.error}>
-                      {t("primaryColorHelpInvalid")}
-                    </HelperTextItem>
-                  </HelperText>
-                </FormHelperText>
-              )}
             </FlexItem>
           </Flex>
-        </FormGroup>
 
-        {/* Secondary Color */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText={t("secondaryColorHelp")}
-              fieldLabelId="secondaryColor"
-            />
-          }
-          label={t("secondaryColor")}
-          fieldId="secondaryColor"
-        >
+          {/* Secondary Color */}
           <Flex alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
               <ColorPicker
@@ -240,43 +198,24 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
               <TextControl
-                {...register("secondaryColor", { required: true })}
                 type="text"
                 id="secondaryColor"
                 name="secondaryColor"
-                label=""
+                label={t("secondaryColor")}
+                labelIcon={t("secondaryColorHelp")}
                 data-testid="secondaryColor"
-                pattern={HexColorPattern}
-                validated={
-                  errors.secondaryColor
-                    ? ValidatedOptions.error
-                    : ValidatedOptions.default
-                }
+                placeholder="#000000"
+                rules={{
+                  pattern: {
+                    value: HexColorPattern,
+                    message: t("secondaryColorHelp"),
+                  },
+                }}
               />
-              {errors.secondaryColor && (
-                <FormHelperText>
-                  <HelperText>
-                    <HelperTextItem variant={ValidatedOptions.error}>
-                      {t("secondaryColorHelpInvalid")}
-                    </HelperTextItem>
-                  </HelperText>
-                </FormHelperText>
-              )}
             </FlexItem>
           </Flex>
-        </FormGroup>
 
-        {/* Background Color */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText={t("backgroundColorHelp")}
-              fieldLabelId="backgroundColor"
-            />
-          }
-          label={t("backgroundColor")}
-          fieldId="backgroundColor"
-        >
+          {/* Background Color */}
           <Flex alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
               <ColorPicker
@@ -286,60 +225,34 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
               <TextControl
-                {...register("backgroundColor", { required: true })}
                 type="text"
                 id="backgroundColor"
                 name="backgroundColor"
-                label=""
+                label={t("backgroundColor")}
+                labelIcon={t("backgroundColorHelp")}
                 data-testid="backgroundColor"
-                pattern={HexColorPattern}
-                validated={
-                  errors.backgroundColor
-                    ? ValidatedOptions.error
-                    : ValidatedOptions.default
-                }
+                rules={{
+                  pattern: {
+                    value: HexColorPattern,
+                    message: t("backgroundColorHelp"),
+                  },
+                }}
               />
-              {errors.backgroundColor && (
-                <FormHelperText>
-                  <HelperText>
-                    <HelperTextItem variant={ValidatedOptions.error}>
-                      {t("backgroundColorHelpInvalid")}
-                    </HelperTextItem>
-                  </HelperText>
-                </FormHelperText>
-              )}
             </FlexItem>
           </Flex>
-        </FormGroup>
 
-        {/* CSS */}
-        <FormGroup
-          labelIcon={<HelpItem helpText={t("cssHelp")} fieldLabelId="css" />}
-          label={t("css")}
-          fieldId="css"
-        >
+          {/* CSS */}
           <TextAreaControl
             id="css"
             name="css"
             type="text"
-            label=""
+            labelIcon={t("cssHelp")}
+            label={t("css")}
             data-testid="css"
-            validated={
-              errors.css ? ValidatedOptions.error : ValidatedOptions.default
-            }
           />
-          {errors.css && (
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem variant={ValidatedOptions.error}>
-                  {t("cssHelpInvalid")}
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          )}
-        </FormGroup>
 
-        <SaveReset name="generalStyles" save={save} reset={reset} isActive />
+          <SaveReset name="generalStyles" save={save} reset={reset} isActive />
+        </FormProvider>
       </Form>
     </PageSection>
   );

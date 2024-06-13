@@ -21,6 +21,7 @@ export type TextAreaControlProps<
     label: string;
     labelIcon?: string;
     isDisabled?: boolean;
+    rows?: number;
   };
 
 export const TextAreaControl = <
@@ -53,6 +54,7 @@ export const TextAreaControl = <
           fieldState.error ? ValidatedOptions.error : ValidatedOptions.default
         }
         isDisabled={props.isDisabled}
+        rows={props.rows}
         {...field}
       />
     </FormLabel>

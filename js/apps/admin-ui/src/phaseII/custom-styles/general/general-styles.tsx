@@ -3,19 +3,15 @@ import {
   Brand,
   Form,
   FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
   PageSection,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  ValidatedOptions,
 } from "@patternfly/react-core";
-import { useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { HelpItem, TextControl } from "@keycloak/keycloak-ui-shared";
+import { TextControl } from "@keycloak/keycloak-ui-shared";
 import { SaveReset } from "../components/SaveReset";
 import { useState, ReactElement, useEffect } from "react";
 import { useRealm } from "../../../context/realm-context/RealmContext";
@@ -42,7 +38,7 @@ const LogoContainer = ({
   children: ReactElement<any, any>;
 }) => {
   return (
-    <Panel variant="bordered" className="pf-v5-u-mt-lg">
+    <Panel variant="bordered">
       <PanelHeader>{title}</PanelHeader>
       <PanelMain>
         <PanelMainBody>{children}</PanelMainBody>
@@ -64,6 +60,14 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   const { adminClient } = useAdminClient();
   const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
+  const form = useForm<GeneralStylesType>({
+    defaultValues: {
+      logoUrl: "",
+      faviconUrl: "",
+      appIconUrl: "",
+    },
+  });
+
   const {
     control,
     reset,
@@ -72,13 +76,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
     clearErrors,
     setValue,
     formState: { errors, isDirty },
-  } = useForm<GeneralStylesType>({
-    defaultValues: {
-      logoUrl: "",
-      faviconUrl: "",
-      appIconUrl: "",
-    },
-  });
+  } = form;
 
   async function loadRealm() {
     const realmInfo = await adminClient.realms.findOne({ realm });
@@ -116,7 +114,10 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
       setUrlError(false);
     } else {
       setUrlError(true);
-      setError(formElement, { type: "custom", message: "Invalid image URL." });
+      setError(formElement, {
+        type: "custom",
+        message: t("formHelpImageInvalid"),
+      });
     }
   };
 
@@ -229,157 +230,90 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
 
   return (
     <PageSection variant="light" className="keycloak__form">
-      <Form isHorizontal>
-        {/* Logo Url */}
-        <FormGroup
-          labelIcon={
-            <HelpItem helpText={t("formHelpLogoUrl")} fieldLabelId="logoUrl" />
-          }
-          label={t("logoUrl")}
-          fieldId="kc-styles-logo-url"
-        >
+      <Form isHorizontal id="general-styles">
+        <FormProvider {...form}>
+          {/* Logo Url */}
           <TextControl
             type="text"
-            label=""
+            label={t("logoUrl")}
+            labelIcon={t("formHelpLogoUrl")}
             id="kc-styles-logo-url"
             data-testid="kc-styles-logo-url"
             name="logoUrl"
-            validated={
-              errors.logoUrl ? ValidatedOptions.error : ValidatedOptions.default
-            }
             rules={{ required: true }}
           />
-          {errors.logoUrl && (
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem
-                  variant={
-                    errors.logoUrl
-                      ? ValidatedOptions.error
-                      : ValidatedOptions.default
-                  }
-                >
-                  {t("formHelpImageInvalid")}
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          )}
-          {LogoUrlBrand}
-          {logoUrl && (
-            <img
-              className="pf-v5-u-display-none"
-              src={logoUrl}
-              onError={() => isValidUrl(false, "logoUrl", setLogoUrlError)}
-              onLoad={() => isValidUrl(true, "logoUrl", setLogoUrlError)}
-            ></img>
-          )}
-        </FormGroup>
+          <FormGroup fieldId="kc-styles-logo-url">
+            {LogoUrlBrand}
+            {logoUrl && (
+              <img
+                className="pf-v5-u-display-none"
+                src={logoUrl}
+                onError={() => isValidUrl(false, "logoUrl", setLogoUrlError)}
+                onLoad={() => isValidUrl(true, "logoUrl", setLogoUrlError)}
+              ></img>
+            )}
+          </FormGroup>
 
-        {/* Favicon Url */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText={t("formHelpFaviconUrl")}
-              fieldLabelId="faviconUrl"
-            />
-          }
-          label={t("faviconUrl")}
-          fieldId="kc-styles-favicon-url"
-        >
+          {/* Favicon Url */}
           <TextControl
             type="text"
             id="kc-styles-favicon-url"
-            name="kc-styles-favicon-url"
-            label=""
+            name="faviconUrl"
+            label={t("faviconUrl")}
+            labelIcon={t("formHelpFaviconUrl")}
             data-testid="kc-styles-favicon-url"
-            validated={
-              errors.faviconUrl
-                ? ValidatedOptions.error
-                : ValidatedOptions.default
-            }
             rules={{ required: true }}
           />
-          {errors.faviconUrl && (
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem
-                  variant={
-                    errors.faviconUrl
-                      ? ValidatedOptions.error
-                      : ValidatedOptions.default
-                  }
-                >
-                  {t("formHelpImageInvalid")}
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          )}
-          {FaviconUrlBrand}
-          {faviconUrl && (
-            <img
-              className="pf-v5-u-display-none"
-              src={faviconUrl}
-              onError={() =>
-                isValidUrl(false, "faviconUrl", setFaviconUrlError)
-              }
-              onLoad={() => isValidUrl(true, "faviconUrl", setFaviconUrlError)}
-            ></img>
-          )}
-        </FormGroup>
+          <FormGroup>
+            {FaviconUrlBrand}
+            {faviconUrl && (
+              <img
+                className="pf-v5-u-display-none"
+                src={faviconUrl}
+                onError={() =>
+                  isValidUrl(false, "faviconUrl", setFaviconUrlError)
+                }
+                onLoad={() =>
+                  isValidUrl(true, "faviconUrl", setFaviconUrlError)
+                }
+              ></img>
+            )}
+          </FormGroup>
 
-        {/* App Icon Url */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText={t("formHelpAppIconUrl")}
-              fieldLabelId="appIconUrl"
-            />
-          }
-          label={t("appIconUrl")}
-          fieldId="kc-styles-logo-url"
-        >
+          {/* App Icon Url */}
+
           <TextControl
             type="text"
             id="kc-styles-logo-url"
-            label=""
+            label={t("appIconUrl")}
+            labelIcon={t("formHelpAppIconUrl")}
             data-testid="kc-styles-logo-url"
             name="appIconUrl"
-            validated={
-              errors.appIconUrl
-                ? ValidatedOptions.error
-                : ValidatedOptions.default
-            }
             rules={{ required: true }}
           />
-          {errors.appIconUrl && (
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem variant={ValidatedOptions.error}>
-                  {t("formHelpImageInvalid")}
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          )}
+          <FormGroup>
+            {AppIconUrlBrand}
+            {appIconUrl && (
+              <img
+                className="pf-v5-u-display-none"
+                src={appIconUrl}
+                onError={() =>
+                  isValidUrl(false, "appIconUrl", setAppIconUrlError)
+                }
+                onLoad={() =>
+                  isValidUrl(true, "appIconUrl", setAppIconUrlError)
+                }
+              ></img>
+            )}
+          </FormGroup>
 
-          {AppIconUrlBrand}
-          {appIconUrl && (
-            <img
-              className="pf-v5-u-display-none"
-              src={appIconUrl}
-              onError={() =>
-                isValidUrl(false, "appIconUrl", setAppIconUrlError)
-              }
-              onLoad={() => isValidUrl(true, "appIconUrl", setAppIconUrlError)}
-            ></img>
-          )}
-        </FormGroup>
-
-        <SaveReset
-          name="generalStyles"
-          save={save}
-          reset={reset}
-          isActive={isDirty && isEqual(errors, {})}
-        />
+          <SaveReset
+            name="generalStyles"
+            save={save}
+            reset={reset}
+            isActive={isDirty && isEqual(errors, {})}
+          />
+        </FormProvider>
       </Form>
     </PageSection>
   );

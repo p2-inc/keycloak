@@ -4,24 +4,18 @@ import {
   Button,
   Form,
   FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
+  MenuToggle,
   PageSection,
   Select,
+  SelectList,
   SelectOption,
   Spinner,
-  ValidatedOptions,
 } from "@patternfly/react-core";
 import { BaseSyntheticEvent, ChangeEvent, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useAlerts } from "../../../components/alert/Alerts";
-import {
-  HelpItem,
-  TextAreaControl,
-  TextControl,
-} from "@keycloak/keycloak-ui-shared";
+import { TextAreaControl } from "@keycloak/keycloak-ui-shared";
 import { useRealm } from "../../../context/realm-context/RealmContext";
 import { SaveReset } from "../components/SaveReset";
 import useStylesFetcher from "../useStylesFetcher";
@@ -38,7 +32,9 @@ type EmailTemplateFormType = {
 };
 
 const PlaceholderSelectOption = () => (
-  <SelectOption key="plcSlcOption" value="Clear selection" />
+  <SelectOption key="plcSlcOption" value="Clear selection">
+    Clear selection
+  </SelectOption>
 );
 
 interface EmailTemplateMap {
@@ -57,18 +53,13 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [updatingEmailTheme, setUpdatingEmailTheme] = useState(false);
 
-  const {
-    reset: resetForm,
-    getValues,
-    setError,
-    setValue,
-    formState: { errors },
-  } = useForm<EmailTemplateFormType>({
+  const form = useForm<EmailTemplateFormType>({
     defaultValues: {
       htmlEmail: "",
       textEmail: "",
     },
   });
+  const { reset: resetForm, getValues, setError, setValue } = form;
 
   const hasEmailThemeSettingsEnabled = realm.emailTheme === "attributes";
 
@@ -85,7 +76,8 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
   }, []);
 
   const [isTemplateSelectOpen, setIsTemplateSelectOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>();
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<string>("Select a template");
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
   const [templateSelectDisabled, setTemplateSelectDisabled] = useState(
     !hasEmailThemeSettingsEnabled,
@@ -132,11 +124,11 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
 
   const emailTemplateSelectOptions = Object.keys(emailTemplates).map((k) => (
     <SelectOption
-      value={`${emailTemplates[k]} (${k})`}
       key={k}
+      value={k}
       id={k}
       itemID={k}
-    />
+    >{`${emailTemplates[k]} (${k})`}</SelectOption>
   ));
   const templateSelectOptions = [
     <PlaceholderSelectOption key="plcSlcOption" />,
@@ -144,7 +136,7 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
   ];
 
   const clearSelection = () => {
-    setSelectedTemplate(undefined);
+    setSelectedTemplate("Select a template");
     setSelectedTemplateId(undefined);
     setIsTemplateSelectOpen(false);
   };
@@ -153,10 +145,13 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
     event: MouseEvent | ChangeEvent | BaseSyntheticEvent,
     value: string,
   ) => {
+    console.log("🚀 ~ EmailTemplate ~ value:", value);
+    console.log("🚀 ~ EmailTemplate ~ emailTemplates:", emailTemplates);
+    console.log("🚀 ~ EmailTemplate ~ event:", event);
     if (value === "Clear selection") clearSelection();
     else {
-      setSelectedTemplate(value);
-      setSelectedTemplateId(event.target?.getAttribute("itemid"));
+      setSelectedTemplate(`${emailTemplates[value]} (${value})`);
+      setSelectedTemplateId(value);
       setIsTemplateSelectOpen(false);
     }
   };
@@ -247,100 +242,63 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
           }
         >
           <Select
+            toggle={(ref) => (
+              <MenuToggle
+                ref={ref}
+                onClick={() => setIsTemplateSelectOpen(!isTemplateSelectOpen)}
+                isExpanded={isTemplateSelectOpen}
+                isDisabled={templateSelectDisabled}
+              >
+                {selectedTemplate}
+              </MenuToggle>
+            )}
             aria-label="Select email template"
-            onToggle={setIsTemplateSelectOpen}
             // @ts-ignore
             onSelect={selectTemplate}
-            selections={selectedTemplate}
+            selected={selectedTemplate}
             isOpen={isTemplateSelectOpen}
             aria-labelledby={"Select email template"}
-            isDisabled={templateSelectDisabled}
-            placeholderText="Select a template"
             id="emailTemplateSelect"
           >
-            {templateSelectOptions}
+            <SelectList>{templateSelectOptions}</SelectList>
           </Select>
         </FormGroup>
       </Form>
 
       <Form isHorizontal className="pf-v5-u-mt-lg">
-        {/* HTML Template */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText={t("formHelpHtmlTemplate")}
-              fieldLabelId="htmlEmail"
-            />
-          }
-          label={t("htmlEmail")}
-          fieldId="htmlEmail"
-        >
-          <TextControl
-            label=""
+        <FormProvider {...form}>
+          {/* HTML Template */}
+
+          <TextAreaControl
+            label={t("htmlEmail")}
+            labelIcon={t("formHelpHtmlTemplate")}
             id="htmlEmail"
             data-testid="htmlEmail"
             name="htmlEmail"
-            rows={7}
+            rows={10}
             isDisabled={templateSelectDisabled}
-            validated={
-              errors.htmlEmail
-                ? ValidatedOptions.error
-                : ValidatedOptions.default
-            }
           />
-          {errors.htmlEmail && (
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem variant={ValidatedOptions.error}>
-                  {t("formHelpHtmlTemplateInvalid")}
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          )}
-        </FormGroup>
 
-        {/* Text Template */}
-        <FormGroup
-          labelIcon={
-            <HelpItem
-              helpText={t("formHelpTextTemplate")}
-              fieldLabelId="textEmail"
-            />
-          }
-          label={t("textEmail")}
-          fieldId="textEmail"
-        >
+          {/* Text Template */}
+
           <TextAreaControl
             id="textEmail"
             data-testid="textEmail"
             name="textEmail"
-            label=""
-            rows={7}
+            label={t("textEmail")}
+            labelIcon={t("formHelpTextTemplate")}
+            rows={10}
             isDisabled={templateSelectDisabled}
-            validated={
-              errors.textEmail
-                ? ValidatedOptions.error
-                : ValidatedOptions.default
-            }
             rules={{ required: true }}
           />
-          {errors.textEmail && (
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem variant={ValidatedOptions.error}>
-                  {t("formHelpTextTemplateInvalid")}
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          )}
-        </FormGroup>
 
-        <SaveReset
-          name="emailTemplates"
-          save={save}
-          reset={reset}
-          isActive={!!selectedTemplateId && !isSaving}
-        />
+          <SaveReset
+            name="emailTemplates"
+            save={save}
+            reset={reset}
+            isActive={!!selectedTemplateId && !isSaving}
+          />
+        </FormProvider>
       </Form>
     </PageSection>
   );
