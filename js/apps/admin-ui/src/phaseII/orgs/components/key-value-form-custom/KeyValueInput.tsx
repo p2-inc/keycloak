@@ -106,7 +106,7 @@ export const KeyValueInput = ({ name, allowFullClear }: KeyValueInputProps) => {
             isDisabled={!isValid}
             onClick={() => append({ key: "", value: "" })}
           >
-            {t("addAttribute")}
+            {t("addAttribute", { label: t("attribute") })}
           </Button>
         </ActionListItem>
       </ActionList>
