@@ -17,7 +17,11 @@ import { BaseSyntheticEvent, ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useAlerts } from "../../../components/alert/Alerts";
-import { HelpItem, TextAreaControl, TextControl } from "ui-shared";
+import {
+  HelpItem,
+  TextAreaControl,
+  TextControl,
+} from "@keycloak/keycloak-ui-shared";
 import { useRealm } from "../../../context/realm-context/RealmContext";
 import { SaveReset } from "../components/SaveReset";
 import useStylesFetcher from "../useStylesFetcher";

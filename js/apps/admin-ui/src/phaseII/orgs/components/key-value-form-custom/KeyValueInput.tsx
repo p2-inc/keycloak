@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { KeyValueType } from "./key-value-convert";
-import { TextControl } from "../../../../../../../libs/ui-shared/src/controls/TextControl";
+import { TextControl } from "@keycloak/keycloak-ui-shared";
 
 type KeyValueInputProps = {
   name: string;

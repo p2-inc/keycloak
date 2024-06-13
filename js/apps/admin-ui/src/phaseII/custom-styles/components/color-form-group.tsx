@@ -11,7 +11,7 @@ import {
   HelperText,
   HelperTextItem,
 } from "@patternfly/react-core";
-import { HelpItem, TextControl } from "ui-shared";
+import { HelpItem, TextControl } from "@keycloak/keycloak-ui-shared";
 import { ValidatedOptions } from "@patternfly/react-core/dist/js/helpers/constants";
 import type {
   FieldErrors,
@@ -36,7 +36,6 @@ const ColorFormGroup: React.FC<ColorFormGroupProps> = ({
   errors,
   getValues,
   setValue,
-  register,
 }) => {
   const { t } = useTranslation();
   return (

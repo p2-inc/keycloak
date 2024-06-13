@@ -17,7 +17,7 @@ import { useAlerts } from "../../components/alert/Alerts";
 import useOrgFetcher from "./useOrgFetcher";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import type { OrgRepresentation } from "./routes";
-import { HelpItem } from "ui-shared";
+import { HelpItem } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
 
 type AddInvitationProps = {

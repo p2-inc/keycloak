@@ -11,7 +11,7 @@ import {
 } from "@patternfly/react-core";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { HelpItem, TextAreaControl } from "ui-shared";
+import { HelpItem, TextAreaControl } from "@keycloak/keycloak-ui-shared";
 import { SaveReset } from "../components/SaveReset";
 import { useState, useEffect } from "react";
 import { useRealm } from "../../../context/realm-context/RealmContext";

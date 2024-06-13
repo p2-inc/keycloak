@@ -9,7 +9,7 @@ import {
   ValidatedOptions,
 } from "@patternfly/react-core";
 import { MultiLineInput } from "../../../components/multi-line-input/MultiLineInput";
-import { HelpItem } from "ui-shared";
+import { HelpItem } from "@keycloak/keycloak-ui-shared";
 
 export const NewOrg = () => {
   const { t } = useTranslation();
