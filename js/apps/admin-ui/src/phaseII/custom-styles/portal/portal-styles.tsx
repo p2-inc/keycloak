@@ -17,6 +17,8 @@ import { useAlerts } from "../../../components/alert/Alerts";
 import { useAdminClient } from "../../../admin-client";
 import ColorFormGroup from "../components/color-form-group";
 
+import "./portal-styles.css";
+
 export type PortalStylesTypeColors = {
   primaryColor100: string;
   primaryColor200: string;
@@ -275,7 +277,7 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
   });
 
   return (
-    <PageSection variant="light" className="keycloak__form">
+    <PageSection variant="light" className="keycloak__form portal-styles">
       <Form isHorizontal>
         <FormProvider {...form}>
           <Title headingLevel="h3" className="pf-c-title pf-m-xl">
