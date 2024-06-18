@@ -290,9 +290,12 @@ export default function useOrgFetcher(realm: string) {
     };
   }
 
-  async function updateRoleForOrg(orgId: string, role: RoleRepresentation) {
+  async function updateRoleForOrg(
+    orgId: string,
+    role: { name: string; description?: string },
+  ) {
     let resp = (await fetchPut(
-      `${baseUrl}/orgs/${orgId}/roles`,
+      `${baseUrl}/orgs/${orgId}/roles/${role.name}`,
       role,
     )) as OrgResp;
     if (resp.ok) {

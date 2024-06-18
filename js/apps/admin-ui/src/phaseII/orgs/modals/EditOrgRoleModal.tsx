@@ -48,7 +48,7 @@ export const EditOrgRoleModal = ({
     },
   });
 
-  const submitForm = async (role: RoleRepresentation) => {
+  const submitForm = async (role: { name: string; description?: string }) => {
     try {
       const resp = await updateRoleForOrg(orgId, role);
       if (resp.success) {
