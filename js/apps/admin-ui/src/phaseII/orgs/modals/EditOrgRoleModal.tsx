@@ -43,7 +43,7 @@ export const EditOrgRoleModal = ({
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      name: role.name,
+      name: role.name || "",
       description: role.description,
     },
   });
@@ -124,6 +124,7 @@ export const EditOrgRoleModal = ({
                     ? ValidatedOptions.error
                     : ValidatedOptions.default
                 }
+                isRequired
                 isDisabled
               />
             )}
