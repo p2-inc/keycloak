@@ -8,6 +8,7 @@ import { environment } from "../../environment";
 import IdentityProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { useAdminClient } from "../../admin-client";
 import { SyncMode } from "./OrgIdentityProviders";
+import { OrgConfigType } from "./modals/ManageOrgSettingsDialog";
 
 type MembersOf = UserRepresentation & {
   membership: GroupRepresentation[];
@@ -538,6 +539,44 @@ export default function useOrgFetcher(realm: string) {
     }
   }
 
+  // GET /:realm/orgs/config
+  async function getOrgsConfig() {
+    try {
+      const resp = await fetchGet(`${baseUrl}/orgs/config`);
+      if (resp.ok) {
+        return (await resp.json()) as OrgConfigType;
+      }
+      return {
+        error: true,
+        message: "Failed to fetch orgs config.",
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error,
+      };
+    }
+  }
+
+  async function updateOrgsConfig(orgsConfig: OrgConfigType) {
+    try {
+      const resp = await fetchPut(`${baseUrl}/orgs/config`, orgsConfig);
+
+      if (resp.ok) {
+        return {
+          success: true,
+          message: "Organizations config updated.",
+        };
+      }
+      throw new Error("Failed to update organizations config.");
+    } catch (error) {
+      return {
+        error: true,
+        message: error,
+      };
+    }
+  }
+
   return {
     addOrgMember,
     checkOrgRoleForUser,
@@ -550,6 +589,7 @@ export default function useOrgFetcher(realm: string) {
     getIdpsForOrg,
     getIdpsForRealm,
     getOrg,
+    getOrgsConfig,
     getOrgInvitations,
     getOrgMembers,
     getPortalLink,
@@ -565,6 +605,7 @@ export default function useOrgFetcher(realm: string) {
     unlinkIDPtoOrg,
     updateIdentityProvider,
     updateOrg,
+    updateOrgsConfig,
     updateRoleForOrg,
   };
 }

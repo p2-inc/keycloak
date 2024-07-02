@@ -14,6 +14,7 @@ import {
   AlertGroup,
   Alert,
   AlertVariant,
+  Badge,
 } from "@patternfly/react-core";
 import { PaginatingTableToolbar } from "../../../components/table-toolbar/PaginatingTableToolbar";
 import IdentityProviderRepresentation from "../../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
@@ -29,6 +30,7 @@ import { fetchWithError } from "../../../../../../libs/keycloak-admin-client/lib
 import { addTrailingSlash } from "../../../util";
 import { useAdminClient } from "../../../admin-client";
 import { getAuthorizationHeaders } from "../../../utils/getAuthorizationHeaders";
+import { OrgConfigType } from "./ManageOrgSettingsDialog";
 
 type IdentityProviderListProps = {
   list?: IdentityProviderRepresentation[];
@@ -53,20 +55,31 @@ const IdentityProviderList = ({
     <PageSection variant="light" className="pf-v5-u-py-lg">
       <Form isHorizontal>
         {list?.map((identityProvider) => {
-          const idpAssignedToThisOrg =
-            identityProvider.config?.["home.idp.discovery.org"] === org.id;
-          const isIdPLinked =
+          const homeIdpDiscoveryOrg =
             identityProvider.config?.["home.idp.discovery.org"];
+          const idpAssignedToThisOrg = homeIdpDiscoveryOrg?.includes(org.id);
+          const isIdPLinked = homeIdpDiscoveryOrg;
           const isIdPEnabled = identityProvider.enabled;
 
-          let label = identityProvider.displayName || t("noName");
+          const idpName =
+            identityProvider.displayName ||
+            identityProvider.alias ||
+            t("noName");
+          let idpBadge;
           if (idpAssignedToThisOrg) {
-            label += ` (${t("idpAssignedToThisOrg")})`;
+            idpBadge = <Badge>{t("idpAssignedToThisOrg")}</Badge>;
           } else if (isIdPLinked) {
-            label += ` (${t("idpLinkedToOrg")})`;
+            idpBadge = <Badge isRead>{t("idpLinkedToOrg")}</Badge>;
+          }
+          if (homeIdpDiscoveryOrg?.includes("#")) {
+            idpBadge = (
+              <>
+                {idpBadge} <Badge isRead>{t("idpLinkedToMultpleOrgs")}</Badge>
+              </>
+            );
           }
 
-          let description = identityProvider.alias;
+          let description = `${t("alias")}: ${identityProvider.alias}`;
           description += isIdPEnabled
             ? ` (${t("enabled").toLowerCase()})`
             : ` (${t("disabled").toLowerCase()})`;
@@ -76,7 +89,11 @@ const IdentityProviderList = ({
               id={identityProvider.internalId!}
               key={identityProvider.internalId}
               name="identityProvider"
-              label={label}
+              label={
+                <>
+                  {idpName} {idpBadge}
+                </>
+              }
               data-testid={identityProvider.internalId}
               description={description}
               onChange={() => {
@@ -116,7 +133,7 @@ export function AssignIdentityProvider({
   const { adminClient } = useAdminClient();
   const { t } = useTranslation();
   const { realm } = useRealm();
-  const { getIdpsForRealm } = useOrgFetcher(realm);
+  const { getIdpsForRealm, getOrgsConfig } = useOrgFetcher(realm);
 
   const [value, setValue] = useState<IdentityProviderRepresentation>();
   const [identityProviders, setIdentityProviders] =
@@ -128,6 +145,7 @@ export function AssignIdentityProvider({
   const [authFlowOptions, setAuthFlowOptions] = useState<
     { label: string; value: string }[]
   >([]);
+  const [orgConfig, setOrgConfig] = useState<OrgConfigType | null>(null);
 
   const idpSelectionForm = useForm<idpFormValues>({
     defaultValues: {
@@ -174,6 +192,11 @@ export function AssignIdentityProvider({
 
   useEffect(() => {
     getAuthFlowOptions();
+    getOrgsConfig().then((config) => {
+      if (!("error" in config)) {
+        setOrgConfig(config);
+      }
+    });
   }, []);
 
   const page = useMemo(() => {
@@ -254,6 +277,7 @@ export function AssignIdentityProvider({
             />
           ))}
       </AlertGroup>
+
       {identityProviders && (
         <PaginatingTableToolbar
           count={page.length || 0}
@@ -328,13 +352,22 @@ export function AssignIdentityProvider({
           </FormGroup>
         </Form>
       </FormProvider>
-      {warning && (
+      {orgConfig?.sharedIdpsEnabled ? (
         <Alert
-          variant={AlertVariant.warning}
+          variant={AlertVariant.info}
           isInline
-          title={warning}
+          title={t("configMultipleOrgs")}
           className="pf-v5-u-mt-lg"
         />
+      ) : (
+        warning && (
+          <Alert
+            variant={AlertVariant.warning}
+            isInline
+            title={warning}
+            className="pf-v5-u-mt-lg"
+          />
+        )
       )}
     </Modal>
   );

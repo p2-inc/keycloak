@@ -17,6 +17,7 @@ import { toOrg } from "./routes/Org";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import type { OrgRepresentation } from "./routes";
 import { useAlerts } from "../../components/alert/Alerts";
+import { ManageOrgSettingsDialog } from "./modals/ManageOrgSettingsDialog";
 
 export default function OrgsSection() {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ export default function OrgsSection() {
 
   const [createOrgModalVisibility, setCreateOrgModalVisibility] =
     useState(false);
+  const [manageOrgSettingsDialog, setManageOrgSettingsDialog] = useState(false);
 
   function toggleCreateModalVisibility() {
     setCreateOrgModalVisibility(!createOrgModalVisibility);
@@ -68,6 +70,14 @@ export default function OrgsSection() {
         subKey={t("orgExplain")}
         helpUrl={helpUrls.orgsUrl}
       />
+      {manageOrgSettingsDialog && (
+        <ManageOrgSettingsDialog
+          onClose={() => {
+            setManageOrgSettingsDialog(false);
+            refresh();
+          }}
+        />
+      )}
       <PageSection variant="light" className="pf-v5-u-p-0 pf-v5-u-pt-lg">
         <KeycloakDataTable
           key={key}
@@ -78,15 +88,27 @@ export default function OrgsSection() {
           ariaLabelKey={t("orgList")}
           searchPlaceholderKey={t("searchForOrg")}
           toolbarItem={
-            <ToolbarItem>
-              <Button
-                data-testid="openCreateOrgModal"
-                variant="primary"
-                onClick={toggleCreateModalVisibility}
-              >
-                {t("createOrg")}
-              </Button>
-            </ToolbarItem>
+            <>
+              <ToolbarItem>
+                <Button
+                  data-testid="openCreateOrgModal"
+                  variant="primary"
+                  onClick={toggleCreateModalVisibility}
+                >
+                  {t("createOrg")}
+                </Button>
+              </ToolbarItem>
+
+              <ToolbarItem>
+                <Button
+                  data-testid="managedOrgSettings"
+                  variant="link"
+                  onClick={() => setManageOrgSettingsDialog(true)}
+                >
+                  {t("manageSettings")}
+                </Button>
+              </ToolbarItem>
+            </>
           }
           //@ts-ignore
           actions={[
