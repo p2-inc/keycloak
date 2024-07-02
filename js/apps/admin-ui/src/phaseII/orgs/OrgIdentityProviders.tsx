@@ -76,8 +76,7 @@ export default function OrgIdentityProviders({
       const activeIdP = first(orgIdps);
 
       if (
-        activeIdP &&
-        activeIdP.config?.["home.idp.discovery.org"] === org.id &&
+        activeIdP?.config?.["home.idp.discovery.org"].includes(org.id) &&
         activeIdP.enabled
       ) {
         setEnabledIdP(activeIdP);
