@@ -1,4 +1,5 @@
 import {
+  Alert,
   AlertVariant,
   Button,
   ButtonVariant,
@@ -37,12 +38,15 @@ export const ManageOrgSettingsDialog = ({
   const { addAlert, addError } = useAlerts();
 
   const [orgConfig, setOrgConfig] = useState<OrgConfigType | null>(null);
+  const [currentOrgConfig, setCurrentOrgConfig] =
+    useState<OrgConfigType | null>(null);
 
   useFetch(
     () => getOrgsConfig(),
     (config) => {
       if (!("error" in config)) {
         setOrgConfig(config);
+        setCurrentOrgConfig(config);
       } else {
         addError(t("orgConfigFetchUpdatesError"), config.message);
       }
@@ -134,6 +138,15 @@ export const ManageOrgSettingsDialog = ({
               setOrgConfig({ ...orgConfig!, sharedIdpsEnabled: checked })
             }
           />
+          {currentOrgConfig?.sharedIdpsEnabled === true &&
+            orgConfig?.sharedIdpsEnabled === false && (
+              <Alert
+                variant={AlertVariant.warning}
+                isInline
+                title={t("orgSettingsSharedIdpsWarning")}
+                className="pf-v5-u-mt-lg"
+              />
+            )}
         </FormGroup>
       </Form>
     </Modal>
