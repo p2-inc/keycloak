@@ -167,16 +167,18 @@ export default function useOrgFetcher(realm: string) {
     first: number;
     max: number;
     search?: string;
+    includeServiceAccounts?: boolean;
   };
   async function getOrgMembers(
     orgId: string,
-    { first, max, search }: OrgMemberOptions = {
+    { first, max, search, includeServiceAccounts }: OrgMemberOptions = {
       first: 1,
-      max: 100,
+      max: 100
     },
   ): Promise<MembersOf[]> {
     let query = `first=${first}&max=${max}`;
     query = search ? `${query}&search=${search}` : query;
+    query = includeServiceAccounts ? `${query}&includeServiceAccounts=${includeServiceAccounts}` : query;
     const resp = await fetchGet(`${baseUrl}/orgs/${orgId}/members?${query}`);
     const result = await resp.json();
     return result;
