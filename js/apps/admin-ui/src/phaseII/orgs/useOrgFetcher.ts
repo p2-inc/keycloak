@@ -21,7 +21,7 @@ export default function useOrgFetcher(realm: string) {
   const [orgs] = useState([]);
   const [org, setOrg] = useState<OrgRepresentation | null>();
 
-  const authUrl = environment.authServerUrl;
+  const authUrl = environment.serverBaseUrl;
   const baseUrl = `${authUrl}/realms/${realm}`;
   const adminUrl = `${authUrl}/admin/realms/${realm}`;
 

@@ -15,7 +15,7 @@ export default function useStylesFetcher() {
   const { realm: realmName } = useRealm();
   const { adminClient } = useAdminClient();
 
-  const authUrl = environment.authServerUrl;
+  const authUrl = environment.serverBaseUrl;
   const baseUrl = `${authUrl}/realms/${realmName}`;
 
   async function fetchG(url: string, headers = {}) {
