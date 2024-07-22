@@ -55,6 +55,7 @@ import { ClientPoliciesTab, toClientPolicies } from "./routes/ClientPolicies";
 import { RealmSettingsTab, toRealmSettings } from "./routes/RealmSettings";
 import { SecurityDefenses } from "./security-defences/SecurityDefenses";
 import { UserProfileTab } from "./user-profile/UserProfileTab";
+import { RealmSettingsAttributeTab } from "../phaseII/realm-settings/RealmSettingsAttributesTab";
 
 export interface UIRealmRepresentation extends RealmRepresentation {
   upConfig?: UserProfileConfig;
@@ -293,6 +294,7 @@ export const RealmSettingsTabs = () => {
   const clientPoliciesTab = useTab("client-policies");
   const userProfileTab = useTab("user-profile");
   const userRegistrationTab = useTab("user-registration");
+  const attributesTab = useTab("attributes");
 
   const useClientPoliciesTab = (tab: ClientPoliciesTab) =>
     useRoutableTab(
@@ -405,6 +407,13 @@ export const RealmSettingsTabs = () => {
             {...tokensTab}
           >
             <RealmSettingsTokensTab save={save} realm={realm!} />
+          </Tab>
+          <Tab
+            title={<TabTitleText>{t("attributes")}</TabTitleText>}
+            data-testid="rs-realm-attributes-tab"
+            {...attributesTab}
+          >
+            <RealmSettingsAttributeTab realm={realm!} />
           </Tab>
           {isFeatureEnabled(Feature.ClientPolicies) && (
             <Tab

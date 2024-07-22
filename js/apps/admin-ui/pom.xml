@@ -11,7 +11,13 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>keycloak-admin-ui</artifactId>
+    <groupId>io.phasetwo</groupId>
+    <artifactId>phasetwo-admin-ui</artifactId>
+    <version>25.0.0</version>
+
+    <properties>
+        <admin-ui.theme.name>phasetwo.v2</admin-ui.theme.name>
+    </properties>
 
     <name>Keycloak Admin UI</name>
     <description>The user inferface to administrate the Keycloak server.</description>
@@ -58,7 +64,7 @@
             </resource>
             <resource>
                 <directory>dist</directory>
-                <targetPath>theme/keycloak.v2/admin/resources</targetPath>
+                <targetPath>theme/${admin-ui.theme.name}/admin/resources</targetPath>
                 <excludes>
                     <exclude>index.html</exclude>
                 </excludes>
