@@ -23,7 +23,6 @@ import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.exceptions.HotRodClientException;
 import org.infinispan.commons.api.BasicCache;
 import org.infinispan.commons.util.ByRef;
-import org.infinispan.context.Flag;
 import org.infinispan.factories.ComponentRegistry;
 import org.infinispan.persistence.manager.PersistenceManager;
 import org.jboss.logging.Logger;
@@ -422,51 +421,9 @@ public class PersistentUserSessionProvider implements UserSessionProvider, Sessi
             return userSession;
         }
 
-        // Try lookup userSession from remoteCache
-        Cache<String, SessionEntityWrapper<UserSessionEntity>> cache = getCache(offline);
-        RemoteCache remoteCache = InfinispanUtil.getRemoteCache(cache);
-
-        if (remoteCache != null) {
-            SessionEntityWrapper<UserSessionEntity> remoteSessionEntityWrapper = (SessionEntityWrapper<UserSessionEntity>) remoteCache.get(id);
-            if (remoteSessionEntityWrapper != null) {
-                UserSessionEntity remoteSessionEntity = remoteSessionEntityWrapper.getEntity();
-                remoteSessionEntity.setOffline(offline);
-                log.debugf("getUserSessionWithPredicate(%s): remote cache contains session entity %s", id, remoteSessionEntity);
-
-                UserSessionModel remoteSessionAdapter = wrap(realm, remoteSessionEntity, offline);
-                if (predicate.test(remoteSessionAdapter)) {
-
-                    // Remote entity contains our predicate. Update local cache with the remote entity
-                    SessionEntityWrapper<UserSessionEntity> sessionWrapper = remoteSessionEntity.mergeRemoteEntityWithLocalEntity(sessionTx.get(id, offline));
-
-                    // Replace entity just in ispn cache. Skip remoteStore
-                    cache.getAdvancedCache().withFlags(Flag.SKIP_CACHE_STORE, Flag.SKIP_CACHE_LOAD, Flag.IGNORE_RETURN_VALUES)
-                            .replace(id, sessionWrapper);
-
-                    sessionTx.reloadEntityInCurrentTransaction(realm, id, sessionWrapper);
-
-                    // Recursion. We should have it locally now
-                    return getUserSessionWithPredicate(realm, id, offline, predicate);
-                } else {
-                    log.debugf("getUserSessionWithPredicate(%s): found, but predicate doesn't pass", id);
-
-                    return null;
-                }
-            } else {
-                log.debugf("getUserSessionWithPredicate(%s): not found", id);
-
-                // Session not available on remoteCache. Was already removed there. So removing locally too.
-                // TODO: Can be optimized to skip calling remoteCache.remove
-                removeUserSession(realm, userSession);
-
-                return null;
-            }
-        } else {
-
-            log.debugf("getUserSessionWithPredicate(%s): remote cache not available", id);
-
-            return null;
-        }
+        // The logic to remove the local entry if there is no entry in the remote cache that is present in the InfinispanUserSessionProvider is removed here,
+        // as with persistent sessions we will have only a subset of all sessions in memory (both locally and in the remote store).
+        return null;
     }
 
 
@@ -1060,9 +1017,13 @@ public class PersistentUserSessionProvider implements UserSessionProvider, Sessi
             // ignoring old and unknown realm found in the session
             return;
         }
-        sessionEntityWrapper.getEntity().getAuthenticatedClientSessions().forEach((k, uuid) -> {
+        sessionEntityWrapper.getEntity().getAuthenticatedClientSessions().forEach((clientId, uuid) -> {
             SessionEntityWrapper<AuthenticatedClientSessionEntity> clientSession = clientSessionCache.get(uuid);
             if (clientSession != null) {
+                // This is necessary because client sessions created by a KC version < 22 do not have clientId set within the entity.
+                if (clientSession.getEntity().getClientId() == null) {
+                    clientSession.getEntity().setClientId(clientId);
+                }
                 clientSession.getEntity().setUserSessionId(sessionEntityWrapper.getEntity().getId());
                 MergedUpdate<AuthenticatedClientSessionEntity> merged = MergedUpdate.computeUpdate(Collections.singletonList(Tasks.addIfAbsentSync()), clientSession, 1, 1);
                 clientSessionPerformer.registerChange(Map.entry(uuid, new SessionUpdatesList<>(realm, clientSession)), merged);

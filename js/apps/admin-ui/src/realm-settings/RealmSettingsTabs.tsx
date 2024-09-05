@@ -295,6 +295,11 @@ export const RealmSettingsTabs = () => {
   const userProfileTab = useTab("user-profile");
   const userRegistrationTab = useTab("user-registration");
   const attributesTab = useTab("attributes");
+  const { hasAccess, hasSomeAccess } = useAccess();
+  const canViewOrManageEvents =
+    hasAccess("view-realm") && hasSomeAccess("view-events", "manage-events");
+  const canViewUserRegistration =
+    hasAccess("view-realm") && hasSomeAccess("view-clients", "manage-clients");
 
   const useClientPoliciesTab = (tab: ClientPoliciesTab) =>
     useRoutableTab(
@@ -368,13 +373,15 @@ export const RealmSettingsTabs = () => {
           >
             <KeysTab />
           </Tab>
-          <Tab
-            title={<TabTitleText>{t("events")}</TabTitleText>}
-            data-testid="rs-realm-events-tab"
-            {...eventsTab}
-          >
-            <EventsTab realm={realm!} />
-          </Tab>
+          {canViewOrManageEvents && (
+            <Tab
+              title={<TabTitleText>{t("events")}</TabTitleText>}
+              data-testid="rs-realm-events-tab"
+              {...eventsTab}
+            >
+              <EventsTab realm={realm!} />
+            </Tab>
+          )}
           <Tab
             title={<TabTitleText>{t("localization")}</TabTitleText>}
             data-testid="rs-localization-tab"
@@ -462,13 +469,15 @@ export const RealmSettingsTabs = () => {
           >
             <UserProfileTab setTableData={setTableData as any} />
           </Tab>
-          <Tab
-            title={<TabTitleText>{t("userRegistration")}</TabTitleText>}
-            data-testid="rs-userRegistration-tab"
-            {...userRegistrationTab}
-          >
-            <UserRegistration />
-          </Tab>
+          {canViewUserRegistration && (
+            <Tab
+              title={<TabTitleText>{t("userRegistration")}</TabTitleText>}
+              data-testid="rs-userRegistration-tab"
+              {...userRegistrationTab}
+            >
+              <UserRegistration />
+            </Tab>
+          )}
         </RoutableTabs>
       </PageSection>
     </>

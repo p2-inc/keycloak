@@ -5,12 +5,12 @@
     <parent>
         <artifactId>documentation-parent</artifactId>
         <groupId>org.keycloak.documentation</groupId>
-        <version>25.0.2</version>
+        <version>25.0.4</version>
     </parent>
 
     <groupId>org.keycloak.documentation</groupId>
     <artifactId>header-maven-plugin</artifactId>
-    <version>25.0.2</version>
+    <version>25.0.4</version>
     <packaging>maven-plugin</packaging>
 
     <name>github-maven-plugin</name>

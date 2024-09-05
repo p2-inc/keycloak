@@ -20,7 +20,7 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>25.0.2</version>
+        <version>25.0.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>Keycloak Crypto Parent</name>

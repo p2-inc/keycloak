@@ -241,7 +241,7 @@ export const RealmOverrides = ({
       try {
         for (const key of selectedRowKeys) {
           delete (
-            i18n.store.data[whoAmI.getLocale()]["translation"] as Record<
+            i18n.store.data[whoAmI.getLocale()][currentRealm] as Record<
               string,
               string
             >
@@ -384,6 +384,7 @@ export const RealmOverrides = ({
             </Button>
             <ToolbarItem>
               <Dropdown
+                onOpenChange={(isOpen) => setKebabOpen(isOpen)}
                 toggle={(ref) => (
                   <MenuToggle
                     ref={ref}
