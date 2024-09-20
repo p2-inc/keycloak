@@ -140,6 +140,7 @@ public class IgnoredArtifacts {
                     case MYSQL -> JDBC_MYSQL;
                     case MARIADB -> JDBC_MARIADB;
                     case POSTGRES -> JDBC_POSTGRES;
+                    case COCKROACH -> JDBC_POSTGRES;
                     case MSSQL -> JDBC_MSSQL;
                     case ORACLE -> JDBC_ORACLE;
                 })
