@@ -139,6 +139,22 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   const faviconUrl = getValues("faviconUrl");
   const appIconUrl = getValues("appIconUrl");
 
+  const handleBlur = (
+    url: string,
+    formElement: "logoUrl" | "faviconUrl" | "appIconUrl",
+  ) => {
+    const trimmedUrl = url.trim();
+    if (trimmedUrl !== url) {
+      setValue(formElement, trimmedUrl);
+    }
+  };
+
+  useEffect(() => {
+    handleBlur(logoUrl, "logoUrl");
+    handleBlur(faviconUrl, "faviconUrl");
+    handleBlur(appIconUrl, "appIconUrl");
+  }, [logoUrl, faviconUrl, appIconUrl]);
+
   const save = async () => {
     // update realm with new attributes
     const updatedRealm = {
@@ -235,7 +251,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
         <FormProvider {...form}>
           {/* Logo Url */}
           <TextControl
-            type="text"
+            type="url"
             label={t("logoUrl")}
             labelIcon={t("formHelpLogoUrl")}
             id="kc-styles-logo-url"
@@ -264,6 +280,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
             labelIcon={t("formHelpFaviconUrl")}
             data-testid="kc-styles-favicon-url"
             rules={{ required: true }}
+            onBlur={(e) => handleBlur(e.target.value, "logoUrl")}
           />
           <FormGroup>
             {FaviconUrlBrand}
@@ -291,6 +308,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
             data-testid="kc-styles-logo-url"
             name="appIconUrl"
             rules={{ required: true }}
+            onBlur={(e) => handleBlur(e.target.value, "logoUrl")}
           />
           <FormGroup>
             {AppIconUrlBrand}
