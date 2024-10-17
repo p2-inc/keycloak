@@ -273,14 +273,13 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
 
           {/* Favicon Url */}
           <TextControl
-            type="text"
+            type="url"
             id="kc-styles-favicon-url"
             name="faviconUrl"
             label={t("faviconUrl")}
             labelIcon={t("formHelpFaviconUrl")}
             data-testid="kc-styles-favicon-url"
             rules={{ required: true }}
-            onBlur={(e) => handleBlur(e.target.value, "logoUrl")}
           />
           <FormGroup>
             {FaviconUrlBrand}
@@ -301,14 +300,13 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
           {/* App Icon Url */}
 
           <TextControl
-            type="text"
+            type="url"
             id="kc-styles-logo-url"
             label={t("appIconUrl")}
             labelIcon={t("formHelpAppIconUrl")}
             data-testid="kc-styles-logo-url"
             name="appIconUrl"
             rules={{ required: true }}
-            onBlur={(e) => handleBlur(e.target.value, "logoUrl")}
           />
           <FormGroup>
             {AppIconUrlBrand}
