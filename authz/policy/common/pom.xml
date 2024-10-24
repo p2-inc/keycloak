@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-authz-provider-parent</artifactId>
-        <version>26.0.0</version>
+        <version>26.0.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -49,6 +49,11 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi-private</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus.resteasy.reactive</groupId>
+            <artifactId>resteasy-reactive-common</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -92,6 +92,7 @@ import org.keycloak.models.UserSessionModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.models.utils.RepresentationToModel;
+import org.keycloak.organization.admin.resource.OrganizationsResource;
 import org.keycloak.partialimport.PartialImportResult;
 import org.keycloak.partialimport.PartialImportResults;
 import org.keycloak.representations.adapters.action.GlobalRequestResult;
@@ -553,6 +554,10 @@ public class RealmAdminResource {
         return ref;
     }
 
+    @Path("organizations")
+    public OrganizationsResource organizations() {
+        return new OrganizationsResource(session, auth, adminEvent);
+    }
 
     @Path("{extension}")
     public Object extension(@PathParam("extension") String extension) {
@@ -1117,7 +1122,7 @@ public class RealmAdminResource {
                         AdminEventBuilder adminEventClone = adminEvent.clone(kcSession);
                         // calling a static method to avoid using the wrong instances
                         return getPartialImportResults(requestBody, kcSession, realmClone, adminEventClone);
-                    }, false)
+                    }, false, "Partial import in realm " + realm.getName())
             ).build();
         } catch (ModelDuplicateException e) {
             throw ErrorResponse.exists(e.getLocalizedMessage());

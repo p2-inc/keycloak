@@ -1,12 +1,25 @@
-package org.keycloak.common.util;
+package org.keycloak.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.keycloak.representations.account.DeviceRepresentation;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Supplier;
 
 public class SecureContextResolverTest {
+
+    static DeviceRepresentation DEVICE_UNKOWN;
+    static DeviceRepresentation DEVICE_SAFARI;
+
+    static {
+        DEVICE_UNKOWN = new DeviceRepresentation();
+        DEVICE_UNKOWN.setBrowser(DeviceRepresentation.UNKNOWN);
+
+        DEVICE_SAFARI = new DeviceRepresentation();
+        DEVICE_SAFARI.setBrowser("Safari/18.0.1");
+    }
 
     @Test
     public void testHttps() {
@@ -47,9 +60,32 @@ public class SecureContextResolverTest {
         assertSecureContext("http://test.localhost.not", false);
     }
 
+    @Test
+    public void testQuirksSafari() {
+        assertSecureContext("https://127.0.0.1", DEVICE_SAFARI, true);
+        assertSecureContext("https://something", DEVICE_SAFARI, true);
+        assertSecureContext("http://[::1]", DEVICE_SAFARI,false);
+        assertSecureContext("http://[0000:0000:0000:0000:0000:0000:0000:0001]", DEVICE_SAFARI, false);
+        assertSecureContext("http://localhost", DEVICE_SAFARI, false);
+        assertSecureContext("http://localhost.", DEVICE_SAFARI, false);
+        assertSecureContext("http://test.localhost", DEVICE_SAFARI, false);
+        assertSecureContext("http://test.localhost.", DEVICE_SAFARI, false);
+    }
+
+    @Test
+    public void testNoDeviceRepresentation() {
+        assertSecureContext("http://localhost", null, true);
+    }
+
     void assertSecureContext(String url, boolean expectedSecureContext) {
+        assertSecureContext(url, DEVICE_UNKOWN, expectedSecureContext);
+    }
+
+    void assertSecureContext(String url, DeviceRepresentation deviceRepresentation, boolean expectedSecureContext) {
+        Supplier<DeviceRepresentation> deviceRepresentationSupplier = () -> deviceRepresentation;
+
         try {
-            Assert.assertEquals(expectedSecureContext, SecureContextResolver.isSecureContext(new URI(url)));
+            Assert.assertEquals(expectedSecureContext, SecureContextResolver.isSecureContext(new URI(url), deviceRepresentationSupplier));
         } catch (URISyntaxException e) {
             Assert.fail(e.getMessage());
         }

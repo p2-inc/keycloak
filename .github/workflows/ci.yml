@@ -64,6 +64,10 @@ jobs:
       - name: Build Keycloak
         uses: ./.github/actions/build-keycloak
 
+      - name: Check for unstaged proto.lock files
+        if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.base.ref, 'release/')
+        run: git diff --name-only --exit-code -- "**/proto.lock"
+
   unit-tests:
     name: Base UT
     runs-on: ubuntu-latest
@@ -455,7 +459,10 @@ jobs:
           zip -u /tmp/keycloak.zip aws.pem
  
           cd .github/scripts/ansible
+          python3 -m venv .venv
+          source .venv/bin/activate
           ./aws_ec2.sh requirements
+          pipx inject ansible-core boto3 botocore
           ./aws_ec2.sh create ${AWS_REGION} ${EC2_CLUSTER_NAME}
           ./keycloak_ec2_installer.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} /tmp/keycloak.zip
           ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B -DskipTests -Pdistribution"
@@ -553,6 +560,7 @@ jobs:
         if: always()
         working-directory: .github/scripts/ansible
         run: |
+          source .venv/bin/activate
           ./aws_ec2.sh delete ${{ steps.aurora-init.outputs.region }} ${{ steps.ec2-create.outputs.ec2_cluster }}
 
       - name: Delete Aurora DB
@@ -727,16 +735,6 @@ jobs:
         uses: ./.github/actions/integration-test-setup
         with:
           jdk-version: 21
-
-      - name: Build adapter distributions
-        run: ./mvnw install -DskipTests -f distribution/pom.xml
-
-      - name: Build app servers
-        run: ./mvnw install -DskipTests -Pbuild-app-servers -f testsuite/integration-arquillian/servers/app-server/pom.xml
-
-
-      - name: Prepare Quarkus distribution with BCFIPS
-        run: ./mvnw install -e -pl testsuite/integration-arquillian/servers/auth-server/quarkus -Pauth-server-quarkus,auth-server-fips140-2
 
       - name: Run base tests
         run: docker run --rm --workdir /github/workspace -e "SUREFIRE_RERUN_FAILING_COUNT" -v "${{ github.workspace }}":"/github/workspace" -v "$HOME/.m2":"/root/.m2" registry.access.redhat.com/ubi8/ubi:latest .github/scripts/run-fips-it.sh ${{ matrix.mode }}

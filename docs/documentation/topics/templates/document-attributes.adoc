@@ -2,10 +2,10 @@
 :project_name_full: Keycloak
 :project_community: true
 :project_product: false
-:project_version: 26.0.0
-:project_versionMvn: 26.0.0
-:project_versionNpm: 26.0.0
-:project_versionDoc: 26.0.0
+:project_version: 26.0.2
+:project_versionMvn: 26.0.2
+:project_versionNpm: 26.0.2
+:project_versionDoc: 26.0.2
 
 :archivebasename: keycloak
 :archivedownloadurl: https://github.com/keycloak/keycloak/releases/download/{project_version}/keycloak-{project_version}.zip
@@ -125,3 +125,5 @@
 :securing_apps_name: Securing applications Guides
 :securing_apps_name_short: Securing applications
 :securing_apps_link: https://www.keycloak.org/guides#securing-apps
+:securing_apps_java_policy_enforcer_link: https://www.keycloak.org/securing-apps/policy-enforcer
+:securing_apps_java_policy_enforcer_name: Java Policy enforcer
