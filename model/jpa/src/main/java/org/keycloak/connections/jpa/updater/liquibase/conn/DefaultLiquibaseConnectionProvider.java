@@ -23,6 +23,7 @@ import liquibase.ThreadLocalScopeManager;
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.database.core.CockroachDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
@@ -120,6 +121,9 @@ public class DefaultLiquibaseConnectionProvider implements LiquibaseConnectionPr
         }
 
         String changelog = LiquibaseJpaUpdaterProvider.CHANGELOG;
+        if (database instanceof CockroachDatabase) {
+          changelog = LiquibaseJpaUpdaterProvider.CHANGELOG_CRDB;
+        }
         ResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader());
 
         logger.debugf("Using changelog file %s and changelogTableName %s", changelog, database.getDatabaseChangeLogTableName());
