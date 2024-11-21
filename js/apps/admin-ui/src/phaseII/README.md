@@ -21,6 +21,10 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 - Orgs
   - This folder contains all the Orgs UI. It exists mostly independent of other code, but does import components from the `ui-shared` and the `src/components` folder.
   - Check all references and imports for changes in location. The KC maintainers have a tendency to move these around a lot. Confirm the imports have also not changed functionality.
+- User
+  - This folder contains a new tab for the User details view.
+  - In `admin-ui/src/user/routes/User.tsx` > UserTab add `user-orgs`
+  - In `admin-ui/src/user/EditUser.tsx` import `UserOrgs`, add the `userOrgsTab` and add the `<Tab><UsersOrgs />...`
 - Custom Styles
   - This folder contains all the Custom Styles UI. It exists mostly independent of other code, but does import components from the `ui-shared` and the `src/components` folder.
 - Realm Settings Attributes Tab `realmSettingsTabs.tsx`

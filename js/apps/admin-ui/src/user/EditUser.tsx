@@ -58,6 +58,9 @@ import { UserParams, UserTab, toUser } from "./routes/User";
 import { toUsers } from "./routes/Users";
 import { isLightweightUser } from "./utils";
 
+// User Orgs
+import { UserOrgs } from "../phaseII/user/user-details-orgs";
+
 import "./user-section.css";
 
 export default function EditUser() {
@@ -112,6 +115,7 @@ export default function EditUser() {
   const consentsTab = useTab("consents");
   const identityProviderLinksTab = useTab("identity-provider-links");
   const sessionsTab = useTab("sessions");
+  const userOrgsTab = useTab("user-orgs");
 
   useFetch(
     async () =>
@@ -423,6 +427,13 @@ export default function EditUser() {
                 {...sessionsTab}
               >
                 <UserSessions />
+              </Tab>
+              <Tab
+                data-testid="user-organizations-tab"
+                title={<TabTitleText>{t("userOrganizations")}</TabTitleText>}
+                {...userOrgsTab}
+              >
+                <UserOrgs />
               </Tab>
             </RoutableTabs>
           </FormProvider>

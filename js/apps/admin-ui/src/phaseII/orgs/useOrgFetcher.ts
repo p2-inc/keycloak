@@ -195,6 +195,11 @@ export default function useOrgFetcher(realm: string) {
     });
   }
 
+  async function getOrgsForUser(userId: string): Promise<OrgRepresentation[]> {
+    const resp = await fetchGet(`${baseUrl}/users/${userId}/orgs`);
+    return await resp.json();
+  }
+
   async function removeMemberFromOrg(orgId: string, userId: string) {
     await fetchDelete(`${baseUrl}/orgs/${orgId}/members/${userId}`);
   }
@@ -589,9 +594,10 @@ export default function useOrgFetcher(realm: string) {
     getIdpsForOrg,
     getIdpsForRealm,
     getOrg,
-    getOrgsConfig,
     getOrgInvitations,
     getOrgMembers,
+    getOrgsConfig,
+    getOrgsForUser,
     getPortalLink,
     getRolesForOrg,
     linkIDPtoOrg,
