@@ -139,6 +139,18 @@
             <artifactId>picocli</artifactId>
         </dependency>
 
+	<!-- Dependencies used by keycloak extensions -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-keycloak-admin-client-common</artifactId>
+            <version>${quarkus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-keycloak-admin-client-reactive</artifactId>
+            <version>${quarkus.version}</version>
+        </dependency>
+
         <!-- Keycloak -->
         <dependency>
             <groupId>org.keycloak</groupId>
