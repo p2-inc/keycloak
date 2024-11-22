@@ -18,7 +18,6 @@ services:
     image: quay.io/phasetwo/keycloak-crdb:26.0.5
     environment:
       KC_DB: cockroach
-      #KC_DB_DRIVER: io.cockroachdb.jdbc.CockroachDriver
       KC_DB_URL_HOST: cockroach
       KC_DB_URL_PORT: 26257
       KC_DB_URL_DATABASE: defaultdb
