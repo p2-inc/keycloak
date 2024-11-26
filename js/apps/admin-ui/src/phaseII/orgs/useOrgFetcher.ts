@@ -4,11 +4,12 @@ import type { OrgFormSubmission } from "./modals/NewOrgModal";
 import type UserRepresentation from "@keycloak/keycloak-admin-client/lib/defs/userRepresentation";
 import type GroupRepresentation from "@keycloak/keycloak-admin-client/lib/defs/groupRepresentation";
 import type RoleRepresentation from "@keycloak/keycloak-admin-client/lib/defs/roleRepresentation";
-import { environment } from "../../environment";
 import IdentityProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { useAdminClient } from "../../admin-client";
 import { SyncMode } from "./OrgIdentityProviders";
 import { OrgConfigType } from "./modals/ManageOrgSettingsDialog";
+import { useEnvironment } from "@keycloak/keycloak-ui-shared";
+import type { Environment } from "../../environment";
 
 type MembersOf = UserRepresentation & {
   membership: GroupRepresentation[];
@@ -17,6 +18,7 @@ type MembersOf = UserRepresentation & {
 type OrgResp = Response & { error: string; data?: any[] };
 
 export default function useOrgFetcher(realm: string) {
+  const { environment } = useEnvironment<Environment>();
   const { adminClient } = useAdminClient();
   const [orgs] = useState([]);
   const [org, setOrg] = useState<OrgRepresentation | null>();
