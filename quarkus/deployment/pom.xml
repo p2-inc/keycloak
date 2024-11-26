@@ -5,7 +5,7 @@
     <parent>
         <artifactId>keycloak-quarkus-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>26.0.2</version>
+        <version>26.0.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -48,6 +48,10 @@
                 <exclusion>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-vertx-http-dev-ui-resources</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.mvnpm</groupId>
+                    <artifactId>importmap</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

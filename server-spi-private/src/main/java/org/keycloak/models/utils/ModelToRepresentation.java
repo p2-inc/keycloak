@@ -84,6 +84,7 @@ public class ModelToRepresentation {
         REALM_EXCLUDED_ATTRIBUTES.add("bruteForceProtected");
         REALM_EXCLUDED_ATTRIBUTES.add("permanentLockout");
         REALM_EXCLUDED_ATTRIBUTES.add("maxTemporaryLockouts");
+        REALM_EXCLUDED_ATTRIBUTES.add("bruteForceStrategy");
         REALM_EXCLUDED_ATTRIBUTES.add("maxFailureWaitSeconds");
         REALM_EXCLUDED_ATTRIBUTES.add("waitIncrementSeconds");
         REALM_EXCLUDED_ATTRIBUTES.add("quickLoginCheckMilliSeconds");
@@ -307,6 +308,7 @@ public class ModelToRepresentation {
         rep.setResourcePath(adminEvent.getResourcePath());
         rep.setRepresentation(adminEvent.getRepresentation());
         rep.setError(adminEvent.getError());
+        rep.setDetails(adminEvent.getDetails());
 
         return rep;
     }
@@ -372,6 +374,7 @@ public class ModelToRepresentation {
         rep.setBruteForceProtected(realm.isBruteForceProtected());
         rep.setPermanentLockout(realm.isPermanentLockout());
         rep.setMaxTemporaryLockouts(realm.getMaxTemporaryLockouts());
+        rep.setBruteForceStrategy(realm.getBruteForceStrategy());
         rep.setMaxFailureWaitSeconds(realm.getMaxFailureWaitSeconds());
         rep.setMinimumQuickLoginWaitSeconds(realm.getMinimumQuickLoginWaitSeconds());
         rep.setWaitIncrementSeconds(realm.getWaitIncrementSeconds());

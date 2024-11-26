@@ -33,7 +33,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.ext.Provider;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
@@ -58,7 +57,6 @@ import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.AdminEventBuilder;
 import org.keycloak.utils.StringUtil;
 
-@Provider
 @Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class OrganizationMemberResource {
 
@@ -67,14 +65,6 @@ public class OrganizationMemberResource {
     private final OrganizationProvider provider;
     private final OrganizationModel organization;
     private final AdminEventBuilder adminEvent;
-
-    public OrganizationMemberResource() {
-        this.session = null;
-        this.realm = null;
-        this.provider = null;
-        this.organization = null;
-        this.adminEvent = null;
-    }
 
     public OrganizationMemberResource(KeycloakSession session, OrganizationModel organization, AdminEventBuilder adminEvent) {
         this.session = session;
@@ -91,6 +81,8 @@ public class OrganizationMemberResource {
             "an existing user with the organization. If no user is found, or if it is already associated with the organization, " +
             "an error response is returned")
     public Response addMember(String id) {
+        id = id.replaceAll("^\"|\"$", ""); // fixes https://github.com/keycloak/keycloak/issues/34401
+        
         UserModel user = session.users().getUserById(realm, id);
 
         if (user == null) {
@@ -102,6 +94,8 @@ public class OrganizationMemberResource {
                 adminEvent.operation(OperationType.CREATE).resource(ResourceType.ORGANIZATION_MEMBERSHIP)
                         .representation(ModelToRepresentation.toRepresentation(organization))
                         .resourcePath(session.getContext().getUri())
+                        .detail(UserModel.USERNAME, user.getUsername())
+                        .detail(UserModel.EMAIL, user.getEmail())
                         .success();
                 return Response.created(session.getContext().getUri().getAbsolutePathBuilder().path(user.getId()).build()).build();
             }
@@ -180,6 +174,8 @@ public class OrganizationMemberResource {
             adminEvent.operation(OperationType.DELETE).resource(ResourceType.ORGANIZATION_MEMBERSHIP)
                     .representation(ModelToRepresentation.toRepresentation(organization))
                     .resourcePath(session.getContext().getUri())
+                    .detail(UserModel.USERNAME, member.getUsername())
+                    .detail(UserModel.EMAIL, member.getEmail())
                     .success();
             return Response.noContent().build();
         }

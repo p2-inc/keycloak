@@ -22,7 +22,7 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>26.0.2</version>
+        <version>26.0.6</version>
     </parent>
 
     <name>Keycloak Administration UI</name>

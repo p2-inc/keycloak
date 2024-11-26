@@ -24,7 +24,8 @@ export default defineConfig(({ mode }) => {
         },
       }
     : {
-        outDir: "target/classes/theme/phasetwo.v2/admin/resources",
+        outDir: "target/classes/theme/keycloak.v2/admin/resources",
+        external: ["src/index.ts"],
       };
   return {
     base: "",

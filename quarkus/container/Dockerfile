@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi9 AS ubi-micro-build
 
-ENV KEYCLOAK_VERSION 26.0.2
+ENV KEYCLOAK_VERSION 26.0.6
 ARG KEYCLOAK_DIST=https://github.com/keycloak/keycloak/releases/download/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.tar.gz
 
 RUN dnf install -y tar gzip
