@@ -139,7 +139,6 @@ export default function OrgIdentityProviders({
   const unassignIdentityProvider = async (idpAlias: string) => {
     try {
       const resp = await unlinkIDPtoOrg(org.id, idpAlias);
-      console.log("🚀 ~ unassignIdentityProvider ~ resp:", resp);
 
       if (resp!.error) {
         setAlerts((prevAlertInfo) => [

@@ -146,9 +146,6 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
     event: MouseEvent | ChangeEvent | BaseSyntheticEvent,
     value: string,
   ) => {
-    console.log("🚀 ~ EmailTemplate ~ value:", value);
-    console.log("🚀 ~ EmailTemplate ~ emailTemplates:", emailTemplates);
-    console.log("🚀 ~ EmailTemplate ~ event:", event);
     if (value === "Clear selection") clearSelection();
     else {
       setSelectedTemplate(`${emailTemplates[value]} (${value})`);

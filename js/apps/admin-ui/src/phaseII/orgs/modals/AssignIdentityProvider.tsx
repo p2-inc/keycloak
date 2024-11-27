@@ -25,7 +25,7 @@ import useOrgFetcher from "../useOrgFetcher";
 import { useRealm } from "../../../context/realm-context/RealmContext";
 import { OrgRepresentation } from "../routes";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { AuthenticationType } from "../../../authentication/AuthenticationSection";
+import { AuthenticationType } from "../../../authentication/constants";
 import { fetchWithError } from "../../../../../../libs/keycloak-admin-client/lib/utils/fetchWithError";
 import { addTrailingSlash } from "../../../util";
 import { useAdminClient } from "../../../admin-client";
