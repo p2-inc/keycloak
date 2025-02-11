@@ -60,6 +60,9 @@ import { UserParams, UserTab, toUser } from "./routes/User";
 import { toUsers } from "./routes/Users";
 import { isLightweightUser } from "./utils";
 
+// Phase Two User Orgs
+import { UserOrgs } from "../phaseII/user/user-details-orgs";
+
 import "./user-section.css";
 import { AdminEvents } from "../events/AdminEvents";
 
@@ -118,6 +121,9 @@ export default function EditUser() {
   );
   const sessionsTab = useRoutableTab(toTab("sessions"));
   const eventsTab = useRoutableTab(toTab("events"));
+
+  // Phase Two User Orgs Tab
+  const userOrgsTab = useRoutableTab(toTab("user-orgs"));
 
   useFetch(
     async () =>
@@ -429,6 +435,14 @@ export default function EditUser() {
                 {...sessionsTab}
               >
                 <UserSessions />
+              </Tab>
+              {/* Phase Two User Orgs Tab */}
+              <Tab
+                data-testid="phasetwo-user-organizations-tab"
+                title={<TabTitleText>{t("userOrganizations")}</TabTitleText>}
+                {...userOrgsTab}
+              >
+                <UserOrgs />
               </Tab>
               {hasAccess("view-events") &&
                 (realm?.adminEventsEnabled || realm?.eventsEnabled) && (
