@@ -6231,6 +6231,7 @@ snapshots:
       lodash-es: 4.17.21
       p-debounce: 4.0.0
       react: 18.3.1
+      react-colorful: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
       react-hook-form: 7.54.2(react@18.3.1)
       react-i18next: 15.4.0(i18next@24.2.1(typescript@5.7.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

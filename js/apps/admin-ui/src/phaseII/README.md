@@ -62,3 +62,9 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 - TextAreaControl in ui-shared
   - `rows={props.rows}` to the `TextArea` to allow passing through (allows setting rows number height)
 - In `vite.config.ts` update `outDir` to be `phasetwo.v2` instead of `keycloak.v2`
+
+## Verify
+
+Once done, make sure to test a build with the following:
+
+`mvn clean package -pl :phasetwo-admin-ui -am -DskipTests`
