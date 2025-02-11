@@ -2,6 +2,7 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.quarkus.datasource.common.runtime.DatabaseKind;
 import io.smallrye.config.ConfigSourceInterceptorContext;
+import io.smallrye.config.ConfigValue;
 
 import org.keycloak.config.DatabaseOptions;
 import org.keycloak.config.TransactionOptions;
@@ -78,6 +79,10 @@ final class DatabasePropertyMappers {
                 fromOption(DatabaseOptions.DB_POOL_MAX_SIZE)
                         .to("quarkus.datasource.jdbc.max-size")
                         .paramLabel("size")
+                        .build(),
+                fromOption(DatabaseOptions.DB_VERSION)
+                        .to("quarkus.datasource.db-version")
+                        .paramLabel("version")
                         .build()
         };
     }
@@ -88,7 +93,13 @@ final class DatabasePropertyMappers {
 
     private static String getXaOrNonXaDriver(String value, ConfigSourceInterceptorContext context) {
         Optional<String> xaEnabledConfigValue = Configuration.getOptionalKcValue(TransactionOptions.TRANSACTION_XA_ENABLED);
+        ConfigValue jtaEnabledConfiguration = context.proceed("kc.transaction-jta-enabled");
         boolean isXaEnabled = xaEnabledConfigValue.map(Boolean::parseBoolean).orElse(false);
+        boolean isJtaEnabled = jtaEnabledConfiguration == null || Boolean.parseBoolean(jtaEnabledConfiguration.getValue());
+
+        if (!isJtaEnabled) {
+            isXaEnabled = false;
+        }
 
         return Database.getDriver(value, isXaEnabled).orElse(null);
     }
