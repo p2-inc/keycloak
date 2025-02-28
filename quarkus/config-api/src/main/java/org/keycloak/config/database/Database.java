@@ -201,6 +201,14 @@ public final class Database {
                 asList("liquibase.database.core.PostgresDatabase", "org.keycloak.connections.jpa.updater.liquibase.PostgresPlusDatabase"),
                 "postgres"
         ),
+        COCKROACH(POSTGRES.databaseKind, //needs to be aligned with https://quarkus.io/guides/datasource#default-datasource
+                POSTGRES.xaDriver,
+                "io.cockroachdb.jdbc.CockroachDriver",
+                "org.hibernate.dialect.CockroachDialect",
+                "jdbc:cockroachdb://${kc.db-url-host:localhost}:${kc.db-url-port:26257}/${kc.db-url-database:keycloak}${kc.db-url-properties:}",
+                List.of("liquibase.database.core.CockroachDatabase"),
+                "cockroach"
+        ),
         MSSQL("mssql",
                 "com.microsoft.sqlserver.jdbc.SQLServerXADataSource",
                 "com.microsoft.sqlserver.jdbc.SQLServerDriver",
