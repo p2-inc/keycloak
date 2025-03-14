@@ -11,7 +11,6 @@ import { LoginStyles } from "./login/login-styles";
 import { GeneralStyles } from "./general/general-styles";
 import { EmailTemplate } from "./email/email-template";
 import { PortalStyles } from "./portal/portal-styles";
-
 import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinner";
 import { useFetch } from "@keycloak/keycloak-ui-shared";
 import { useState } from "react";
@@ -70,14 +69,14 @@ export default function StylesSection() {
             title={<TabTitleText>{t("general")}</TabTitleText>}
             {...generalTab}
           >
-            <GeneralStyles refresh={refresh} />
+            <GeneralStyles refresh={refresh} realm={realm} />
           </Tab>
           <Tab
             data-testid="login"
             title={<TabTitleText>{t("login")}</TabTitleText>}
             {...loginTab}
           >
-            <LoginStyles refresh={refresh} />
+            <LoginStyles refresh={refresh} realm={realm} />
           </Tab>
           <Tab
             data-testid="email"
@@ -91,7 +90,7 @@ export default function StylesSection() {
             title={<TabTitleText>{t("portal")}</TabTitleText>}
             {...portalTab}
           >
-            <PortalStyles refresh={refresh} />
+            <PortalStyles refresh={refresh} realm={realm} />
           </Tab>
         </RoutableTabs>
       </PageSection>

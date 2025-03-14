@@ -8,7 +8,7 @@ The [CONTRIBUTING.md](../../CONTRIBUTING.md) file contains the general informati
 
 1. If possible, use a Phase Two image for this. It contains the extensions needed for getting things to work. To get the image go to https://quay.io/repository/phasetwo/phasetwo-keycloak. If that isn't available, just use the base Keycloak image.
 1. Start the local Keycloak image in the [`/js/apps/keycloak-server`](/js/apps/keycloak-server/README.md) folder. Follow the instructions in the readme and start the local server with `pnpm start --admin-dev`.
-1. Start the local dev server at the root of the `admin-ui` repo with `pnpm dev` (run `pnpm i` first)
+1. Start the local dev server at the root of the `admin-ui` [`/js/apps/admin-ui`](/js/apps/admin-ui/) repo with `pnpm dev` (run `pnpm i` first)
 1. Open localhost:8080 to start working
 
 ## Customizations

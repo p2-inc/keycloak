@@ -9,8 +9,7 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { TextAreaControl, TextControl } from "@keycloak/keycloak-ui-shared";
 import { SaveReset } from "../components/SaveReset";
-import { useState, useEffect } from "react";
-import { useRealm } from "../../../context/realm-context/RealmContext";
+import { useEffect } from "react";
 import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { get } from "lodash-es";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
@@ -27,14 +26,14 @@ type LoginStylesType = {
 
 type LoginStylesArgs = {
   refresh: () => void;
+  realm: RealmRepresentation;
 };
 
 const HexColorPattern = /^#([0-9a-f]{3}){1,2}$/;
 
-export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
+export const LoginStyles = ({ refresh, realm }: LoginStylesArgs) => {
   const { t } = useTranslation();
   const { adminClient } = useAdminClient();
-  const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const form = useForm<LoginStylesType>({
     defaultValues: {
@@ -44,11 +43,16 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
       css: "",
     },
   });
-  const { control, reset, getValues, setValue } = form;
+  const {
+    control,
+    reset,
+    getValues,
+    setValue,
+    formState: { isDirty },
+  } = form;
 
   async function loadRealm() {
-    const realmInfo = await adminClient.realms.findOne({ realm });
-    setFullRealm(realmInfo);
+    const realmInfo = realm;
 
     setValue(
       "primaryColor",
@@ -80,8 +84,6 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
     );
   }
 
-  const [fullRealm, setFullRealm] = useState<RealmRepresentation>();
-
   useEffect(() => {
     loadRealm();
   }, []);
@@ -111,7 +113,7 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
   const generateUpdatedRealm = () => {
     const { primaryColor, secondaryColor, backgroundColor, css } = getValues();
     let updatedRealm = {
-      ...fullRealm,
+      ...realm,
     };
 
     updatedRealm = addOrRemoveItem("primaryColor", primaryColor, updatedRealm);
@@ -135,7 +137,10 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
     const updatedRealm = generateUpdatedRealm();
     // save values
     try {
-      await adminClient.realms.update({ realm }, updatedRealm);
+      await adminClient.realms.update(
+        { realm: realm.realm as string },
+        updatedRealm,
+      );
       addAlert("Attributes for realm have been updated.", AlertVariant.success);
       refresh();
     } catch (e) {
@@ -166,7 +171,9 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             <FlexItem>
               <ColorPicker
                 color={getValues("primaryColor")}
-                onChange={(color) => setValue("primaryColor", color)}
+                onChange={(color) =>
+                  setValue("primaryColor", color, { shouldDirty: true })
+                }
               />
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
@@ -194,7 +201,9 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             <FlexItem>
               <ColorPicker
                 color={getValues("secondaryColor")}
-                onChange={(color) => setValue("secondaryColor", color)}
+                onChange={(color) =>
+                  setValue("secondaryColor", color, { shouldDirty: true })
+                }
               />
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
@@ -221,7 +230,9 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             <FlexItem>
               <ColorPicker
                 color={getValues("backgroundColor")}
-                onChange={(color) => setValue("backgroundColor", color)}
+                onChange={(color) =>
+                  setValue("backgroundColor", color, { shouldDirty: true })
+                }
               />
             </FlexItem>
             <FlexItem grow={{ default: "grow" }}>
@@ -232,6 +243,7 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
                 label={t("backgroundColor")}
                 labelIcon={t("backgroundColorHelp")}
                 data-testid="backgroundColor"
+                placeholder="#000000"
                 rules={{
                   pattern: {
                     value: HexColorPattern,
@@ -252,7 +264,12 @@ export const LoginStyles = ({ refresh }: LoginStylesArgs) => {
             data-testid="css"
           />
 
-          <SaveReset name="generalStyles" save={save} reset={reset} isActive />
+          <SaveReset
+            name="generalStyles"
+            save={save}
+            reset={reset}
+            isActive={isDirty}
+          />
         </FormProvider>
       </Form>
     </PageSection>

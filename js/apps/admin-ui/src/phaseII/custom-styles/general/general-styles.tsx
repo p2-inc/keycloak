@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { TextControl } from "@keycloak/keycloak-ui-shared";
 import { SaveReset } from "../components/SaveReset";
 import { useState, ReactElement, useEffect } from "react";
-import { useRealm } from "../../../context/realm-context/RealmContext";
 import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { get, isEqual } from "lodash-es";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
@@ -29,6 +28,7 @@ type GeneralStylesType = {
 
 type GeneralStylesArgs = {
   refresh: () => void;
+  realm: RealmRepresentation;
 };
 
 const LogoContainer = ({
@@ -56,10 +56,9 @@ const ImageInstruction = ({ name }: { name: string }) => (
   <div>Enter a custom URL for the {name} to preview the image.</div>
 );
 
-export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
+export const GeneralStyles = ({ refresh, realm }: GeneralStylesArgs) => {
   const { t } = useTranslation();
   const { adminClient } = useAdminClient();
-  const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const form = useForm<GeneralStylesType>({
     defaultValues: {
@@ -80,8 +79,7 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   } = form;
 
   async function loadRealm() {
-    const realmInfo = await adminClient.realms.findOne({ realm });
-    setFullRealm(realmInfo);
+    const realmInfo = realm;
     setValue(
       "logoUrl",
       get(realmInfo?.attributes, "_providerConfig.assets.logo.url", ""),
@@ -99,7 +97,6 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   const [logoUrlError, setLogoUrlError] = useState(false);
   const [faviconUrlError, setFaviconUrlError] = useState(false);
   const [appIconUrlError, setAppIconUrlError] = useState(false);
-  const [fullRealm, setFullRealm] = useState<RealmRepresentation>();
 
   useEffect(() => {
     loadRealm();
@@ -158,9 +155,9 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
   const save = async () => {
     // update realm with new attributes
     const updatedRealm = {
-      ...fullRealm,
+      ...realm,
       attributes: {
-        ...fullRealm!.attributes,
+        ...realm!.attributes,
         "_providerConfig.assets.logo.url": logoUrl,
         "_providerConfig.assets.favicon.url": faviconUrl,
         "_providerConfig.assets.appicon.url": appIconUrl,
@@ -182,7 +179,10 @@ export const GeneralStyles = ({ refresh }: GeneralStylesArgs) => {
 
     // save values
     try {
-      await adminClient.realms.update({ realm }, updatedRealm);
+      await adminClient.realms.update(
+        { realm: realm.realm as string },
+        updatedRealm,
+      );
       addAlert("Attributes for realm have been updated.", AlertVariant.success);
       refresh();
     } catch (e) {

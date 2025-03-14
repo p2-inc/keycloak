@@ -12,6 +12,13 @@ const Extensions = () => {
 
   const showOrgs = hasSomeAccess("view-organizations", "manage-organizations");
 
+  return (
+    <NavGroup aria-label={t("extensions")} title={t("extensions")}>
+      {showOrgs && <LeftNav title={t("orgList")} path="/ext-organizations" />}
+      <LeftNav title={t("styles")} path="/ext-styles" />
+    </NavGroup>
+  );
+
   return !isOnAddRealm ? (
     <NavGroup aria-label={t("extensions")} title={t("extensions")}>
       {showOrgs && <LeftNav title={t("orgList")} path="/ext-organizations" />}

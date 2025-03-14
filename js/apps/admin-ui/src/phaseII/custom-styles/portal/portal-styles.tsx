@@ -9,8 +9,7 @@ import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { HelpItem, TextAreaControl } from "@keycloak/keycloak-ui-shared";
 import { SaveReset } from "../components/SaveReset";
-import { useState, useEffect } from "react";
-import { useRealm } from "../../../context/realm-context/RealmContext";
+import { useEffect } from "react";
 import RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { get, mapKeys, pick } from "lodash-es";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
@@ -66,6 +65,7 @@ type PortalStylesKeys = keyof PortalStylesType;
 
 type PortalStylesArgs = {
   refresh: () => void;
+  realm: RealmRepresentation;
 };
 
 const visiblityProfileItems: PortalStylesKeys[] = [
@@ -89,10 +89,9 @@ const visibilityItems = [
   ...visiblityOrganizationItems,
 ];
 
-export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
+export const PortalStyles = ({ refresh, realm }: PortalStylesArgs) => {
   const { t } = useTranslation();
   const { adminClient } = useAdminClient();
-  const { realm } = useRealm();
   const { addAlert, addError } = useAlerts();
   const form = useForm<PortalStylesType>({
     defaultValues: {
@@ -126,12 +125,11 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
     reset,
     getValues,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = form;
 
   async function loadRealm() {
-    const realmInfo = await adminClient.realms.findOne({ realm });
-    setFullRealm(realmInfo);
+    const realmInfo = realm;
 
     colorKeys.map((k) => {
       setValue(
@@ -153,8 +151,6 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
       setValue(pi, val);
     });
   }
-
-  const [fullRealm, setFullRealm] = useState<RealmRepresentation>();
 
   useEffect(() => {
     loadRealm();
@@ -205,7 +201,7 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
     const { css, ...portalValues } = getValues();
 
     let updatedRealm = {
-      ...fullRealm,
+      ...realm,
     };
 
     // @ts-ignore
@@ -230,7 +226,10 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
 
     // save values
     try {
-      await adminClient.realms.update({ realm }, updatedRealm);
+      await adminClient.realms.update(
+        { realm: realm.realm as string },
+        updatedRealm,
+      );
       addAlert("Attributes for realm have been updated.", AlertVariant.success);
       refresh();
     } catch (e) {
@@ -360,7 +359,12 @@ export const PortalStyles = ({ refresh }: PortalStylesArgs) => {
             />
           ))}
 
-          <SaveReset name="generalStyles" save={save} reset={reset} isActive />
+          <SaveReset
+            name="generalStyles"
+            save={save}
+            reset={reset}
+            isActive={isDirty}
+          />
         </FormProvider>
       </Form>
     </PageSection>
