@@ -8,9 +8,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
 
-import useOrgFetcher from "../useOrgFetcher";
+import useOrgFetcher, {
+  PhaseTwoOrganizationUserRepresentation,
+} from "../useOrgFetcher";
 import { useRealm } from "../../../context/realm-context/RealmContext";
-import type UserRepresentation from "@keycloak/keycloak-admin-client/lib/defs/userRepresentation";
 import type RoleRepresentation from "@keycloak/keycloak-admin-client/lib/defs/roleRepresentation";
 import { differenceBy } from "lodash-es";
 import {
@@ -27,7 +28,7 @@ type AssignRoleToMemberProps = {
   orgId: string;
   handleModalToggle: () => void;
   refresh: () => void;
-  user: UserRepresentation;
+  user: PhaseTwoOrganizationUserRepresentation;
   orgRoles: RoleRepresentation[];
 };
 
@@ -160,7 +161,7 @@ export const AssignRoleToMemberModal = ({
 
   return (
     <Modal
-      variant={ModalVariant.medium}
+      variant={ModalVariant.large}
       title={`${t("assignRoleAction")} to ${user.username || "user"}`}
       isOpen={true}
       onClose={closeModal}

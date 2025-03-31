@@ -6,25 +6,26 @@ import { ListEmptyState } from "@keycloak/keycloak-ui-shared";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { AddMember } from "./AddMember";
 import type { OrgRepresentation } from "./routes";
-import useOrgFetcher from "./useOrgFetcher";
+import useOrgFetcher, {
+  PhaseTwoOrganizationUserRepresentation,
+} from "./useOrgFetcher";
 import { Button, ToolbarItem } from "@patternfly/react-core";
 import type UserRepresentation from "@keycloak/keycloak-admin-client/lib/defs/userRepresentation";
 import { Link } from "react-router-dom";
 import { toUser } from "../../user/routes/User";
-import type GroupRepresentation from "@keycloak/keycloak-admin-client/lib/defs/groupRepresentation";
 import { AssignRoleToMemberModal } from "./modals/AssignRoleToMemberInOrgModal";
 import type RoleRepresentation from "@keycloak/keycloak-admin-client/lib/defs/roleRepresentation";
+import { ViewOrganizationUserAttributes } from "./modals/ViewUserOrganizationAttributes";
 
 type OrgMembersTypeProps = {
   org: OrgRepresentation;
   refresh: () => void;
 };
 
-type MembersOf = UserRepresentation & {
-  membership: GroupRepresentation[];
-};
-
-const UserDetailLink = (user: MembersOf, realm: string) => (
+const UserDetailLink = (
+  user: PhaseTwoOrganizationUserRepresentation,
+  realm: string,
+) => (
   <Link key={user.id} to={toUser({ realm, id: user.id!, tab: "settings" })}>
     {user.username}
   </Link>
@@ -46,6 +47,8 @@ export default function OrgMembers({
   const [assignRoleModalOpen, setAssignRoleModalOpen] = useState<
     UserRepresentation | boolean
   >(false);
+  const [viewUserOrganizationAttributes, setViewUserOrganizationAttributes] =
+    useState<UserRepresentation | boolean>(false);
 
   const [orgRoles, setOrgRoles] = useState<RoleRepresentation[]>([]);
 
@@ -62,7 +65,7 @@ export default function OrgMembers({
     first: number,
     max: number,
     search: string,
-  ): Promise<MembersOf[]> =>
+  ): Promise<PhaseTwoOrganizationUserRepresentation[]> =>
     await getOrgMembers(org.id, { first, max, search });
 
   const [addMembersVisibility, setAddMembersVisibility] = useState(false);
@@ -81,10 +84,17 @@ export default function OrgMembers({
       {assignRoleModalOpen && (
         <AssignRoleToMemberModal
           orgId={org.id}
-          user={assignRoleModalOpen as UserRepresentation}
+          user={assignRoleModalOpen as PhaseTwoOrganizationUserRepresentation}
           handleModalToggle={() => setAssignRoleModalOpen(false)}
           refresh={refresh}
           orgRoles={orgRoles}
+        />
+      )}
+      {viewUserOrganizationAttributes && (
+        <ViewOrganizationUserAttributes
+          user={assignRoleModalOpen as PhaseTwoOrganizationUserRepresentation}
+          handleModalToggle={() => setAssignRoleModalOpen(false)}
+          refresh={refresh}
         />
       )}
       <KeycloakDataTable
@@ -109,7 +119,7 @@ export default function OrgMembers({
         }
         actions={[
           {
-            title: "Assign Role",
+            title: t("assignRole"),
             onRowClick: async (user: UserRepresentation): Promise<boolean> => {
               setAssignRoleModalOpen(user);
               // open a modal
@@ -119,7 +129,16 @@ export default function OrgMembers({
             },
           } as Action<any>,
           {
-            title: "Remove from Org",
+            title: t("viewAttributes"),
+            onRowClick: async (user: UserRepresentation): Promise<boolean> => {
+              setViewUserOrganizationAttributes(user);
+              // open a modal
+              // only able to view current attributes from passed in user
+              return Promise.resolve(true);
+            },
+          } as Action<any>,
+          {
+            title: t("removeMember"),
             onRowClick: async (user: UserRepresentation): Promise<boolean> => {
               await removeMemberFromOrg(org.id, user.id!);
               refresh();
@@ -131,7 +150,8 @@ export default function OrgMembers({
           {
             name: "username",
             displayKey: "Name",
-            cellRenderer: (user: MembersOf) => UserDetailLink(user, realm),
+            cellRenderer: (user: PhaseTwoOrganizationUserRepresentation) =>
+              UserDetailLink(user, realm),
           },
           {
             name: "email",

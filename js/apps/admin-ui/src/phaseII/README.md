@@ -7,7 +7,13 @@ Starting and running the Admin UI without anything else is somewhat of a pain. U
 The [CONTRIBUTING.md](../../CONTRIBUTING.md) file contains the general information for doing a local development admin ui server.
 
 1. If possible, use a Phase Two image for this. It contains the extensions needed for getting things to work. To get the image go to https://quay.io/repository/phasetwo/phasetwo-keycloak. If that isn't available, just use the base Keycloak image.
-1. Start the local Keycloak image in the [`/js/apps/keycloak-server`](/js/apps/keycloak-server/README.md) folder. Follow the instructions in the readme and start the local server with `pnpm start --admin-dev`.
+
+   KC_ADMIN_VITE_URL=http://localhost:5174 docker run --name phasetwo_test --rm -p 8080:8080 \
+   -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin -e KC_HTTP_RELATIVE_PATH=/auth \
+   quay.io/phasetwo/phasetwo-keycloak:26.1.4 \
+   start-dev --spi-email-template-provider=freemarker-plus-mustache --spi-email-template-freemarker-plus-mustache-enabled=true --spi-theme-cache-themes=false
+
+1. Or start the local Keycloak image in the [`/js/apps/keycloak-server`](/js/apps/keycloak-server/README.md) folder. Follow the instructions in the readme and start the local server with `pnpm start --admin-dev`. Then disable items in the PageNav to see things
 1. Start the local dev server at the root of the `admin-ui` [`/js/apps/admin-ui`](/js/apps/admin-ui/) repo with `pnpm dev` (run `pnpm i` first)
 1. Open localhost:8080 to start working
 

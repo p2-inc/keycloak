@@ -11,7 +11,8 @@ import { OrgConfigType } from "./modals/ManageOrgSettingsDialog";
 import { useEnvironment } from "@keycloak/keycloak-ui-shared";
 import type { Environment } from "../../environment";
 
-type MembersOf = UserRepresentation & {
+export type PhaseTwoOrganizationUserRepresentation = UserRepresentation & {
+  organizationAttributes: Record<string, any>;
   membership: GroupRepresentation[];
 };
 
@@ -176,7 +177,7 @@ export default function useOrgFetcher(realm: string) {
       first: 1,
       max: 100,
     },
-  ): Promise<MembersOf[]> {
+  ): Promise<PhaseTwoOrganizationUserRepresentation[]> {
     let query = `first=${first}&max=${max}`;
     query = search ? `${query}&search=${search}` : query;
     const resp = await fetchGet(`${baseUrl}/orgs/${orgId}/members?${query}`);
