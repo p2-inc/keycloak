@@ -92,8 +92,10 @@ export default function OrgMembers({
       )}
       {viewUserOrganizationAttributes && (
         <ViewOrganizationUserAttributes
-          user={assignRoleModalOpen as PhaseTwoOrganizationUserRepresentation}
-          handleModalToggle={() => setAssignRoleModalOpen(false)}
+          user={
+            viewUserOrganizationAttributes as PhaseTwoOrganizationUserRepresentation
+          }
+          handleModalToggle={() => setViewUserOrganizationAttributes(false)}
           refresh={refresh}
         />
       )}
