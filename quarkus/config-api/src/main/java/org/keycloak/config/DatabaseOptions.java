@@ -82,4 +82,9 @@ public class DatabaseOptions {
             .defaultValue(100)
             .description("The maximum size of the connection pool.")
             .build();
+
+    public static final Option<String> DB_VERSION = new OptionBuilder<>("db-version", String.class)
+            .category(OptionCategory.DATABASE)
+            .description("The database version.")
+            .build();
 }
