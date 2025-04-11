@@ -151,10 +151,9 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-keycloak-admin-client-reactive</artifactId>
-            <version>3.15.4</version>
+            <artifactId>quarkus-keycloak-admin-rest-client</artifactId>
+            <version>${quarkus.version}</version>
         </dependency>
-
         <!-- Keycloak -->
         <dependency>
             <groupId>org.keycloak</groupId>
