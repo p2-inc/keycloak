@@ -15,7 +15,7 @@ services:
     ports:
       - 26257:26257
   keycloak:
-    image: quay.io/phasetwo/keycloak-crdb:26.1.5
+    image: quay.io/phasetwo/keycloak-crdb:26.2.0
     environment:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
