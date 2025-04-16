@@ -25,12 +25,14 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.keycloak.models.OrganizationDomainModel.ANY_DOMAIN;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ import org.junit.Test;
 import org.keycloak.admin.client.resource.OrganizationMemberResource;
 import org.keycloak.admin.client.resource.OrganizationResource;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.models.OrganizationModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -473,12 +476,19 @@ public class OrganizationMemberTest extends AbstractOrganizationTest {
         // assign IdP to the org
         idpRep.getConfig().put(OrganizationModel.ORGANIZATION_DOMAIN_ATTRIBUTE, orgDomain);
         idpRep.getConfig().put(OrganizationModel.IdentityProviderRedirectMode.EMAIL_MATCH.getKey(), Boolean.TRUE.toString());
+        testRealm().identityProviders().get(idpRep.getAlias()).update(idpRep);
 
         try (Response response = testRealm().organizations().get(id).identityProviders().addIdentityProvider(idpAlias)) {
             assertThat(response.getStatus(), equalTo(Status.NO_CONTENT.getStatusCode()));
         }
 
         //check the federated user is not a member
+        assertThat(testRealm().organizations().get(id).members().list(-1, -1), hasSize(0));
+
+        // test again this time assigning any org domain to the identity provider
+
+        idpRep.getConfig().put(OrganizationModel.ORGANIZATION_DOMAIN_ATTRIBUTE, ANY_DOMAIN);
+        testRealm().identityProviders().get(idpRep.getAlias()).update(idpRep);
         assertThat(testRealm().organizations().get(id).members().list(-1, -1), hasSize(0));
     }
 
@@ -544,6 +554,33 @@ public class OrganizationMemberTest extends AbstractOrganizationTest {
         }
 
         assertEquals(10, (long) organization.members().count());
+    }
+
+    @Test
+    public void testNonMemberCanUnsetEmailThatMatchesOrg() {
+        // create a test org with a domain "neworg.org"
+        OrganizationRepresentation orgRep = createOrganization();
+        assertThat(orgRep.getDomains(), hasSize(1));
+        assertThat(orgRep.getDomains().iterator().next().getName(), equalTo("neworg.org"));
+
+        // create a user whose e-mail matches the org
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername("brucewayne");
+        user.setFirstName("Bruce");
+        user.setLastName("Wayne");
+        user.setEmail("bwayne@neworg.org");
+
+        try (Response response = testRealm().users().create(user)) {
+            user.setId(ApiUtil.getCreatedId(response));
+        }
+        getCleanup().addCleanup(() -> testRealm().users().get(user.getId()).remove());
+
+        // now update the user, unsetting the e-mail
+        user.setEmail("");
+        testRealm().users().get(user.getId()).update(user);
+
+        UserRepresentation updatedUser = testRealm().users().get(user.getId()).toRepresentation();
+        assertThat(updatedUser.getEmail(), is(nullValue()));
     }
 
     private void loginViaNonOrgIdP(String idpAlias) {

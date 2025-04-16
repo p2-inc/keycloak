@@ -4,14 +4,14 @@
 <#import "/templates/links.adoc" as links>
 <#import "/templates/profile.adoc" as profile>
 
-<@tmpl.guide title="Enabling Tracing"
-summary="Learn how to enable distributed tracing in {project_name}"
+<@tmpl.guide title="Root cause analysis with tracing"
+summary="Record information during the request lifecycle with OpenTelementry tracing to identify root cases for latencies and errors in {project_name} and connected systems."
 includedOptions="tracing-* log-*-include-trace">
 
 This {section} explains how you can enable and configure distributed tracing in {project_name} by utilizing https://opentelemetry.io/[OpenTelemetry] (OTel).
 Tracing allows for detailed monitoring of each request's lifecycle, which helps quickly identify and diagnose issues, leading to more efficient debugging and maintenance.
 
-It also provides valuable insights into performance bottlenecks and can help optimize the system's overall efficiency.
+It provides valuable insights into performance bottlenecks and can help optimize the system's overall efficiency and across system boundaries.
 {project_name} uses a supported https://quarkus.io/guides/opentelemetry-tracing[Quarkus OTel extension] that provides smooth integration and exposure of application traces.
 
 == Enable tracing
@@ -135,15 +135,18 @@ WARNING: For a production-ready environment, sampling should be properly set to 
 
 The used sampler can be changed via the `tracing-sampler-type` property.
 
+[[sampling]]
 === Default sampler
 The default sampler for {project_name} is `traceidratio`, which controls the rate of trace sampling based on a specified ratio configurable via the `tracing-sampler-ratio` property.
 
 ==== Trace ratio
 The default trace ratio is `1.0`, which means all traces are sampled - sent to the collector.
-The ratio is a floating number in the range `(0,1]`.
+The ratio is a floating number in the range `[0,1]`.
 For instance, when the ratio is `0.1`, only 10% of the traces are sampled.
 
 WARNING: For a production-ready environment, the trace ratio should be a smaller number to prevent the massive cost of trace store infrastructure and avoid performance overhead.
+
+TIP: The ratio can be set to `0.0` to disable sampling entirely _at runtime_.
 
 ==== Rationale
 

@@ -21,7 +21,6 @@ package org.keycloak.authentication.authenticators.x509;
 import static org.keycloak.authentication.authenticators.x509.AbstractX509ClientCertificateAuthenticator.CERTIFICATE_POLICY_MODE_ANY;
 
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -74,6 +73,7 @@ import org.keycloak.common.crypto.CryptoIntegration;
 import org.keycloak.common.util.PemUtils;
 import org.keycloak.common.util.Time;
 import org.keycloak.connections.httpclient.HttpClientProvider;
+import org.keycloak.crl.CrlStorageProvider;
 import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.truststore.TruststoreProvider;
@@ -114,8 +114,13 @@ public class CertificateValidator {
             this.name = name.trim();
         }
 
-        public int getInt() { return this.value; }
-        public String getName() {  return this.name; }
+        public int getInt() {
+            return this.value;
+        }
+
+        public String getName() {
+            return this.name;
+        }
 
         static public KeyUsageBits parse(String name) throws IllegalArgumentException, IndexOutOfBoundsException {
             if (name == null || name.trim().length() == 0)
@@ -158,16 +163,19 @@ public class CertificateValidator {
         /**
          * Requests certificate revocation status using OCSP. The OCSP responder URI
          * is obtained from the certificate's AIA extension.
-         * @param cert the certificate to be checked
+         * 
+         * @param cert              the certificate to be checked
          * @param issuerCertificate The issuer certificate
          * @return revocation status
          */
-        public abstract OCSPProvider.OCSPRevocationStatus check(X509Certificate cert, X509Certificate issuerCertificate) throws CertPathValidatorException;
+        public abstract OCSPProvider.OCSPRevocationStatus check(X509Certificate cert, X509Certificate issuerCertificate)
+                throws CertPathValidatorException;
     }
 
     public abstract static class CRLLoaderImpl {
         /**
          * Returns a collection of {@link X509CRL}
+         * 
          * @return
          * @throws GeneralSecurityException
          */
@@ -187,7 +195,8 @@ public class CertificateValidator {
         }
 
         @Override
-        public OCSPProvider.OCSPRevocationStatus check(X509Certificate cert, X509Certificate issuerCertificate) throws CertPathValidatorException {
+        public OCSPProvider.OCSPRevocationStatus check(X509Certificate cert, X509Certificate issuerCertificate)
+                throws CertPathValidatorException {
 
             OCSPProvider.OCSPRevocationStatus ocspRevocationStatus = null;
             if (responderUri == null || responderUri.trim().length() == 0) {
@@ -202,21 +211,23 @@ public class CertificateValidator {
                 // 3) Certificate is valid at the time
                 OCSPProvider ocspProvider = CryptoIntegration.getProvider().getOCSPProver(OCSPProvider.class);
                 ocspRevocationStatus = ocspProvider.check(session, cert, issuerCertificate);
-            }
-            else {
+            } else {
                 URI uri;
                 try {
                     uri = new URI(responderUri);
                 } catch (URISyntaxException e) {
-                    String message = String.format("Unable to check certificate revocation status using OCSP.\n%s", e.getMessage());
+                    String message = String.format("Unable to check certificate revocation status using OCSP.\n%s",
+                            e.getMessage());
                     throw new CertPathValidatorException(message, e);
                 }
-                logger.tracef("Responder URI \"%s\" will be used to verify revocation status of the certificate using OCSP with responderCert=%s",
+                logger.tracef(
+                        "Responder URI \"%s\" will be used to verify revocation status of the certificate using OCSP with responderCert=%s",
                         uri.toString(), responderCert);
                 // Obtains the revocation status of a certificate using OCSP.
                 // OCSP responder's certificate is assumed to be the issuer's certificate
                 // certificate.
-                // responderUri overrides the contents (if any) of the certificate's AIA extension
+                // responderUri overrides the contents (if any) of the certificate's AIA
+                // extension
                 OCSPProvider ocspProvider = CryptoIntegration.getProvider().getOCSPProver(OCSPProvider.class);
                 ocspRevocationStatus = ocspProvider.check(session, cert, issuerCertificate, uri, responderCert, null);
             }
@@ -226,9 +237,11 @@ public class CertificateValidator {
 
     public static class CRLLoaderProxy extends CRLLoaderImpl {
         private final X509CRL _crl;
+
         public CRLLoaderProxy(X509CRL crl) {
             _crl = crl;
         }
+
         public Collection<X509CRL> getX509CRLs() throws GeneralSecurityException {
             return Collections.singleton(_crl);
         }
@@ -245,7 +258,6 @@ public class CertificateValidator {
                     .map(cRLPath -> new CRLFileLoader(session, cRLPath, abortIfNonUpdated))
                     .collect(Collectors.toList());
         }
-
 
         @Override
         public Collection<X509CRL> getX509CRLs() throws GeneralSecurityException {
@@ -268,7 +280,8 @@ public class CertificateValidator {
             this(session, cRLPath, abortIfNonUpdated, new LdapContext());
         }
 
-        public CRLFileLoader(KeycloakSession session, String cRLPath, boolean abortIfNonUpdated, LdapContext ldapContext) {
+        public CRLFileLoader(KeycloakSession session, String cRLPath, boolean abortIfNonUpdated,
+                LdapContext ldapContext) {
             this.session = session;
             this.cRLPath = cRLPath;
             this.abortIfNonUpdated = abortIfNonUpdated;
@@ -279,13 +292,20 @@ public class CertificateValidator {
         }
 
         public Collection<X509CRL> getX509CRLs() throws GeneralSecurityException {
-            X509CRL crl = loadCRL();
+            if (cRLPath == null) {
+                throw new GeneralSecurityException("Unable to load CRL because no crl path is defined");
+            }
+
+            CrlStorageProvider crlCache = session.getProvider(CrlStorageProvider.class);
+            final X509CRL crl = crlCache.get(cRLPath, this::loadCRL);
+
             if (crl == null) {
                 throw new GeneralSecurityException(String.format("Unable to load CRL from \"%s\"", cRLPath));
             }
 
             if (crl.getNextUpdate() != null && crl.getNextUpdate().compareTo(new Date(Time.currentTimeMillis())) < 0) {
-                final String message = String.format("CRL from '%s' is not refreshed. Next update is %s.", cRLPath, crl.getNextUpdate());
+                final String message = String.format("CRL from '%s' is not refreshed. Next update is %s.", cRLPath,
+                        crl.getNextUpdate());
                 logger.warn(message);
                 if (abortIfNonUpdated) {
                     throw new GeneralSecurityException(message);
@@ -298,25 +318,23 @@ public class CertificateValidator {
         private X509CRL loadCRL() throws GeneralSecurityException {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             X509CRL crl = null;
-            if (cRLPath != null) {
-                if (cRLPath.startsWith("http") || cRLPath.startsWith("https")) {
-                    // load CRL using remote URI
-                    try {
-                        crl = loadFromURI(cf, new URI(cRLPath));
-                    } catch (URISyntaxException e) {
-                        logger.error(e.getMessage());
-                    }
-                } else if (cRLPath.startsWith("ldap")) {
-                    // load CRL from LDAP
-                    try {
-                        crl = loadCRLFromLDAP(cf, new URI(cRLPath));
-                    } catch(URISyntaxException e) {
-                        logger.error(e.getMessage());
-                    }
-                } else {
-                    // load CRL from file
-                    crl = loadCRLFromFile(cf, cRLPath);
+            if (cRLPath.startsWith("http") || cRLPath.startsWith("https")) {
+                // load CRL using remote URI
+                try {
+                    crl = loadFromURI(cf, new URI(cRLPath));
+                } catch (URISyntaxException e) {
+                    logger.error(e.getMessage());
                 }
+            } else if (cRLPath.startsWith("ldap")) {
+                // load CRL from LDAP
+                try {
+                    crl = loadCRLFromLDAP(cf, new URI(cRLPath));
+                } catch (URISyntaxException e) {
+                    logger.error(e.getMessage());
+                }
+            } else {
+                // load CRL from file
+                crl = loadCRLFromFile(cf, cRLPath);
             }
             return crl;
         }
@@ -330,16 +348,13 @@ public class CertificateValidator {
                 get.setHeader("Pragma", "no-cache");
                 get.setHeader("Cache-Control", "no-cache, no-store");
                 try (CloseableHttpResponse response = httpClient.execute(get)) {
-                    try {
-                        InputStream content = response.getEntity().getContent();
-                        X509CRL crl = loadFromStream(cf, content);
-                        return crl;
+                    try (InputStream content = response.getEntity().getContent()) {
+                        return loadFromStream(cf, content);
                     } finally {
                         EntityUtils.consumeQuietly(response.getEntity());
                     }
                 }
-            }
-            catch(IOException ex) {
+            } catch (IOException ex) {
                 logger.errorf(ex.getMessage());
             }
             return null;
@@ -356,18 +371,20 @@ public class CertificateValidator {
                 try {
                     Attributes attrs = ctx.getAttributes("");
                     Attribute cRLAttribute = attrs.get("certificateRevocationList;binary");
-                    byte[] data = (byte[])cRLAttribute.get();
+                    byte[] data = (byte[]) cRLAttribute.get();
                     if (data == null || data.length == 0) {
-                        throw new CertificateException(String.format("Failed to download CRL from \"%s\"", remoteURI.toString()));
+                        throw new CertificateException(
+                                String.format("Failed to download CRL from \"%s\"", remoteURI.toString()));
                     }
-                    X509CRL crl = loadFromStream(cf, new ByteArrayInputStream(data));
-                    return crl;
+                    try (InputStream is = new ByteArrayInputStream(data)) {
+                        return loadFromStream(cf, is);
+                    }
                 } finally {
                     ctx.close();
                 }
             } catch (NamingException e) {
                 logger.error(e.getMessage());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 logger.error(e.getMessage());
             }
 
@@ -386,22 +403,18 @@ public class CertificateValidator {
                             throw new IOException(String.format("Unable to read CRL from \"%s\"", f.getAbsolutePath()));
                         }
                         try (FileInputStream is = new FileInputStream(f.getAbsolutePath())) {
-                            X509CRL crl = loadFromStream(cf, is);
-                            return crl;
+                            return loadFromStream(cf, is);
                         }
                     }
                 }
-            }
-            catch(IOException ex) {
+            } catch (IOException ex) {
                 logger.errorf(ex.getMessage());
             }
             return null;
         }
+
         private X509CRL loadFromStream(CertificateFactory cf, InputStream is) throws IOException, CRLException {
-            DataInputStream dis = new DataInputStream(is);
-            X509CRL crl = (X509CRL)cf.generateCRL(dis);
-            dis.close();
-            return crl;
+            return (X509CRL) cf.generateCRL(is);
         }
     }
 
@@ -424,19 +437,20 @@ public class CertificateValidator {
     public CertificateValidator() {
 
     }
+
     protected CertificateValidator(X509Certificate[] certChain,
-                         int keyUsageBits, List<String> extendedKeyUsage,
-                                   List<String> certificatePolicy, String certificatePolicyMode,
-                                   boolean cRLCheckingEnabled,
-                                   boolean cRLAbortIfNonUpdated,
-                                   boolean cRLDPCheckingEnabled,
-                                   CRLLoaderImpl crlLoader,
-                                   boolean oCSPCheckingEnabled,
-                                   boolean ocspFailOpen,
-                                   OCSPChecker ocspChecker,
-                                   KeycloakSession session,
-                                   boolean timestampValidationEnabled,
-                                   boolean trustValidationEnabled) {
+            int keyUsageBits, List<String> extendedKeyUsage,
+            List<String> certificatePolicy, String certificatePolicyMode,
+            boolean cRLCheckingEnabled,
+            boolean cRLAbortIfNonUpdated,
+            boolean cRLDPCheckingEnabled,
+            CRLLoaderImpl crlLoader,
+            boolean oCSPCheckingEnabled,
+            boolean ocspFailOpen,
+            OCSPChecker ocspChecker,
+            KeycloakSession session,
+            boolean timestampValidationEnabled,
+            boolean trustValidationEnabled) {
         _certChain = certChain;
         _keyUsageBits = keyUsageBits;
         _extendedKeyUsage = extendedKeyUsage;
@@ -479,8 +493,10 @@ public class CertificateValidator {
         for (int i = 0; i < keyUsageBits.length; i++, n >>= 1) {
             boolean value = keyUsageBits[i];
             if ((n & 1) == 1 && !value) {
-                String message = String.format("Key Usage bit \'%s\' is not set.", CertificateValidator.KeyUsageBits.fromValue(i).getName());
-                if (sb.length() > 0) sb.append("\n");
+                String message = String.format("Key Usage bit \'%s\' is not set.",
+                        CertificateValidator.KeyUsageBits.fromValue(i).getName());
+                if (sb.length() > 0)
+                    sb.append("\n");
                 sb.append(message);
 
                 logger.warn(message);
@@ -493,7 +509,8 @@ public class CertificateValidator {
         }
     }
 
-    private static void validateExtendedKeyUsage(X509Certificate[] certs, List<String> expectedEKU) throws GeneralSecurityException {
+    private static void validateExtendedKeyUsage(X509Certificate[] certs, List<String> expectedEKU)
+            throws GeneralSecurityException {
         if (expectedEKU == null || expectedEKU.size() == 0) {
             logger.debug("Extended Key Usage validation is not enabled.");
             return;
@@ -524,31 +541,32 @@ public class CertificateValidator {
         }
     }
 
-
-    private static void validatePolicy(X509Certificate[] certs, List<String> expectedPolicies, String policyCheckMode) throws GeneralSecurityException {
+    private static void validatePolicy(X509Certificate[] certs, List<String> expectedPolicies, String policyCheckMode)
+            throws GeneralSecurityException {
         if (expectedPolicies == null || expectedPolicies.isEmpty()) {
             logger.debug("Certificate Policy validation is not enabled.");
             return;
         }
 
-        List<String> policyList = CryptoIntegration.getProvider().getCertificateUtils().getCertificatePolicyList(certs[0]);
+        List<String> policyList = CryptoIntegration.getProvider().getCertificateUtils()
+                .getCertificatePolicyList(certs[0]);
 
         logger.debugf("Certificate policies found: %s", String.join(",", policyList));
 
-        if (CERTIFICATE_POLICY_MODE_ANY.equals(policyCheckMode))
-        {
+        if (CERTIFICATE_POLICY_MODE_ANY.equals(policyCheckMode)) {
             boolean hasMatch = expectedPolicies.stream().anyMatch(p -> policyList.contains(p.toLowerCase()));
             if (!hasMatch) {
-                String message = String.format("Certificate Policy check failed: mode = ANY, found = \'%s\', expected = \'%s\'.",
-                    String.join(",", policyList), String.join(",", expectedPolicies));
+                String message = String.format(
+                        "Certificate Policy check failed: mode = ANY, found = \'%s\', expected = \'%s\'.",
+                        String.join(",", policyList), String.join(",", expectedPolicies));
                 throw new GeneralSecurityException(message);
             }
-        }
-        else
-        {
+        } else {
             for (String policy : expectedPolicies) {
                 if (!policyList.contains(policy.toLowerCase())) {
-                    String message = String.format("Certificate Policy check failed: mode = ALL, certificate policy \'%s\' is missing.", policy);
+                    String message = String.format(
+                            "Certificate Policy check failed: mode = ALL, certificate policy \'%s\' is missing.",
+                            policy);
                     throw new GeneralSecurityException(message);
                 }
             }
@@ -574,22 +592,20 @@ public class CertificateValidator {
         if (!_timestampValidationEnabled)
             return this;
 
-        for (int i = 0; i < _certChain.length; i++)
-        {
+        for (int i = 0; i < _certChain.length; i++) {
             X509Certificate x509Certificate = _certChain[i];
             if (x509Certificate.getNotBefore().getTime() > Time.currentTimeMillis()) {
                 String serialNumber = x509Certificate.getSerialNumber().toString(16).replaceAll("..(?!$)",
-                  "$0 ");
-                String message =
-                  "certificate with serialnumber '" + serialNumber
-                    + "' is not valid yet: " + x509Certificate.getNotBefore().toString();
+                        "$0 ");
+                String message = "certificate with serialnumber '" + serialNumber
+                        + "' is not valid yet: " + x509Certificate.getNotBefore().toString();
                 throw new GeneralSecurityException(message);
             }
             if (x509Certificate.getNotAfter().getTime() < Time.currentTimeMillis()) {
                 String serialNumber = x509Certificate.getSerialNumber().toString(16).replaceAll("..(?!$)",
-                  "$0 ");
+                        "$0 ");
                 String message = "certificate with serialnumber '" + serialNumber
-                                   + "' has expired on: " + x509Certificate.getNotAfter().toString();
+                        + "' has expired on: " + x509Certificate.getNotAfter().toString();
                 throw new GeneralSecurityException(message);
             }
         }
@@ -603,14 +619,16 @@ public class CertificateValidator {
 
         TruststoreProvider truststoreProvider = session.getProvider(TruststoreProvider.class);
         if (truststoreProvider == null || truststoreProvider.getTruststore() == null) {
-            throw new GeneralSecurityException("Cannot validate client certificate trust: Truststore not available. Please make sure to correctly configure truststore provider in order to be able to revalidate certificate trust");
-        }
-        else
-        {
-            Set<X509Certificate> trustedRootCerts = truststoreProvider.getRootCertificates().entrySet().stream().flatMap(t -> t.getValue().stream()).collect(Collectors.toSet());
-            Set<X509Certificate> trustedIntermediateCerts = truststoreProvider.getIntermediateCertificates().entrySet().stream().flatMap(t -> t.getValue().stream()).collect(Collectors.toSet());
+            throw new GeneralSecurityException(
+                    "Cannot validate client certificate trust: Truststore not available. Please make sure to correctly configure truststore provider in order to be able to revalidate certificate trust");
+        } else {
+            Set<X509Certificate> trustedRootCerts = truststoreProvider.getRootCertificates().entrySet().stream()
+                    .flatMap(t -> t.getValue().stream()).collect(Collectors.toSet());
+            Set<X509Certificate> trustedIntermediateCerts = truststoreProvider.getIntermediateCertificates().entrySet()
+                    .stream().flatMap(t -> t.getValue().stream()).collect(Collectors.toSet());
 
-            logger.debugf("Found %d trusted root certs, %d trusted intermediate certs", trustedRootCerts.size(), trustedIntermediateCerts.size());
+            logger.debugf("Found %d trusted root certs, %d trusted intermediate certs", trustedRootCerts.size(),
+                    trustedIntermediateCerts.size());
 
             verifyCertificateTrust(_certChain, trustedRootCerts, trustedIntermediateCerts);
         }
@@ -619,19 +637,24 @@ public class CertificateValidator {
     }
 
     /**
-    * Attempts to build a certification chain for given certificate and to verify
-    * it. Relies on a set of root CA certificates (trust anchors) and a set of
-    * intermediate certificates (to be used as part of the chain).
-    * @param certChain - client chain presented for validation. cert to validate is assumed to be the first in the chain
-    * @param trustedRootCerts - set of trusted root CA certificates
-    * @param trustedIntermediateCerts - set of intermediate certificates
-    * @return the certification chain (if verification is successful)
-    * @throws GeneralSecurityException - if the verification is not successful
-    *       (e.g. certification path cannot be built or some certificate in the
-    *       chain is expired)
-    */
-    private static PKIXCertPathBuilderResult verifyCertificateTrust(X509Certificate[] certChain, Set<X509Certificate> trustedRootCerts,
-        Set<X509Certificate> trustedIntermediateCerts) throws GeneralSecurityException {
+     * Attempts to build a certification chain for given certificate and to verify
+     * it. Relies on a set of root CA certificates (trust anchors) and a set of
+     * intermediate certificates (to be used as part of the chain).
+     * 
+     * @param certChain                - client chain presented for validation. cert
+     *                                 to validate is assumed to be the first in the
+     *                                 chain
+     * @param trustedRootCerts         - set of trusted root CA certificates
+     * @param trustedIntermediateCerts - set of intermediate certificates
+     * @return the certification chain (if verification is successful)
+     * @throws GeneralSecurityException - if the verification is not successful
+     *                                  (e.g. certification path cannot be built or
+     *                                  some certificate in the
+     *                                  chain is expired)
+     */
+    private static PKIXCertPathBuilderResult verifyCertificateTrust(X509Certificate[] certChain,
+            Set<X509Certificate> trustedRootCerts,
+            Set<X509Certificate> trustedIntermediateCerts) throws GeneralSecurityException {
 
         // Create the selector that specifies the starting certificate
         X509CertSelector selector = new X509CertSelector();
@@ -644,8 +667,7 @@ public class CertificateValidator {
         }
 
         // Configure the PKIX certificate builder algorithm parameters
-        PKIXBuilderParameters pkixParams =
-            new PKIXBuilderParameters(trustAnchors, selector);
+        PKIXBuilderParameters pkixParams = new PKIXBuilderParameters(trustAnchors, selector);
 
         // Disable CRL checks (this is done manually as additional step)
         pkixParams.setRevocationEnabled(false);
@@ -659,13 +681,13 @@ public class CertificateValidator {
         for (X509Certificate clientCert : certChain) {
             intermediateCerts.add(clientCert);
         }
-        CertStore intermediateCertStore = CryptoIntegration.getProvider().getCertStore(new CollectionCertStoreParameters(intermediateCerts));
+        CertStore intermediateCertStore = CryptoIntegration.getProvider()
+                .getCertStore(new CollectionCertStoreParameters(intermediateCerts));
         pkixParams.addCertStore(intermediateCertStore);
 
         // Build and verify the certification chain
         CertPathBuilder builder = CryptoIntegration.getProvider().getCertPathBuilder();
-        PKIXCertPathBuilderResult result =
-            (PKIXCertPathBuilderResult) builder.build(pkixParams);
+        PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) builder.build(pkixParams);
         return result;
     }
 
@@ -712,7 +734,7 @@ public class CertificateValidator {
         X509Certificate issuer = null;
 
         if (certs == null || certs.length == 0) {
-             throw new GeneralSecurityException("No certificates sent");
+            throw new GeneralSecurityException("No certificates sent");
         } else if (certs.length > 1) {
             cert = certs[0];
             issuer = certs[1];
@@ -732,37 +754,40 @@ public class CertificateValidator {
 
             if (rs == null) {
                 if (_ocspFailOpen)
-                    logger.warnf("Unable to check client revocation status using OCSP - continuing certificate authentication because of fail-open OCSP configuration setting");
+                    logger.warnf(
+                            "Unable to check client revocation status using OCSP - continuing certificate authentication because of fail-open OCSP configuration setting");
                 else
                     throw new GeneralSecurityException("Unable to check client revocation status using OCSP");
             }
 
             if (rs.getRevocationStatus() == OCSPProvider.RevocationStatus.UNKNOWN) {
                 if (_ocspFailOpen)
-                    logger.warnf("Unable to determine certificate's revocation status - continuing certificate authentication because of fail-open OCSP configuration setting");
+                    logger.warnf(
+                            "Unable to determine certificate's revocation status - continuing certificate authentication because of fail-open OCSP configuration setting");
                 else
                     throw new GeneralSecurityException("Unable to determine certificate's revocation status.");
-            }
-            else if (rs.getRevocationStatus() == OCSPProvider.RevocationStatus.REVOKED) {
+            } else if (rs.getRevocationStatus() == OCSPProvider.RevocationStatus.REVOKED) {
 
                 StringBuilder sb = new StringBuilder();
                 sb.append("Certificate's been revoked.");
                 sb.append("\n");
                 sb.append(rs.getRevocationReason().toString());
                 sb.append("\n");
-                sb.append(String.format("Revoked on: %s",rs.getRevocationTime().toString()));
+                sb.append(String.format("Revoked on: %s", rs.getRevocationTime().toString()));
 
                 throw new GeneralSecurityException(sb.toString());
             }
         } catch (CertPathValidatorException e) {
             if (_ocspFailOpen)
-                logger.warnf("Unable to check client revocation status using OCSP - continuing certificate authentication because of fail-open OCSP configuration setting");
+                logger.warnf(
+                        "Unable to check client revocation status using OCSP - continuing certificate authentication because of fail-open OCSP configuration setting");
             else
                 throw e;
         }
     }
 
-    private static void checkRevocationStatusUsingCRL(X509Certificate[] certs, CRLLoaderImpl crLoader, KeycloakSession session) throws GeneralSecurityException {
+    private static void checkRevocationStatusUsingCRL(X509Certificate[] certs, CRLLoaderImpl crLoader,
+            KeycloakSession session) throws GeneralSecurityException {
         Collection<X509CRL> crlColl = crLoader.getX509CRLs();
         if (crlColl != null && !crlColl.isEmpty()) {
             for (X509CRL it : crlColl) {
@@ -774,18 +799,19 @@ public class CertificateValidator {
     private static List<String> getCRLDistributionPoints(X509Certificate cert) {
         try {
             return CryptoIntegration.getProvider().getCertificateUtils().getCRLDistributionPoints(cert);
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             logger.error(e.getMessage());
         }
         return new ArrayList<>();
     }
 
-    private static void checkRevocationStatusUsingCRLDistributionPoints(X509Certificate[] certs, KeycloakSession session, boolean abortIfNonUpdated) throws GeneralSecurityException {
+    private static void checkRevocationStatusUsingCRLDistributionPoints(X509Certificate[] certs,
+            KeycloakSession session, boolean abortIfNonUpdated) throws GeneralSecurityException {
 
         List<String> distributionPoints = getCRLDistributionPoints(certs[0]);
         if (distributionPoints == null || distributionPoints.isEmpty()) {
-            throw new GeneralSecurityException("Could not find any CRL distribution points in the certificate, unable to check the certificate revocation status using CRL/DP.");
+            throw new GeneralSecurityException(
+                    "Could not find any CRL distribution points in the certificate, unable to check the certificate revocation status using CRL/DP.");
         }
         for (String dp : distributionPoints) {
             logger.tracef("CRL Distribution point: \"%s\"", dp);
@@ -816,7 +842,8 @@ public class CertificateValidator {
     public static class CertificateValidatorBuilder {
         // A hand written DSL that walks through successive steps to configure
         // instances of CertificateValidator type. The design is an adaption of
-        // the approach described in http://programmers.stackexchange.com/questions/252067/learning-to-write-dsls-utilities-for-unit-tests-and-am-worried-about-extensablit
+        // the approach described in
+        // http://programmers.stackexchange.com/questions/252067/learning-to-write-dsls-utilities-for-unit-tests-and-am-worried-about-extensablit
 
         KeycloakSession session;
         int _keyUsageBits;
@@ -843,6 +870,7 @@ public class CertificateValidator {
         public class KeyUsageValidationBuilder {
 
             CertificateValidatorBuilder _parent;
+
             KeyUsageValidationBuilder(CertificateValidatorBuilder parent) {
                 _parent = parent;
             }
@@ -851,34 +879,42 @@ public class CertificateValidator {
                 _keyUsageBits |= 1 << KeyUsageBits.DIGITAL_SIGNATURE.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enablecRLSignBit() {
                 _keyUsageBits |= 1 << KeyUsageBits.CRLSIGN.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enableDataEncriphermentBit() {
                 _keyUsageBits |= 1 << KeyUsageBits.DATA_ENCIPHERMENT.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enableDecipherOnlyBit() {
                 _keyUsageBits |= 1 << KeyUsageBits.DECIPHER_ONLY.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enableEnciphermentOnlyBit() {
                 _keyUsageBits |= 1 << KeyUsageBits.ENCIPHERMENT_ONLY.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enableKeyAgreementBit() {
                 _keyUsageBits |= 1 << KeyUsageBits.KEY_AGREEMENT.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enableKeyEnciphermentBit() {
                 _keyUsageBits |= 1 << KeyUsageBits.KEY_ENCIPHERMENT.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enableKeyCertSign() {
                 _keyUsageBits |= 1 << KeyUsageBits.KEYCERTSIGN.getInt();
                 return this;
             }
+
             public KeyUsageValidationBuilder enableNonRepudiationBit() {
                 _keyUsageBits |= 1 << KeyUsageBits.NON_REPUDIATION.getInt();
                 return this;
@@ -897,22 +933,38 @@ public class CertificateValidator {
                 for (String s : strs) {
                     try {
                         KeyUsageBits bit = KeyUsageBits.parse(s.trim());
-                        switch(bit) {
-                            case CRLSIGN: enablecRLSignBit(); break;
-                            case DATA_ENCIPHERMENT: enableDataEncriphermentBit(); break;
-                            case DECIPHER_ONLY: enableDecipherOnlyBit(); break;
-                            case DIGITAL_SIGNATURE: enableDigitalSignatureBit(); break;
-                            case ENCIPHERMENT_ONLY: enableEnciphermentOnlyBit(); break;
-                            case KEY_AGREEMENT: enableKeyAgreementBit(); break;
-                            case KEY_ENCIPHERMENT: enableKeyEnciphermentBit(); break;
-                            case KEYCERTSIGN: enableKeyCertSign(); break;
-                            case NON_REPUDIATION: enableNonRepudiationBit(); break;
+                        switch (bit) {
+                            case CRLSIGN:
+                                enablecRLSignBit();
+                                break;
+                            case DATA_ENCIPHERMENT:
+                                enableDataEncriphermentBit();
+                                break;
+                            case DECIPHER_ONLY:
+                                enableDecipherOnlyBit();
+                                break;
+                            case DIGITAL_SIGNATURE:
+                                enableDigitalSignatureBit();
+                                break;
+                            case ENCIPHERMENT_ONLY:
+                                enableEnciphermentOnlyBit();
+                                break;
+                            case KEY_AGREEMENT:
+                                enableKeyAgreementBit();
+                                break;
+                            case KEY_ENCIPHERMENT:
+                                enableKeyEnciphermentBit();
+                                break;
+                            case KEYCERTSIGN:
+                                enableKeyCertSign();
+                                break;
+                            case NON_REPUDIATION:
+                                enableNonRepudiationBit();
+                                break;
                         }
-                    }
-                    catch(IllegalArgumentException e) {
+                    } catch (IllegalArgumentException e) {
                         logger.warnf("Unable to parse key usage bit: \"%s\"", s);
-                    }
-                    catch(IndexOutOfBoundsException e) {
+                    } catch (IndexOutOfBoundsException e) {
                         logger.warnf("Invalid key usage bit: \"%s\"", s);
                     }
                 }
@@ -924,6 +976,7 @@ public class CertificateValidator {
         public class ExtendedKeyUsageValidationBuilder {
 
             CertificateValidatorBuilder _parent;
+
             protected ExtendedKeyUsageValidationBuilder(CertificateValidatorBuilder parent) {
                 _parent = parent;
             }
@@ -943,6 +996,7 @@ public class CertificateValidator {
         public class CertificatePolicyValidationBuilder {
 
             CertificateValidatorBuilder _parent;
+
             protected CertificatePolicyValidationBuilder(CertificateValidatorBuilder parent) {
                 _parent = parent;
             }
@@ -967,6 +1021,7 @@ public class CertificateValidator {
         public class RevocationStatusCheckBuilder {
 
             CertificateValidatorBuilder _parent;
+
             protected RevocationStatusCheckBuilder(CertificateValidatorBuilder parent) {
                 _parent = parent;
             }
@@ -994,6 +1049,7 @@ public class CertificateValidator {
                     return new GotOCSP();
                 }
             }
+
             public class GotCRLDP {
                 public GotCRLRelativePath cRLrelativePath(String value) {
                     if (value != null)
@@ -1021,7 +1077,7 @@ public class CertificateValidator {
                         try {
                             _responderCert = PemUtils.decodeCertificate(responderCert);
                             _responderCert.checkValidity();
-                        } catch(CertificateException e) {
+                        } catch (CertificateException e) {
                             logger.warnf("Ignoring invalid certificate: %s", _responderCert);
                             _responderCert = null;
                         }
@@ -1039,6 +1095,7 @@ public class CertificateValidator {
         public class TimestampValidationBuilder {
 
             CertificateValidatorBuilder _parent;
+
             protected TimestampValidationBuilder(CertificateValidatorBuilder parent) {
                 _parent = parent;
             }
@@ -1052,6 +1109,7 @@ public class CertificateValidator {
         public class TrustValidationBuilder {
 
             CertificateValidatorBuilder _parent;
+
             protected TrustValidationBuilder(CertificateValidatorBuilder parent) {
                 _parent = parent;
             }
@@ -1093,14 +1151,14 @@ public class CertificateValidator {
 
         public CertificateValidator build(X509Certificate[] certs) {
             if (_crlLoader == null) {
-                 _crlLoader = new CRLFileLoader(session, "", _crlAbortIfNonUpdated);
+                _crlLoader = new CRLFileLoader(session, "", _crlAbortIfNonUpdated);
             }
             return new CertificateValidator(certs, _keyUsageBits, _extendedKeyUsage,
                     _certificatePolicy, _certificatePolicyMode,
                     _crlCheckingEnabled, _crlAbortIfNonUpdated, _crldpEnabled, _crlLoader, _ocspEnabled, _ocspFailOpen,
-                    new BouncyCastleOCSPChecker(session, _responderUri, _responderCert), session, _timestampValidationEnabled, _trustValidationEnabled);
+                    new BouncyCastleOCSPChecker(session, _responderUri, _responderCert), session,
+                    _timestampValidationEnabled, _trustValidationEnabled);
         }
     }
-
 
 }

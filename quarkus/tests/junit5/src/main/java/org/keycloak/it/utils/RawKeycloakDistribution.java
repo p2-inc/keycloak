@@ -85,8 +85,6 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     private Process keycloak;
     private int exitCode = -1;
     private final Path distPath;
-    private final List<String> outputStream = Collections.synchronizedList(new ArrayList<>());
-    private final List<String> errorStream = Collections.synchronizedList(new ArrayList<>());
     private boolean manualStop;
     private String relativePath;
     private int httpPort;
@@ -99,7 +97,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     private ExecutorService outputExecutor;
     private boolean inited = false;
     private final Map<String, String> envVars = new HashMap<>();
-    private OutputConsumer outputConsumer;
+    private final OutputConsumer outputConsumer;
 
     public RawKeycloakDistribution(boolean debug, boolean manualStop, boolean enableTls, boolean reCreate, boolean removeBuildOptionsAfterBuild, int requestPort) {
         this(debug, manualStop, enableTls, reCreate, removeBuildOptionsAfterBuild, requestPort, new DefaultOutputConsumer());
@@ -115,7 +113,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         this.distPath = prepareDistribution();
         this.outputConsumer = outputConsumer;
     }
-    
+
     public CLIResult kcadm(String... arguments) throws IOException {
     	return kcadm(Arrays.asList(arguments));
     }
@@ -215,13 +213,16 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
                 keycloak.destroy();
                 keycloak.waitFor(DEFAULT_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                exitCode = keycloak.exitValue();
             } catch (Exception cause) {
                 destroyDescendantsOnWindows(keycloak, true);
                 keycloak.destroyForcibly();
                 threadDump();
                 throw new RuntimeException("Failed to stop the server", cause);
             }
+        }
+
+        if (keycloak != null) {
+            exitCode = keycloak.exitValue();
         }
 
         shutdownOutputExecutor();
@@ -394,12 +395,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     }
 
     private HostnameVerifier createInsecureHostnameVerifier() {
-        return new HostnameVerifier() {
-            @Override
-            public boolean verify(String s, SSLSession sslSession) {
-                return true;
-            }
-        };
+        return (s, sslSession) -> true;
     }
 
     private SSLSocketFactory createInsecureSslSocketFactory() throws IOException {
@@ -511,7 +507,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     private void readOutput(Process process, OutputConsumer outputConsumer) {
         try (
                 BufferedReader outStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                BufferedReader errStream = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                BufferedReader errStream = new BufferedReader(new InputStreamReader(process.getErrorStream()))
         ) {
             while (process.isAlive()) {
                 readStream(outStream, outputConsumer, false);
@@ -574,22 +570,12 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
     @Override
     public void removeProperty(String name) {
-        updateProperties(new Consumer<Properties>() {
-            @Override
-            public void accept(Properties properties) {
-                properties.remove(name);
-            }
-        }, distPath.resolve("conf").resolve("keycloak.conf").toFile());
+        updateProperties(properties -> properties.remove(name), distPath.resolve("conf").resolve("keycloak.conf").toFile());
     }
 
     @Override
     public void setQuarkusProperty(String key, String value) {
-        updateProperties(new Consumer<Properties>() {
-            @Override
-            public void accept(Properties properties) {
-                properties.put(key, value);
-            }
-        }, getQuarkusPropertiesFile());
+        updateProperties(properties -> properties.put(key, value), getQuarkusPropertiesFile());
     }
 
     @Override
@@ -637,9 +623,22 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
     private static void copyProvider(Path distPath, String groupId, String artifactId) {
         try {
-            Files.copy(Maven.resolveArtifact(groupId, artifactId), distPath.resolve("providers").resolve(artifactId + ".jar"));
+            Path providerPath = Maven.resolveArtifact(groupId, artifactId);
+            if (!Files.isRegularFile(providerPath)) {
+                throw new RuntimeException("Failed to copy JAR file to 'providers' directory; " + providerPath + " is not a file");
+            }
+
+            Files.copy(providerPath, distPath.resolve("providers").resolve(artifactId + ".jar"));
         } catch (IOException cause) {
             throw new RuntimeException("Failed to copy JAR file to 'providers' directory", cause);
+        }
+    }
+
+    public void copyConfigFile(Path configFilePath) {
+        try {
+            Files.copy(configFilePath, distPath.resolve("conf").resolve(configFilePath.getFileName()));
+        } catch (IOException cause) {
+            throw new RuntimeException("Failed to copy config file [" + configFilePath + "] to 'conf' directory", cause);
         }
     }
 
@@ -648,7 +647,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
         if (propertiesFile.exists()) {
             try (
-                FileInputStream in = new FileInputStream(propertiesFile);
+                FileInputStream in = new FileInputStream(propertiesFile)
             ) {
 
                 properties.load(in);
@@ -709,7 +708,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         }
 
         if (type.isInstance(this)) {
-            return (D) this;
+            return type.cast(type);
         }
 
         throw new IllegalArgumentException("Not a " + type + " type");

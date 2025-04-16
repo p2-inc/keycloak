@@ -17,6 +17,9 @@
 
 package org.keycloak.services.clientregistration;
 
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response;
 import org.keycloak.Config;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.authentication.AuthenticationProcessor;
@@ -44,10 +47,6 @@ import org.keycloak.services.clientregistration.policy.RegistrationAuth;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.util.TokenUtil;
 
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -70,7 +69,8 @@ public class ClientRegistrationAuth {
     private String token;
     private String endpoint;
 
-    public ClientRegistrationAuth(KeycloakSession session, ClientRegistrationProvider provider, EventBuilder event, String endpoint) {
+    public ClientRegistrationAuth(KeycloakSession session, ClientRegistrationProvider provider, EventBuilder event,
+            String endpoint) {
         this.session = session;
         this.provider = provider;
         this.event = event;
@@ -80,7 +80,8 @@ public class ClientRegistrationAuth {
     private void init() {
         realm = session.getContext().getRealm();
 
-        String authorizationHeader = session.getContext().getRequestHeaders().getRequestHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        String authorizationHeader = session.getContext().getRequestHeaders().getRequestHeaders()
+                .getFirst(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader == null) {
             return;
         }
@@ -92,7 +93,8 @@ public class ClientRegistrationAuth {
 
         token = split[1];
 
-        ClientRegistrationTokenUtils.TokenVerification tokenVerification = ClientRegistrationTokenUtils.verifyToken(session, realm, token);
+        ClientRegistrationTokenUtils.TokenVerification tokenVerification = ClientRegistrationTokenUtils
+                .verifyToken(session, realm, token);
         if (tokenVerification.getError() != null) {
             throw unauthorized(tokenVerification.getError().getMessage());
         }
@@ -100,7 +102,8 @@ public class ClientRegistrationAuth {
         jwt = tokenVerification.getJwt();
 
         if (isInitialAccessToken()) {
-            initialAccessModel = session.realms().getClientInitialAccessModel(session.getContext().getRealm(), jwt.getId());
+            initialAccessModel = session.realms().getClientInitialAccessModel(session.getContext().getRealm(),
+                    jwt.getId());
             if (initialAccessModel == null) {
                 throw unauthorized("Initial Access Token not found");
             }
@@ -145,7 +148,9 @@ public class ClientRegistrationAuth {
             }
         } else if (isInitialAccessToken()) {
             if (initialAccessModel.getRemainingCount() > 0) {
-                if (initialAccessModel.getExpiration() == 0 || (initialAccessModel.getTimestamp() + initialAccessModel.getExpiration()) > Time.currentTime()) {
+                if (initialAccessModel.getExpiration() == 0
+                        || (initialAccessModel.getTimestamp() + initialAccessModel.getExpiration()) > Time
+                                .currentTime()) {
                     registrationAuth = RegistrationAuth.AUTHENTICATED;
                 } else {
                     throw unauthorized("Expired initial access token");
@@ -158,8 +163,14 @@ public class ClientRegistrationAuth {
         try {
             session.clientPolicy().triggerOnEvent(new DynamicClientRegisterContext(context, jwt, realm));
             ClientRegistrationPolicyManager.triggerBeforeRegister(context, registrationAuth);
-        } catch (ClientRegistrationPolicyException | ClientPolicyException crpe) {
+        } catch (ClientRegistrationPolicyException crpe) {
             throw forbidden(crpe.getMessage());
+        } catch (ClientPolicyException cpe) {
+            event.detail(Details.REASON, Details.CLIENT_POLICY_ERROR);
+            event.detail(Details.CLIENT_POLICY_ERROR, cpe.getError());
+            event.detail(Details.CLIENT_POLICY_ERROR_DETAIL, cpe.getErrorDetail());
+            event.error(cpe.getError());
+            throw forbidden(cpe.getMessage());
         }
 
         return registrationAuth;
@@ -189,7 +200,8 @@ public class ClientRegistrationAuth {
                 throw forbidden();
             }
         } else if (isRegistrationAccessToken()) {
-            if (client != null && client.getRegistrationToken() != null && client.getRegistrationToken().equals(jwt.getId())) {
+            if (client != null && client.getRegistrationToken() != null
+                    && client.getRegistrationToken().equals(jwt.getId())) {
                 checkClientProtocol(client);
                 authenticated = true;
                 authType = getRegistrationAuth();
@@ -205,8 +217,14 @@ public class ClientRegistrationAuth {
             try {
                 session.clientPolicy().triggerOnEvent(new DynamicClientViewContext(session, client, jwt, realm));
                 ClientRegistrationPolicyManager.triggerBeforeView(session, provider, authType, client);
-            } catch (ClientRegistrationPolicyException | ClientPolicyException crpe) {
+            } catch (ClientRegistrationPolicyException crpe) {
                 throw forbidden(crpe.getMessage());
+            } catch (ClientPolicyException cpe) {
+                event.detail(Details.REASON, Details.CLIENT_POLICY_ERROR);
+                event.detail(Details.CLIENT_POLICY_ERROR, cpe.getError());
+                event.detail(Details.CLIENT_POLICY_ERROR_DETAIL, cpe.getErrorDetail());
+                event.error(cpe.getError());
+                throw forbidden(cpe.getMessage());
             }
         } else {
             throw unauthorized("Not authorized to view client. Not valid token or client credentials provided.");
@@ -224,8 +242,14 @@ public class ClientRegistrationAuth {
         try {
             session.clientPolicy().triggerOnEvent(new DynamicClientUpdateContext(context, client, jwt, realm));
             ClientRegistrationPolicyManager.triggerBeforeUpdate(context, regAuth, client);
-        } catch (ClientRegistrationPolicyException | ClientPolicyException crpe) {
+        } catch (ClientRegistrationPolicyException crpe) {
             throw forbidden(crpe.getMessage());
+        } catch (ClientPolicyException cpe) {
+            event.detail(Details.REASON, Details.CLIENT_POLICY_ERROR);
+            event.detail(Details.CLIENT_POLICY_ERROR, cpe.getError());
+            event.detail(Details.CLIENT_POLICY_ERROR_DETAIL, cpe.getErrorDetail());
+            event.error(cpe.getError());
+            throw forbidden(cpe.getMessage());
         }
 
         return regAuth;
@@ -237,8 +261,14 @@ public class ClientRegistrationAuth {
         try {
             session.clientPolicy().triggerOnEvent(new DynamicClientUnregisterContext(session, client, jwt, realm));
             ClientRegistrationPolicyManager.triggerBeforeRemove(session, provider, chainType, client);
-        } catch (ClientRegistrationPolicyException | ClientPolicyException crpe) {
+        } catch (ClientRegistrationPolicyException crpe) {
             throw forbidden(crpe.getMessage());
+        } catch (ClientPolicyException cpe) {
+            event.detail(Details.REASON, Details.CLIENT_POLICY_ERROR);
+            event.detail(Details.CLIENT_POLICY_ERROR, cpe.getError());
+            event.detail(Details.CLIENT_POLICY_ERROR_DETAIL, cpe.getErrorDetail());
+            event.error(cpe.getError());
+            throw forbidden(cpe.getMessage());
         }
     }
 
@@ -251,7 +281,8 @@ public class ClientRegistrationAuth {
     private void checkClientProtocol(ClientModel client) {
         if (endpoint.equals("openid-connect") || endpoint.equals("saml2-entity-descriptor")) {
             if (client != null && !endpoint.contains(client.getProtocol())) {
-                throw new ErrorResponseException(Errors.INVALID_CLIENT, "Wrong client protocol.", Response.Status.BAD_REQUEST);
+                throw new ErrorResponseException(Errors.INVALID_CLIENT, "Wrong client protocol.",
+                        Response.Status.BAD_REQUEST);
             }
         }
     }
@@ -272,7 +303,8 @@ public class ClientRegistrationAuth {
                 throw forbidden();
             }
         } else if (isRegistrationAccessToken()) {
-            if (client != null && client.getRegistrationToken() != null && client.getRegistrationToken().equals(jwt.getId())) {
+            if (client != null && client.getRegistrationToken() != null
+                    && client.getRegistrationToken().equals(jwt.getId())) {
                 return getRegistrationAuth();
             }
         }
@@ -345,7 +377,8 @@ public class ClientRegistrationAuth {
 
     private WebApplicationException unauthorized(String errorDescription) {
         event.detail(Details.REASON, errorDescription).error(Errors.INVALID_TOKEN);
-        throw new ErrorResponseException(OAuthErrorException.INVALID_TOKEN, errorDescription, Response.Status.UNAUTHORIZED);
+        throw new ErrorResponseException(OAuthErrorException.INVALID_TOKEN, errorDescription,
+                Response.Status.UNAUTHORIZED);
     }
 
     private WebApplicationException forbidden() {
@@ -354,12 +387,14 @@ public class ClientRegistrationAuth {
 
     private WebApplicationException forbidden(String errorDescription) {
         event.error(Errors.NOT_ALLOWED);
-        throw new ErrorResponseException(OAuthErrorException.INSUFFICIENT_SCOPE, errorDescription, Response.Status.FORBIDDEN);
+        throw new ErrorResponseException(OAuthErrorException.INSUFFICIENT_SCOPE, errorDescription,
+                Response.Status.FORBIDDEN);
     }
 
     private WebApplicationException notFound() {
         event.error(Errors.CLIENT_NOT_FOUND);
-        throw new ErrorResponseException(OAuthErrorException.INVALID_REQUEST, "Client not found", Response.Status.NOT_FOUND);
+        throw new ErrorResponseException(OAuthErrorException.INVALID_REQUEST, "Client not found",
+                Response.Status.NOT_FOUND);
     }
 
 }

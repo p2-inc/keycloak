@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ import io.fabric8.kubernetes.api.model.networking.v1.NetworkPolicyPeer;
 import io.fabric8.kubernetes.api.model.networking.v1.NetworkPolicyPort;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.utils.Serialization;
+import io.netty.util.NetUtil;
 import io.quarkus.logging.Log;
 import org.assertj.core.api.ObjectAssert;
 import org.awaitility.Awaitility;
@@ -62,10 +64,10 @@ public final class CRAssert {
     // ISPN000094 -> merge view
     private static final Pattern CLUSTER_SIZE_PATTERN = Pattern.compile("ISPN00009[34]: [^]]*] \\((\\d+)\\)");
 
-    public static void assertKeycloakStatusCondition(Keycloak kc, String condition, boolean status) {
+    public static void assertKeycloakStatusCondition(Keycloak kc, String condition, Boolean status) {
         assertKeycloakStatusCondition(kc, condition, status, null);
     }
-    public static void assertKeycloakStatusCondition(Keycloak kc, String condition, boolean status, String containedMessage) {
+    public static void assertKeycloakStatusCondition(Keycloak kc, String condition, Boolean status, String containedMessage) {
         Log.debugf("Asserting CR: %s, condition: %s, status: %s, message: %s", kc.getMetadata().getName(), condition, status, containedMessage);
         try {
             assertKeycloakStatusCondition(kc.getStatus(), condition, status, containedMessage, null);
@@ -118,6 +120,7 @@ public final class CRAssert {
                 .await()
                 .pollInterval(1, TimeUnit.SECONDS)
                 .timeout(Duration.ofMinutes(5))
+                .ignoreExceptions()
                 .untilAsserted(() -> client.pods()
                         .inNamespace(namespaceOf(keycloak))
                         .withLabels(Utils.allInstanceLabels(keycloak))
@@ -197,7 +200,7 @@ public final class CRAssert {
                 "--connect-timeout",
                 "2",
                 "-s",
-                "telnet://%s:%s".formatted(hostname, port));
+                "telnet://%s:%s".formatted(NetUtil.isValidIpV6Address(hostname)?"["+hostname+"]":hostname, port));
         // Relevant exit codes:
         // 28-Operation timeout.
         // 48-Unknown option specified to libcurl (BOGUS=1 is not a valid option, but the connection is successful).
@@ -283,5 +286,45 @@ public final class CRAssert {
         return networkPolicy.getSpec().getIngress().stream()
                 .filter(rule -> rule.getPorts().stream().anyMatch(port -> port.getPort().getIntVal() == rulePort))
                 .findFirst();
+    }
+
+    public static CompletableFuture<Void> eventuallyRollingUpdateStatus(KubernetesClient client, Keycloak keycloak, String reason) {
+        var cf1 = client.resource(keycloak).informOnCondition(kcs -> {
+            try {
+                assertKeycloakStatusCondition(kcs.get(0), KeycloakStatusCondition.ROLLING_UPDATE, true, "Rolling out deployment update");
+                return true;
+            } catch (AssertionError e) {
+                return false;
+            }
+        });
+        var cf2 = client.resource(keycloak).informOnCondition(kcs -> {
+            try {
+                assertKeycloakStatusCondition(kcs.get(0), KeycloakStatusCondition.UPDATE_TYPE, false, reason);
+                return true;
+            } catch (AssertionError e) {
+                return false;
+            }
+        });
+        return CompletableFuture.allOf(cf1, cf2);
+    }
+
+    public static CompletableFuture<Void> eventuallyRecreateUpdateStatus(KubernetesClient client, Keycloak keycloak, String reason) {
+        var cf1 = client.resource(keycloak).informOnCondition(kcs -> {
+            try {
+                assertKeycloakStatusCondition(kcs.get(0), KeycloakStatusCondition.READY, false, "Performing Keycloak update");
+                return true;
+            } catch (AssertionError e) {
+                return false;
+            }
+        });
+        var cf2 = client.resource(keycloak).informOnCondition(kcs -> {
+            try {
+                assertKeycloakStatusCondition(kcs.get(0), KeycloakStatusCondition.UPDATE_TYPE, true, reason);
+                return true;
+            } catch (AssertionError e) {
+                return false;
+            }
+        });
+        return CompletableFuture.allOf(cf1, cf2);
     }
 }

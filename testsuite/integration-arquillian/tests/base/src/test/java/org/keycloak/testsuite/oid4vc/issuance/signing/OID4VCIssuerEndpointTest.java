@@ -40,7 +40,6 @@ import org.keycloak.common.crypto.CryptoIntegration;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.common.util.SecretGenerator;
 import org.keycloak.common.util.Time;
-import org.keycloak.crypto.Algorithm;
 import org.keycloak.models.AuthenticatedClientSessionModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserSessionModel;
@@ -49,8 +48,6 @@ import org.keycloak.protocol.oid4vc.issuance.OID4VCIssuerWellKnownProviderFactor
 import org.keycloak.protocol.oid4vc.issuance.TimeProvider;
 import org.keycloak.protocol.oid4vc.issuance.credentialbuilder.CredentialBuilder;
 import org.keycloak.protocol.oid4vc.issuance.credentialbuilder.JwtCredentialBuilder;
-import org.keycloak.protocol.oid4vc.issuance.signing.JwtSigningService;
-import org.keycloak.protocol.oid4vc.issuance.signing.VerifiableCredentialsSigningService;
 import org.keycloak.protocol.oid4vc.model.CredentialIssuer;
 import org.keycloak.protocol.oid4vc.model.CredentialRequest;
 import org.keycloak.protocol.oid4vc.model.CredentialResponse;
@@ -65,6 +62,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ClientScopeRepresentation;
 import org.keycloak.representations.idm.ComponentExportRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.services.managers.AppAuthManager;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.resources.RealmsResource;
@@ -72,12 +70,14 @@ import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.runonserver.RunOnServerException;
 import org.keycloak.testsuite.util.AdminClientUtil;
-import org.keycloak.testsuite.util.OAuthClient;
+import org.keycloak.testsuite.util.oauth.AuthorizationEndpointResponse;
+import org.keycloak.testsuite.util.oauth.OAuthClient;
 import org.keycloak.util.JsonSerialization;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +89,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.keycloak.protocol.oid4vc.issuance.OID4VCIssuerEndpoint.CREDENTIAL_OFFER_URI_CODE_SCOPE;
+import static org.keycloak.testsuite.forms.PassThroughClientAuthenticator.clientId;
 
 /**
  * Moved test to subclass. so we can reuse initialization code.
@@ -97,18 +98,29 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
 
     protected static final TimeProvider TIME_PROVIDER = new OID4VCTest.StaticTimeProvider(1000);
     protected CloseableHttpClient httpClient;
+    public static String verifiableCredentialScopeName = "VerifiableCredential";
+    public static String testCredentialScopeName = "test-credential";
 
 
     @Before
     public void setup() {
         CryptoIntegration.init(this.getClass().getClassLoader());
         httpClient = HttpClientBuilder.create().build();
+        ClientRepresentation client = testRealm().clients().findByClientId(clientId).get(0);
+
+        // Register the optional client scopes
+        String verifiableCredentialScopeId = registerOptionalClientScope(verifiableCredentialScopeName, client.getClientId());
+        String testCredentialScopeId = registerOptionalClientScope(testCredentialScopeName, client.getClientId());
+
+        // Assign the registered optional client scopes to the client
+        assignOptionalClientScopeToClient(verifiableCredentialScopeId, client.getClientId());
+        assignOptionalClientScopeToClient(testCredentialScopeId, client.getClientId());
     }
 
 
     protected String getBearerToken(OAuthClient oAuthClient) {
-        OAuthClient.AuthorizationEndpointResponse authorizationEndpointResponse = oAuthClient.doLogin("john", "password");
-        return oAuthClient.doAccessTokenRequest(authorizationEndpointResponse.getCode(), "password").getAccessToken();
+        AuthorizationEndpointResponse authorizationEndpointResponse = oAuthClient.doLogin("john", "password");
+        return oAuthClient.doAccessTokenRequest(authorizationEndpointResponse.getCode()).getAccessToken();
     }
 
     private ClientResource findClientByClientId(RealmResource realm, String clientId) {
@@ -120,14 +132,28 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
         return null;
     }
 
-    private String registerOptionalClientScope(String scopeName) {
+    private String registerOptionalClientScope(String scopeName, String clientId) {
+        // Check if the client scope already exists
+        List<ClientScopeRepresentation> existingScopes = testRealm().clientScopes().findAll();
+        for (ClientScopeRepresentation existingScope : existingScopes) {
+            if (existingScope.getName().equals(scopeName)) {
+                return existingScope.getId(); // Reuse existing scope
+            }
+        }
+
+        // Create a new ClientScope if not found
         ClientScopeRepresentation clientScope = new ClientScopeRepresentation();
         clientScope.setName(scopeName);
         clientScope.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
+
         Response res = testRealm().clientScopes().create(clientScope);
         String scopeId = ApiUtil.getCreatedId(res);
-        getCleanup().addClientScopeId(scopeId); // automatically removed when a test method is finished.
+        getCleanup().addClientScopeId(scopeId); // Automatically removed when a test method is finished.
         res.close();
+
+        // Add protocol mappers to the ClientScope
+        addProtocolMappersToClientScope(scopeId, scopeName, clientId);
+
         return scopeId;
     }
 
@@ -143,15 +169,6 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
         clientRepresentation.setAttributes(Map.of(
                 "vc." + credentialConfigurationId + ".format", format,
                 "vc." + credentialConfigurationId + ".scope", scope));
-        clientRepresentation.setProtocolMappers(
-                List.of(
-                        getRoleMapper(clientId, "VerifiableCredential"),
-                        getUserAttributeMapper("email", "email", "VerifiableCredential"),
-                        getIdMapper("VerifiableCredential"),
-                        getStaticClaimMapper(scope, "VerifiableCredential"),
-                        getStaticClaimMapper("AnotherCredentialType", "VerifiableCredential")
-                )
-        );
 
         clientResource.update(clientRepresentation);
     }
@@ -170,7 +187,7 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
 
     private void testCredentialIssuanceWithAuthZCodeFlow(Consumer<Map<String, String>> c) throws Exception {
         // use pre-registered client for this test class whose clientId is "test-app" defined in testrealm.json
-        String testClientId = "test-app";
+        String testClientId = clientId;
 
         // use supported values by Credential Issuer Metadata
         String testCredentialConfigurationId = "test-credential";
@@ -178,7 +195,7 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
         String testFormat = Format.JWT_VC;
 
         // register optional client scope
-        String scopeId = registerOptionalClientScope(testScope);
+        String scopeId = registerOptionalClientScope(testScope, testClientId);
 
         // assign registered optional client scope
         assignOptionalClientScopeToClient(scopeId, testClientId); // pre-registered client for this test class
@@ -270,32 +287,24 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
 
     protected static OID4VCIssuerEndpoint prepareIssuerEndpoint(KeycloakSession session, AppAuthManager.BearerTokenAuthenticator authenticator) {
         JwtCredentialBuilder jwtCredentialBuilder = new JwtCredentialBuilder(
-                TEST_DID.toString(),
-                new StaticTimeProvider(1000));
-
-        JwtSigningService jwtSigningService = new JwtSigningService(
-                session,
-                getKeyFromSession(session).getKid(),
-                Algorithm.RS256);
+            TEST_DID.toString(), 
+            new StaticTimeProvider(1000));
 
         return prepareIssuerEndpoint(
                 session,
                 authenticator,
-                Map.of(jwtCredentialBuilder.getSupportedFormat(), jwtCredentialBuilder),
-                Map.of(jwtSigningService.locator(), jwtSigningService)
+                Map.of(jwtCredentialBuilder.getSupportedFormat(), jwtCredentialBuilder)
         );
     }
 
     protected static OID4VCIssuerEndpoint prepareIssuerEndpoint(
             KeycloakSession session,
             AppAuthManager.BearerTokenAuthenticator authenticator,
-            Map<String, CredentialBuilder> credentialBuilders,
-            Map<String, VerifiableCredentialsSigningService> signingServices
+            Map<String, CredentialBuilder> credentialBuilders
     ) {
         return new OID4VCIssuerEndpoint(
                 session,
                 credentialBuilders,
-                signingServices,
                 authenticator,
                 TIME_PROVIDER,
                 30,
@@ -336,26 +345,34 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
         }
 
         testRealm.getComponents().add("org.keycloak.keys.KeyProvider", getKeyProvider());
-        testRealm.getComponents().addAll("org.keycloak.protocol.oid4vc.issuance.signing.VerifiableCredentialsSigningService", getSigningProviders());
         testRealm.getComponents().addAll("org.keycloak.protocol.oid4vc.issuance.credentialbuilder.CredentialBuilder", getCredentialBuilderProviders());
 
-        ClientRepresentation clientRepresentation = getTestClient("did:web:test.org");
-        if (testRealm.getClients() != null) {
-            testRealm.getClients().add(clientRepresentation);
-        } else {
-            testRealm.setClients(List.of(clientRepresentation));
-        }
+        // Find existing client representation
+        ClientRepresentation existingClient = testRealm.getClients().stream()
+                .filter(client -> client.getClientId().equals(clientId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Client with ID " + clientId + " not found in realm"));
+
+        // Add role to existing client
         if (testRealm.getRoles() != null) {
-            testRealm.getRoles().getClient()
-                    .put(clientRepresentation.getClientId(), List.of(getRoleRepresentation("testRole", clientRepresentation.getClientId())));
+            Map<String, List<RoleRepresentation>> clientRoles = testRealm.getRoles().getClient();
+            clientRoles.merge(
+                    existingClient.getClientId(),
+                    List.of(getRoleRepresentation("testRole", existingClient.getClientId())),
+                    (existingRoles, newRoles) -> {
+                        List<RoleRepresentation> mergedRoles = new ArrayList<>(existingRoles);
+                        mergedRoles.addAll(newRoles);
+                        return mergedRoles;
+                    }
+            );
         } else {
             testRealm.getRoles()
-                    .setClient(Map.of(clientRepresentation.getClientId(), List.of(getRoleRepresentation("testRole", clientRepresentation.getClientId()))));
+                    .setClient(Map.of(existingClient.getClientId(), List.of(getRoleRepresentation("testRole", existingClient.getClientId()))));
         }
         if (testRealm.getUsers() != null) {
-            testRealm.getUsers().add(getUserRepresentation(Map.of(clientRepresentation.getClientId(), List.of("testRole"))));
+            testRealm.getUsers().add(getUserRepresentation(Map.of(existingClient.getClientId(), List.of("testRole"))));
         } else {
-            testRealm.setUsers(List.of(getUserRepresentation(Map.of(clientRepresentation.getClientId(), List.of("testRole")))));
+            testRealm.setUsers(List.of(getUserRepresentation(Map.of(existingClient.getClientId(), List.of("testRole")))));
         }
 
         if (testRealm.getAttributes() == null) {
@@ -379,10 +396,6 @@ public abstract class OID4VCIssuerEndpointTest extends OID4VCTest {
 
     protected ComponentExportRepresentation getKeyProvider() {
         return getRsaKeyProvider(RSA_KEY);
-    }
-
-    protected List<ComponentExportRepresentation> getSigningProviders() {
-        return List.of(getJwtSigningProvider(RSA_KEY));
     }
 
     protected List<ComponentExportRepresentation> getCredentialBuilderProviders() {

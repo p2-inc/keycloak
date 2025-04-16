@@ -1,32 +1,42 @@
 package org.keycloak.testframework.events;
 
-import org.keycloak.events.Event;
+import org.jboss.logging.Logger;
+import org.keycloak.representations.idm.EventRepresentation;
+import org.keycloak.testframework.realm.ManagedRealm;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-public class Events implements SysLogListener {
+public class Events extends AbstractEvents<EventRepresentation> {
 
-    private final BlockingQueue<Event> events = new LinkedBlockingQueue<>();
+    private static final Logger LOGGER = Logger.getLogger(Events.class);
 
-    public Event poll() {
-        try {
-            return events.poll(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            return null;
-        }
-    }
-
-    public void clear() {
-        events.clear();
+    public Events(ManagedRealm realm) {
+        super(realm);
     }
 
     @Override
-    public void onLog(SysLog sysLog) {
-        Event event = EventParser.parse(sysLog);
-        if (event != null) {
-            events.add(event);
-        }
+    protected List<EventRepresentation> getEvents(long from, long to) {
+        return realm.admin().getEvents(null, null, null, from, to, null, null, null, "asc");
     }
+
+    @Override
+    protected String getEventId(EventRepresentation rep) {
+        return rep.getId();
+    }
+
+    @Override
+    protected String getRealmId(EventRepresentation rep) {
+        return rep.getRealmId();
+    }
+
+    @Override
+    protected void clearServerEvents() {
+        realm.admin().clearEvents();
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
+    }
+
 }

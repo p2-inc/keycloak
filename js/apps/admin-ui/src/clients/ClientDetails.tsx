@@ -310,7 +310,6 @@ export default function ClientDetails() {
   });
 
   const setupForm = (client: ClientRepresentation) => {
-    form.reset({ ...client });
     convertToFormValues(client, form.setValue);
     if (client.attributes?.["acr.loa.map"]) {
       form.setValue(
@@ -321,6 +320,8 @@ export default function ClientDetails() {
         ),
       );
     }
+    // reset dirty as for reason it is not resetting
+    form.reset(form.getValues(), { keepDirty: false });
   };
 
   useFetch(
@@ -525,6 +526,8 @@ export default function ClientDetails() {
                     clientId,
                     tab: "setup",
                   })}
+                  mountOnEnter
+                  unmountOnExit
                 >
                   <Tab
                     id="setup"

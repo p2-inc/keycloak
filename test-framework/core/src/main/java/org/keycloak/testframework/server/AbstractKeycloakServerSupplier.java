@@ -16,16 +16,6 @@ import org.keycloak.testframework.injection.SupplierOrder;
 public abstract class AbstractKeycloakServerSupplier implements Supplier<KeycloakServer, KeycloakIntegrationTest> {
 
     @Override
-    public Class<KeycloakServer> getValueType() {
-        return KeycloakServer.class;
-    }
-
-    @Override
-    public Class<KeycloakIntegrationTest> getAnnotationClass() {
-        return KeycloakIntegrationTest.class;
-    }
-
-    @Override
     public KeycloakServer getValue(InstanceContext<KeycloakServer, KeycloakIntegrationTest> instanceContext) {
         KeycloakIntegrationTest annotation = instanceContext.getAnnotation();
         KeycloakServerConfig serverConfig = SupplierHelpers.getInstance(annotation.config());
@@ -69,12 +59,7 @@ public abstract class AbstractKeycloakServerSupplier implements Supplier<Keycloa
 
     @Override
     public boolean compatible(InstanceContext<KeycloakServer, KeycloakIntegrationTest> a, RequestedInstance<KeycloakServer, KeycloakIntegrationTest> b) {
-        if (!a.getAnnotation().config().equals(b.getAnnotation().config())) {
-            return false;
-        }
-
-        ServerConfigInterceptorHelper interceptor = new ServerConfigInterceptorHelper(a.getRegistry());
-        return interceptor.sameInterceptors(a);
+        return a.getAnnotation().config().equals(b.getAnnotation().config());
     }
 
     @Override

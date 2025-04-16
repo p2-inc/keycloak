@@ -2,19 +2,21 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
-
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import org.jboss.logging.Logger;
 import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.config.ConfigSupportLevel;
+import org.keycloak.config.Option;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.cli.Picocli;
 import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
 import org.keycloak.quarkus.runtime.cli.command.Build;
 import org.keycloak.quarkus.runtime.cli.command.ShowConfig;
 import org.keycloak.quarkus.runtime.configuration.DisabledMappersInterceptor;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
+import org.keycloak.quarkus.runtime.configuration.NestedPropertyMappingInterceptor;
 import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
 
 import java.util.ArrayList;
@@ -24,12 +26,12 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.keycloak.quarkus.runtime.Environment.isParsedCommand;
@@ -77,10 +79,17 @@ public final class PropertyMappers {
 
     public static ConfigValue getValue(ConfigSourceInterceptorContext context, String name) {
         PropertyMapper<?> mapper = getMapper(name);
-        // during re-aug do not resolve the server runtime properties and avoid they included by quarkus in the default value config source
-        if ((isRebuild() || Environment.isRebuildCheck()) && isKeycloakRuntime(name, mapper)) {
+
+        // During re-aug do not resolve server runtime properties and avoid they included by quarkus in the default value config source.
+        //
+        // The special handling of log properties is because some logging runtime properties are requested during build time
+        // and we need to resolve them. That should be fine as they are generally not considered security sensitive.
+        // See https://github.com/quarkusio/quarkus/pull/42157
+        if ((isRebuild() || Environment.isRebuildCheck()) && isKeycloakRuntime(name, mapper)
+                && !NestedPropertyMappingInterceptor.getResolvingRoot().orElse(name).startsWith("quarkus.log.")) {
             return ConfigValue.builder().withName(name).build();
         }
+
         if (mapper == null) {
             return context.proceed(name);
         }
@@ -127,14 +136,11 @@ public final class PropertyMappers {
         MAPPERS.sanitizeDisabledMappers();
     }
 
-    public static String maskValue(String property, String value) {
-        return maskValue(property, value, null);
+    public static String maskValue(String value, PropertyMapper<?> mapper) {
+        return maskValue(value, null, mapper);
     }
 
-    public static String maskValue(String property, String value, String configSourceName) {
-        property = removeProfilePrefixIfNeeded(property);
-        PropertyMapper<?> mapper = getMapper(property);
-
+    public static String maskValue(String value, String configSourceName, PropertyMapper<?> mapper) {
         if ((configSourceName != null && isKeyStoreConfigSource(configSourceName) || (mapper != null && mapper.isMask()))) {
             return VALUE_MASK;
         }
@@ -142,16 +148,7 @@ public final class PropertyMappers {
         return value;
     }
 
-    private static String removeProfilePrefixIfNeeded(String property) {
-        if(property.startsWith("%")) {
-            String profilePrefix = property.substring(0, property.indexOf(".") +1);
-            property = property.split(profilePrefix)[1];
-        }
-        return property;
-    }
-
     private static PropertyMapper<?> getMapperOrDefault(String property, PropertyMapper<?> defaultMapper, OptionCategory category) {
-        property = removeProfilePrefixIfNeeded(property);
         final var mappers = new ArrayList<>(MAPPERS.getOrDefault(property, Collections.emptyList()));
         if (category != null) {
             mappers.removeIf(m -> !m.getCategory().equals(category));
@@ -175,12 +172,31 @@ public final class PropertyMappers {
         return getMapper(property, null);
     }
 
+    public static PropertyMapper<?> getMapperByCliKey(String cliKey) {
+        return getKcKeyFromCliKey(cliKey).map(PropertyMappers::getMapper).orElse(null);
+    }
+
+    public static Optional<String> getKcKeyFromCliKey(String cliKey) {
+        if (!cliKey.startsWith(Picocli.ARG_PREFIX)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(
+                MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX + cliKey.substring(Picocli.ARG_PREFIX.length()));
+    }
+
+    /**
+     * @return a mutable copy of all known mappers
+     */
     public static Set<PropertyMapper<?>> getMappers() {
-        return MAPPERS.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        return MAPPERS.values().stream().flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public static Set<WildcardPropertyMapper<?>> getWildcardMappers() {
         return MAPPERS.getWildcardMappers();
+    }
+
+    public static WildcardPropertyMapper<?> getWildcardMappedFrom(Option<?> from) {
+        return MAPPERS.wildcardMapFrom.get(from.getKey());
     }
 
     public static boolean isSupported(PropertyMapper<?> mapper) {
@@ -201,12 +217,7 @@ public final class PropertyMappers {
     }
 
     public static boolean isDisabledMapper(String property) {
-        final Predicate<String> isDisabledMapper = (p) -> getDisabledMapper(p).isPresent() && getMapper(p) == null;
-
-        if (property.startsWith("%")) {
-            return isDisabledMapper.test(property.substring(property.indexOf('.') + 1));
-        }
-        return isDisabledMapper.test(property);
+        return getDisabledMapper(property).isPresent() && getMapper(property) == null;
     }
 
     private static Set<PropertyMapper<?>> filterDeniedCategories(List<PropertyMapper<?>> mappers) {
@@ -225,7 +236,9 @@ public final class PropertyMappers {
 
         private final Map<String, PropertyMapper<?>> disabledBuildTimeMappers = new HashMap<>();
         private final Map<String, PropertyMapper<?>> disabledRuntimeMappers = new HashMap<>();
+
         private final Set<WildcardPropertyMapper<?>> wildcardMappers = new HashSet<>();
+        private final Map<String, WildcardPropertyMapper<?>> wildcardMapFrom = new HashMap<>();
 
         public void addAll(PropertyMapper<?>[] mappers) {
             for (PropertyMapper<?> mapper : mappers) {
@@ -245,14 +258,24 @@ public final class PropertyMappers {
 
         public void addMapper(PropertyMapper<?> mapper) {
             if (mapper.hasWildcard()) {
+                if (mapper.getMapFrom() != null) {
+                    wildcardMapFrom.put(mapper.getMapFrom(), (WildcardPropertyMapper<?>) mapper);
+                }
                 wildcardMappers.add((WildcardPropertyMapper<?>)mapper);
+            } else {
+                handleMapper(mapper, this::add);
             }
-            handleMapper(mapper, this::add);
         }
 
         public void removeMapper(PropertyMapper<?> mapper) {
-            wildcardMappers.remove(mapper);
-            handleMapper(mapper, this::remove);
+            if (mapper.hasWildcard()) {
+                wildcardMappers.remove(mapper);
+                if (mapper.getFrom() != null) {
+                    wildcardMapFrom.remove(mapper.getMapFrom());
+                }
+            } else {
+                handleMapper(mapper, this::remove);
+            }
         }
 
         private void remove(String key, PropertyMapper<?> mapper) {
@@ -263,18 +286,29 @@ public final class PropertyMappers {
         }
 
         @Override
+        @SuppressWarnings({"rawtypes", "unchecked"})
         public List<PropertyMapper<?>> get(Object key) {
-            // First check if the requested option matches any wildcard mappers
+            // First check the base mappings
             String strKey = (String) key;
-            List ret = wildcardMappers.stream()
-                    .filter(m -> m.matchesWildcardOptionName(strKey))
-                    .toList();
-            if (!ret.isEmpty()) {
+
+            List ret = super.get(key);
+            if (ret != null) {
                 return ret;
             }
 
-            // If no wildcard mappers match, check for exact matches
-            return super.get(key);
+            // TODO: we may want to introduce a prefix tree here as we add more wildcardMappers
+            // for now we'll just limit ourselves to searching wildcards when we see a quarkus or
+            // keycloak key
+            if (strKey.startsWith(MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX) || strKey.startsWith(MicroProfileConfigProvider.NS_QUARKUS_PREFIX)) {
+                ret = wildcardMappers.stream()
+                        .filter(m -> m.matchesWildcardOptionName(strKey))
+                        .toList();
+                if (!ret.isEmpty()) {
+                    return ret;
+                }
+            }
+
+            return null;
         }
 
         @Override
@@ -287,7 +321,9 @@ public final class PropertyMappers {
         }
 
         public void sanitizeDisabledMappers() {
-            if (Environment.getParsedCommand().isEmpty()) return; // do not sanitize when no command is present
+            if (Environment.getParsedCommand().isEmpty()) {
+                return; // do not sanitize when no command is present
+            }
 
             DisabledMappersInterceptor.runWithDisabled(() -> { // We need to have the whole configuration available
 
@@ -365,8 +401,7 @@ public final class PropertyMappers {
             if (!mapper.getFrom().equals(mapper.getTo())) {
                 operation.accept(mapper.getTo(), mapper);
             }
-            operation.accept(mapper.getCliFormat(), mapper);
-            operation.accept(mapper.getEnvVarFormat(), mapper);
         }
     }
+
 }

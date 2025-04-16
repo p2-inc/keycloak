@@ -122,12 +122,13 @@ public class UserStorageManager extends AbstractStorageManager<UserStorageProvid
             return new ReadOnlyUserModelDelegate(user, false);
         }
 
-        if (user == null || user.getFederationLink() == null) return user;
+        if (user == null || !user.isFederated()) return user;
 
         UserStorageProviderModel model = getStorageProviderModel(realm, user.getFederationLink());
         if (model == null) {
             // remove linked user with unknown storage provider.
             logger.debugf("Removed user with federation link of unknown storage provider '%s'", user.getUsername());
+            deleteInvalidUserCache(realm, user);
             deleteInvalidUser(realm, user);
             return null;
         }
@@ -149,11 +150,16 @@ public class UserStorageManager extends AbstractStorageManager<UserStorageProvid
 
         UserModel validated = importedUserValidation.validate(realm, user);
         if (validated == null) {
-            deleteInvalidUser(realm, user);
-            return null;
-        } else {
-            return validated;
+            deleteInvalidUserCache(realm, user);
+            if (model.isRemoveInvalidUsersEnabled()) {
+                deleteInvalidUser(realm, user);
+                return null;
+            }
+
+            return new ReadOnlyUserModelDelegate(user, false);
         }
+
+        return validated;
     }
 
     private static <T> Stream<T> getCredentialProviders(KeycloakSession session, Class<T> type) {
@@ -204,14 +210,16 @@ public class UserStorageManager extends AbstractStorageManager<UserStorageProvid
         return result;
     }
 
-    protected void deleteInvalidUser(final RealmModel realm, final UserModel user) {
-        String userId = user.getId();
-        String userName = user.getUsername();
+    protected void deleteInvalidUserCache(final RealmModel realm, final UserModel user) {
         UserCache userCache = UserStorageUtil.userCache(session);
         if (userCache != null) {
             userCache.evict(realm, user);
         }
+    }
 
+    protected void deleteInvalidUser(final RealmModel realm, final UserModel user) {
+        String userId = user.getId();
+        String userName = user.getUsername();
         // This needs to be running in separate transaction because removing the user may end up with throwing
         // PessimisticLockException which also rollbacks Jpa transaction, hence when it is running in current transaction
         // it will become not usable for all consequent jpa calls. It will end up with Transaction is in rolled back
@@ -219,6 +227,7 @@ public class UserStorageManager extends AbstractStorageManager<UserStorageProvid
         runJobInTransaction(session.getKeycloakSessionFactory(), session -> {
             RealmModel realmModel = session.realms().getRealm(realm.getId());
             if (realmModel == null) return;
+            session.getContext().setRealm(realm);
             UserModel deletedUser = UserStoragePrivateUtil.userLocalStorage(session).getUserById(realmModel, userId);
             if (deletedUser != null) {
                 try {
@@ -233,7 +242,6 @@ public class UserStorageManager extends AbstractStorageManager<UserStorageProvid
             }
         });
     }
-
 
     protected Stream<UserModel> importValidation(RealmModel realm, Stream<UserModel> users) {
         return users.map(user -> importValidation(realm, user)).filter(Objects::nonNull);
@@ -377,9 +385,8 @@ public class UserStorageManager extends AbstractStorageManager<UserStorageProvid
         StorageId storageId = new StorageId(user.getId());
 
         if (storageId.getProviderId() == null) {
-            String federationLink = user.getFederationLink();
-            boolean linkRemoved = federationLink == null || Optional.ofNullable(
-                    getStorageProviderInstance(realm, federationLink, UserRegistrationProvider.class))
+            boolean linkRemoved = !user.isFederated() || Optional.ofNullable(
+                    getStorageProviderInstance(realm, user.getFederationLink(), UserRegistrationProvider.class))
                     .map(provider -> provider.removeUser(realm, user))
                     .orElse(false);
 

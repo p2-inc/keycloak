@@ -2,7 +2,6 @@
 import { fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import eslint from "@eslint/js";
-import mochaPlugin from "eslint-plugin-mocha";
 import playwright from "eslint-plugin-playwright";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
 import reactCompiler from "eslint-plugin-react-compiler";
@@ -22,8 +21,6 @@ export default tseslint.config(
       "**/lib/",
       "**/target/",
       "./apps/keycloak-server/server/",
-      // Keycloak JS follows a completely different and outdated style, so we'll exclude it for now.
-      "./libs/keycloak-js/",
     ],
   },
   eslint.configs.recommended,
@@ -139,29 +136,9 @@ export default tseslint.config(
       "lodash/import-scope": ["error", "member"],
     },
   },
-  ...[
-    ...compat.extends("plugin:cypress/recommended"),
-    mochaPlugin.configs.flat.recommended,
-  ].map((config) => ({
-    ...config,
-    files: ["**/cypress/**/*"],
-  })),
-  {
-    files: ["**/cypress/**/*"],
-    // TODO: Set these rules to "error" when issues have been resolved.
-    rules: {
-      "cypress/no-unnecessary-waiting": "warn",
-      "cypress/unsafe-to-chain-command": "warn",
-      "mocha/max-top-level-suites": "off",
-      "mocha/no-exclusive-tests": "error",
-      "mocha/no-identical-title": "off",
-      "mocha/no-mocha-arrows": "off",
-      "mocha/no-setup-in-describe": "off",
-    },
-  },
   {
     ...playwright.configs["flat/recommended"],
-    files: ["apps/account-ui/test/**"],
+    files: ["apps/account-ui/test/**", "apps/admin-ui/test/**"],
   },
   {
     files: ["libs/keycloak-admin-client/test/**"],

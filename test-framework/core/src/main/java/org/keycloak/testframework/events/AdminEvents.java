@@ -1,32 +1,41 @@
 package org.keycloak.testframework.events;
 
-import org.keycloak.events.admin.AdminEvent;
+import org.jboss.logging.Logger;
+import org.keycloak.representations.idm.AdminEventRepresentation;
+import org.keycloak.testframework.realm.ManagedRealm;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-public class AdminEvents implements SysLogListener{
+public class AdminEvents extends AbstractEvents<AdminEventRepresentation> {
 
-    private final BlockingQueue<AdminEvent> adminEvents = new LinkedBlockingQueue<>();
+    private static final Logger LOGGER = Logger.getLogger(AdminEvents.class);
 
-    public AdminEvent poll() {
-        try {
-            return adminEvents.poll(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            return null;
-        }
-    }
-
-    public void clear() {
-        adminEvents.clear();
+    public AdminEvents(ManagedRealm realm) {
+        super(realm);
     }
 
     @Override
-    public void onLog(SysLog sysLog) {
-        AdminEvent adminEvent = AdminEventsParser.parse(sysLog);
-        if (adminEvent != null) {
-            adminEvents.add(adminEvent);
-        }
+    protected List<AdminEventRepresentation> getEvents(long from, long to) {
+        return realm.admin().getAdminEvents(null, null, null, null, null, null, null, from, to, null, null, "asc");
+    }
+
+    @Override
+    protected String getEventId(AdminEventRepresentation rep) {
+        return rep.getId();
+    }
+
+    @Override
+    protected String getRealmId(AdminEventRepresentation rep) {
+        return rep.getRealmId();
+    }
+
+    @Override
+    protected void clearServerEvents() {
+        realm.admin().clearAdminEvents();
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
     }
 }

@@ -17,6 +17,7 @@
 
 package org.keycloak.protocol.oid4vc.issuance.credentialbuilder;
 
+import java.util.ArrayList;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.protocol.oid4vc.model.Format;
@@ -29,8 +30,10 @@ import java.util.List;
  */
 public class LDCredentialBuilderFactory implements CredentialBuilderFactory {
 
+    protected static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
+
     @Override
-    public String getId() {
+    public String getSupportedFormat() {
         return Format.LDP_VC;
     }
 
@@ -41,7 +44,7 @@ public class LDCredentialBuilderFactory implements CredentialBuilderFactory {
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return null;
+        return configProperties;
     }
 
     @Override

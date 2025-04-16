@@ -82,7 +82,8 @@ public class Organizations {
         List<IdentityProviderModel> brokers = new ArrayList<>();
 
         for (OrganizationModel organization : organizations) {
-            // user is a managed member, try to resolve the origin broker and redirect automatically
+            // user is a managed member, try to resolve the origin broker and redirect
+            // automatically
             List<IdentityProviderModel> organizationBrokers = organization.getIdentityProviders().toList();
             session.users().getFederatedIdentitiesStream(realm, user)
                     .map(f -> {
@@ -92,7 +93,8 @@ public class Organizations {
                             return null;
                         }
 
-                        FederatedIdentityModel identity = session.users().getFederatedIdentity(realm, user, broker.getAlias());
+                        FederatedIdentityModel identity = session.users().getFederatedIdentity(realm, user,
+                                broker.getAlias());
 
                         if (identity != null) {
                             return broker;
@@ -172,6 +174,13 @@ public class Organizations {
         return email.substring(domainSeparator + 1);
     }
 
+    public static String getEmailDomain(UserModel user) {
+        if (user == null) {
+            return null;
+        }
+        return getEmailDomain(user.getEmail());
+    }
+
     public static OrganizationModel resolveOrganization(KeycloakSession session) {
         return resolveOrganization(session, null, null);
     }
@@ -203,7 +212,8 @@ public class Organizations {
         if (authSession != null) {
             OrganizationScope scope = OrganizationScope.valueOfScope(session);
 
-            List<OrganizationModel> organizations = ofNullable(authSession.getAuthNote(OrganizationModel.ORGANIZATION_ATTRIBUTE))
+            List<OrganizationModel> organizations = ofNullable(
+                    authSession.getAuthNote(OrganizationModel.ORGANIZATION_ATTRIBUTE))
                     .map(provider::getById)
                     .map(List::of)
                     .orElseGet(() -> scope == null ? List.of() : scope.resolveOrganizations(user, session).toList());
@@ -216,20 +226,22 @@ public class Organizations {
                     return resolved;
                 }
 
-                // make sure the user still maps to the organization from the authentication session
+                // make sure the user still maps to the organization from the authentication
+                // session
                 if (matchesOrganization(resolved, user)) {
                     return resolved;
                 }
 
                 return null;
             } else if (scope != null && user != null) {
-                // organization scope requested but no user and no single organization mapped from the scope
+                // organization scope requested but no user and no single organization mapped
+                // from the scope
                 return null;
             }
         }
 
         organization = ofNullable(user).stream().flatMap(provider::getByMember)
-                .filter(o -> o.isEnabled() && provider.isManagedMember(o, user))
+                .filter(OrganizationModel::isEnabled)
                 .findAny();
 
         if (organization.isPresent()) {
@@ -237,7 +249,7 @@ public class Organizations {
         }
 
         if (user != null && domain == null) {
-            domain = getEmailDomain(user.getEmail());
+            domain = getEmailDomain(user);
         }
 
         return ofNullable(domain)
@@ -250,7 +262,8 @@ public class Organizations {
     }
 
     public static boolean isRegistrationAllowed(KeycloakSession session, RealmModel realm) {
-        if (session.getContext().getOrganization() != null) return true;
+        if (session.getContext().getOrganization() != null)
+            return true;
         return realm.isRegistrationAllowed();
     }
 
@@ -269,7 +282,8 @@ public class Organizations {
             return false;
         }
 
-        // check if provider is enabled and user is managed member of a disabled organization OR provider is disabled and user is managed member
+        // check if provider is enabled and user is managed member of a disabled
+        // organization OR provider is disabled and user is managed member
         return organizationProvider.getByMember(delegate)
                 .anyMatch((org) -> (organizationProvider.isEnabled() && org.isManaged(delegate) && !org.isEnabled()) ||
                         (!organizationProvider.isEnabled() && org.isManaged(delegate)));
@@ -280,7 +294,7 @@ public class Organizations {
             return false;
         }
 
-        String emailDomain = Optional.ofNullable(getEmailDomain(user.getEmail())).orElse("");
+        String emailDomain = Optional.ofNullable(getEmailDomain(user)).orElse("");
         Stream<OrganizationDomainModel> domains = organization.getDomains();
         Stream<String> domainNames = domains.map(OrganizationDomainModel::getName);
 

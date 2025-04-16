@@ -32,23 +32,21 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
         String errorMessage = ex.getMessage();
         String additionalSuggestion = null;
 
-        if (ex instanceof UnmatchedArgumentException) {
-            UnmatchedArgumentException uae = (UnmatchedArgumentException) ex;
-
+        if (ex instanceof UnmatchedArgumentException uae) {
             String[] unmatched = getUnmatchedPartsByOptionSeparator(uae, "=");
 
             String cliKey = unmatched[0];
 
-            PropertyMapper<?> mapper = PropertyMappers.getMapper(cliKey);
+            PropertyMapper<?> mapper = PropertyMappers.getMapperByCliKey(cliKey);
 
-            final boolean isDisabledOption = mapper == null && PropertyMappers.isDisabledMapper(cliKey);
+            Optional<PropertyMapper<?>> disabled = PropertyMappers.getKcKeyFromCliKey(cliKey).flatMap(PropertyMappers::getDisabledMapper);
+
             final BooleanSupplier isUnknownOption = () -> mapper == null || !(cmd.getCommand() instanceof AbstractCommand);
 
-            if (isDisabledOption) {
-                var enabledWhen = PropertyMappers.getDisabledMapper(cliKey)
-                        .map(PropertyMapper::getEnabledWhen)
-                        .filter(Optional::isPresent)
-                        .map(desc -> format(". %s", desc.get()))
+            if (mapper == null && disabled.isPresent()) {
+                var enabledWhen = disabled
+                        .flatMap(PropertyMapper::getEnabledWhen)
+                        .map(desc -> format(". %s", desc))
                         .orElse("");
 
                 errorMessage = format("Disabled option: '%s'%s", cliKey, enabledWhen);
@@ -72,12 +70,10 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
                     }
                 }
             }
-        } else if (ex instanceof MissingParameterException) {
-            MissingParameterException mpe = (MissingParameterException)ex;
+        } else if (ex instanceof MissingParameterException mpe) {
             if (mpe.getMissing().size() == 1) {
                 ArgSpec spec = mpe.getMissing().get(0);
-                if (spec instanceof OptionSpec) {
-                    OptionSpec option = (OptionSpec)spec;
+                if (spec instanceof OptionSpec option) {
                     errorMessage = getExpectedMessage(option);
                 }
             }
@@ -99,7 +95,7 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
         return getInvalidInputExitCode(ex, cmd);
     }
 
-    static int getInvalidInputExitCode(Exception ex, CommandLine cmd) {
+    static int getInvalidInputExitCode(Throwable ex, CommandLine cmd) {
         return cmd.getExitCodeExceptionMapper() != null
                 ? cmd.getExitCodeExceptionMapper().getExitCode(ex)
                 : cmd.getCommandSpec().exitCodeOnInvalidInput();
@@ -126,8 +122,11 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
     }
 
     public static String getExpectedValuesMessage(Iterable<String> specCandidates, boolean caseInsensitive) {
-        return specCandidates.iterator().hasNext() ? String.format(" Expected values are%s: %s",
-                caseInsensitive ? " (case insensitive)" : "", String.join(", ", specCandidates)) : "";
+        if (specCandidates == null || !specCandidates.iterator().hasNext()) {
+            return "";
+        }
+        return String.format(" Expected values are%s: %s", caseInsensitive ? " (case insensitive)" : "",
+                String.join(", ", specCandidates));
     }
 
 }

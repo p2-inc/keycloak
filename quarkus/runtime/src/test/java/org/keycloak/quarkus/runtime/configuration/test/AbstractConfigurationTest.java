@@ -22,17 +22,19 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.keycloak.Config;
 import org.keycloak.common.Profile;
+import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler;
 import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
@@ -43,7 +45,6 @@ import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 import io.smallrye.config.ConfigValue;
 import io.smallrye.config.ConfigValue.ConfigValueBuilder;
 import io.smallrye.config.SmallRyeConfig;
-import io.smallrye.config.SmallRyeConfigProviderResolver;
 
 public abstract class AbstractConfigurationTest {
 
@@ -57,7 +58,11 @@ public abstract class AbstractConfigurationTest {
         try {
             field = env.getClass().getDeclaredField("m");
             field.setAccessible(true);
-            ((Map<String, String>) field.get(env)).put(name, value);
+            if (value == null) {
+                ((Map<String, String>) field.get(env)).remove(name);
+            } else {
+                ((Map<String, String>) field.get(env)).put(name, value);
+            }
         } catch (Exception cause) {
             throw new RuntimeException("Failed to update environment variables", cause);
         } finally {
@@ -101,6 +106,7 @@ public abstract class AbstractConfigurationTest {
     @BeforeClass
     public static void resetConfiguration() {
         System.setProperties((Properties) SYSTEM_PROPERTIES.clone());
+        Environment.setHomeDir(Paths.get("src/test/resources/"));
 
         for (String name : new HashMap<>(System.getenv()).keySet()) {
             if (!ENVIRONMENT_VARIABLES.containsKey(name)) {
@@ -113,18 +119,22 @@ public abstract class AbstractConfigurationTest {
             }
         });
 
-        SmallRyeConfigProviderResolver.class.cast(ConfigProviderResolver.instance()).releaseConfig(ConfigProvider.getConfig());
         PropertyMappers.reset();
         ConfigArgsConfigSource.setCliArgs();
         PersistedConfigSource.getInstance().getConfigValueProperties().clear();
         Profile.reset();
         Configuration.resetConfig();
-        ConfigProviderResolver.setInstance(null);
+        ExecutionExceptionHandler.resetExceptionTransformers();
     }
 
     @After
     public void onAfter() {
         resetConfiguration();
+    }
+
+    @AfterClass
+    public static void afterAll() {
+        Environment.removeHomeDir();
     }
 
     protected Config.Scope initConfig(String... scope) {
@@ -135,11 +145,13 @@ public abstract class AbstractConfigurationTest {
     static protected SmallRyeConfig createConfig() {
         Configuration.resetConfig();
         KeycloakConfigSourceProvider.reload();
+        Environment.getCurrentOrCreateFeatureProfile();
         return Configuration.getConfig();
     }
 
     protected void assertConfig(String key, String expectedValue, boolean isExternal) {
-        Function<String, ConfigValue> getConfig = isExternal ? Configuration::getConfigValue : Configuration::getKcConfigValue;
+        Function<String, ConfigValue> getConfig = isExternal ? Configuration::getConfigValue
+                : Configuration::getKcConfigValue;
         var value = getConfig.apply(key).getValue();
         assertThat(String.format("Value is null for key '%s'", key), value, notNullValue());
         assertThat(String.format("Different value for key '%s'", key), value, is(expectedValue));

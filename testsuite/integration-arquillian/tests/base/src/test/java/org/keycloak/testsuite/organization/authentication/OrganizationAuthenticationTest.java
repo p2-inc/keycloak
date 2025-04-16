@@ -34,7 +34,6 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel.RequiredAction;
 import org.keycloak.models.utils.DefaultAuthenticationFlows;
 import org.keycloak.organization.authentication.authenticators.browser.OrganizationAuthenticatorFactory;
-import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.representations.idm.OrganizationRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.Assert;
@@ -54,7 +53,8 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
         openIdentityFirstLoginPage(member.getEmail(), false, null, false, false);
 
         Assert.assertTrue(loginPage.isPasswordInputPresent());
-        // no idp should be shown because there is only a single idp that is bound to an organization
+        // no idp should be shown because there is only a single idp that is bound to an
+        // organization
         Assert.assertFalse(loginPage.isSocialButtonPresent(bc.getIDPAlias()));
 
         // the member should be able to log in using the credentials
@@ -107,7 +107,8 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
             assertThat("Driver should be on the consumer realm page right now",
                     driver.getCurrentUrl(), Matchers.containsString("/auth/realms/" + bc.consumerRealmName() + "/"));
             Assert.assertTrue(loginPage.isPasswordInputPresent());
-            // no idp should be shown because there is only a single idp that is bound to an organization
+            // no idp should be shown because there is only a single idp that is bound to an
+            // organization
             Assert.assertFalse(loginPage.isSocialButtonPresent(bc.getIDPAlias()));
 
             // the member should be able to log in using the credentials
@@ -129,9 +130,8 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
 
         try {
             setTimeOffset(10);
-            oauth.maxAge("1");
-            oauth.kcAction(RequiredAction.UPDATE_PASSWORD.name());
-            loginPage.open(bc.consumerRealmName());
+            oauth.realm(bc.consumerRealmName());
+            oauth.loginForm().maxAge(1).kcAction(RequiredAction.UPDATE_PASSWORD.name()).open();
             loginPage.assertCurrent();
             Matcher<String> expectedInfo = is("Please re-authenticate to continue");
             assertThat(loginPage.getInfoMessage(), expectedInfo);
@@ -140,14 +140,13 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
             appPage.assertCurrent();
         } finally {
             resetTimeOffset();
-            oauth.kcAction(null);
-            oauth.maxAge(null);
         }
     }
 
     @Test
     public void testRequiresUserMembership() {
-        runOnServer(setAuthenticatorConfig(OrganizationAuthenticatorFactory.REQUIRES_USER_MEMBERSHIP, Boolean.TRUE.toString()));
+        runOnServer(setAuthenticatorConfig(OrganizationAuthenticatorFactory.REQUIRES_USER_MEMBERSHIP,
+                Boolean.TRUE.toString()));
 
         try {
             OrganizationRepresentation org = createOrganization();
@@ -158,7 +157,8 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
             loginPage.open(bc.consumerRealmName());
             loginPage.loginUsername(member.getEmail());
             // user is not a member of any organization
-            assertThat(errorPage.getError(), Matchers.containsString("User is not a member of the organization " + org.getName()));
+            assertThat(errorPage.getError(),
+                    Matchers.containsString("User is not a member of the organization " + org.getName()));
 
             organization.members().addMember(member.getId()).close();
             OrganizationRepresentation orgB = createOrganization("org-b");
@@ -167,7 +167,8 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
             loginPage.open(bc.consumerRealmName());
             loginPage.loginUsername(member.getEmail());
             // user is not a member of the organization selected by the client
-            assertThat(errorPage.getError(), Matchers.containsString("User is not a member of the organization " + orgB.getName()));
+            assertThat(errorPage.getError(),
+                    Matchers.containsString("User is not a member of the organization " + orgB.getName()));
             errorPage.assertTryAnotherWayLinkAvailability(false);
 
             organization.members().member(member.getId()).delete().close();
@@ -188,9 +189,11 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
             organization.members().member(member.getId()).delete().close();
             selectOrganizationPage.selectOrganization(org.getAlias());
             // user is not a member of any organization
-            assertThat(errorPage.getError(), Matchers.containsString("User is not a member of the organization " + org.getName()));
+            assertThat(errorPage.getError(),
+                    Matchers.containsString("User is not a member of the organization " + org.getName()));
         } finally {
-            runOnServer(setAuthenticatorConfig(OrganizationAuthenticatorFactory.REQUIRES_USER_MEMBERSHIP, Boolean.FALSE.toString()));
+            runOnServer(setAuthenticatorConfig(OrganizationAuthenticatorFactory.REQUIRES_USER_MEMBERSHIP,
+                    Boolean.FALSE.toString()));
         }
     }
 
@@ -204,8 +207,9 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
         oauth.clientId("broker-app");
         String expectedUsername = URLEncoder.encode(member.getEmail(), StandardCharsets.UTF_8);
         oauth.realm(bc.consumerRealmName());
-        driver.navigate().to(oauth.getLoginFormUrl() + "&" + OIDCLoginProtocol.LOGIN_HINT_PARAM + "=" + expectedUsername);
-        assertThat(loginPage.getUsername(), Matchers.equalTo(URLDecoder.decode(expectedUsername, StandardCharsets.UTF_8)));
+        oauth.loginForm().loginHint(expectedUsername).open();
+        assertThat(loginPage.getUsername(),
+                Matchers.equalTo(URLDecoder.decode(expectedUsername, StandardCharsets.UTF_8)));
 
         // continue authenticating without setting the username
         loginPage.clickSignIn();
@@ -220,7 +224,9 @@ public class OrganizationAuthenticationTest extends AbstractOrganizationTest {
     public static RunOnServer setAuthenticatorConfig(String key, String value) {
         return session -> {
             RealmModel realm = session.getContext().getRealm();
-            FlowUtil.setAuthenticatorConfig(session, realm.getFlowByAlias(DefaultAuthenticationFlows.BROWSER_FLOW).getId(), OrganizationAuthenticatorFactory.ID, key, value);
+            FlowUtil.setAuthenticatorConfig(session,
+                    realm.getFlowByAlias(DefaultAuthenticationFlows.BROWSER_FLOW).getId(),
+                    OrganizationAuthenticatorFactory.ID, key, value);
         };
     }
 }

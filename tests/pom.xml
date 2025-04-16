@@ -21,7 +21,7 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>26.1.4</version>
+        <version>26.2.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -35,6 +35,17 @@
     <modules>
         <module>base</module>
         <module>utils</module>
+        <module>utils-shared</module>
+        <module>custom-providers</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>test-migration-util</id>
+            <modules>
+                <module>migration-util</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>

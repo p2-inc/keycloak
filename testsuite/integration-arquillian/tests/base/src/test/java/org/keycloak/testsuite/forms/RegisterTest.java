@@ -53,15 +53,16 @@ import org.keycloak.testsuite.updaters.RealmAttributeUpdater;
 import org.keycloak.testsuite.util.FlowUtil;
 import org.keycloak.testsuite.util.GreenMailRule;
 import org.keycloak.testsuite.util.MailUtils;
-import org.keycloak.testsuite.util.OAuthClient;
+import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
 import org.keycloak.testsuite.util.UserBuilder;
 import org.keycloak.testsuite.util.AccountHelper;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.ws.rs.core.Response;
-import org.keycloak.testsuite.util.WaitUtils;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -70,7 +71,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -102,6 +102,8 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
 
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
+
+    private String idTokenHint;
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
@@ -195,7 +197,7 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
     public void registerUpperCaseEmailWithChangedEmailAsUsername() throws IOException {
         String userId = registerUpperCaseAndGetUserId(false);
         assertThat(userId, notNullValue());
-        oauth.openLogout();
+        oauth.logoutForm().idTokenHint(idTokenHint).open();
         events.clear();
 
         try (RealmAttributeUpdater rau = configureRealmRegistrationEmailAsUsername(true).update()) {
@@ -380,7 +382,28 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
 
         UserRepresentation user = getUser(userId);
 
-        assertNull(user.getAttributes());
+        assertEquals(Map.of(UserModel.LOCALE, List.of("en")), user.getAttributes());
+    }
+
+    @Test
+    public void registerUserChangedLocaleSuccess() {
+        oauth.openLoginForm();
+        loginPage.assertCurrent();
+        loginPage.clickRegister();
+        registerPage.assertCurrent();
+        errorPage.openLanguage("Deutsch");
+        assertEquals("Deutsch", errorPage.getLanguageDropdownText());
+
+        registerPage.register("firstName", "lastName", "registerGerman@localhost", "registerGerman", "password", "password");
+
+        appPage.assertCurrent();
+        assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+
+        String userId = events.expectRegister("registerGerman", "registerGerman@localhost").assertEvent().getUserId();
+        assertUserRegistered(userId, "registergerman", "registerGerman@localhost");
+
+        UserRepresentation user = getUser(userId);
+        assertEquals(Map.of(UserModel.LOCALE, List.of("de")), user.getAttributes());
     }
 
     @Test
@@ -819,7 +842,7 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
             String userId = events.expectRegister("registerUserSuccessTermsAcceptance", "registerUserSuccessTermsAcceptance@email")
                     .assertEvent().getUserId();
             UserRepresentation user = assertUserRegistered(userId, "registerUserSuccessTermsAcceptance", "registerUserSuccessTermsAcceptance@email");
-            Assert.assertNull(user.getAttributes());
+            assertEquals(Map.of(UserModel.LOCALE, List.of("en")), user.getAttributes());
         } finally {
             configureRegistrationFlowWithCustomRegistrationPageForm(UUID.randomUUID().toString());
         }
@@ -936,8 +959,8 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
                 .detail("username", EMAIL_OR_USERNAME.toLowerCase())
                 .user(userId)
                 .assertEvent();
-        OAuthClient.AccessTokenResponse tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
-        oauth.idTokenHint(tokenResponse.getIdToken());
+        AccessTokenResponse tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
+        idTokenHint = tokenResponse.getIdToken();
         assertUserBasicRegisterAttributes(userId, emailAsUsername ? null : USERNAME, EMAIL, "firstName", "lastName");
 
         return userId;

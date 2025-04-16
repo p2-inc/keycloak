@@ -41,12 +41,10 @@ import org.keycloak.common.util.Base64;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.common.util.ObjectUtil;
 import org.keycloak.credential.CredentialModel;
-import org.keycloak.credential.hash.Pbkdf2Sha512PasswordHashProviderFactory;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.models.Constants;
 import org.keycloak.models.LDAPConstants;
-import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.credential.OTPCredentialModel;
 import org.keycloak.models.credential.PasswordCredentialModel;
@@ -77,8 +75,7 @@ import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.testsuite.federation.DummyUserFederationProviderFactory;
 import org.keycloak.testsuite.federation.UserMapStorageFactory;
-import org.keycloak.testsuite.forms.VerifyProfileTest;
-import org.keycloak.testsuite.page.LoginPasswordUpdatePage;
+import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.pages.ErrorPage;
 import org.keycloak.testsuite.pages.InfoPage;
 import org.keycloak.testsuite.pages.LoginPage;
@@ -94,10 +91,11 @@ import org.keycloak.testsuite.util.DefaultPasswordHash;
 import org.keycloak.testsuite.util.GreenMailRule;
 import org.keycloak.testsuite.util.GroupBuilder;
 import org.keycloak.testsuite.util.MailUtils;
-import org.keycloak.testsuite.util.OAuthClient;
+import org.keycloak.testsuite.util.oauth.OAuthClient;
 import org.keycloak.testsuite.util.RealmBuilder;
 import org.keycloak.testsuite.util.RoleBuilder;
 import org.keycloak.testsuite.util.UserBuilder;
+import org.keycloak.testsuite.util.userprofile.UserProfileUtil;
 import org.keycloak.userprofile.DefaultAttributes;
 import org.keycloak.userprofile.validator.UsernameProhibitedCharactersValidator;
 import org.keycloak.util.JsonSerialization;
@@ -202,14 +200,14 @@ public class UserTest extends AbstractAdminTest {
     public void beforeUserTest() throws IOException {
         createAppClientInRealm(REALM_NAME);
 
-        VerifyProfileTest.setUserProfileConfiguration(realm, null);
+        UserProfileUtil.setUserProfileConfiguration(realm, null);
         UPConfig upConfig = realm.users().userProfile().getConfiguration();
 
         for (String name : managedAttributes) {
             upConfig.addOrReplaceAttribute(createAttributeMetadata(name));
         }
 
-        VerifyProfileTest.setUserProfileConfiguration(realm, JsonSerialization.writeValueAsString(upConfig));
+        UserProfileUtil.setUserProfileConfiguration(realm, JsonSerialization.writeValueAsString(upConfig));
 
         assertAdminEvents.clear();
     }
@@ -487,7 +485,7 @@ public class UserTest extends AbstractAdminTest {
         realm.users().get(userId).update(userRepresentation);
 
         oauth.realm(REALM_NAME);
-        driver.navigate().to(oauth.getLoginFormUrl());
+        oauth.openLoginForm();
 
         assertEquals("Sign in to your account", PageUtils.getPageTitle(driver));
 
@@ -2901,7 +2899,7 @@ public class UserTest extends AbstractAdminTest {
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResetPasswordPath(userId), ResourceType.USER);
 
         oauth.realm(REALM_NAME);
-        driver.navigate().to(oauth.getLoginFormUrl());
+        oauth.openLoginForm();
 
         assertEquals("Sign in to your account", PageUtils.getPageTitle(driver));
 
@@ -3287,7 +3285,7 @@ public class UserTest extends AbstractAdminTest {
         getCleanup(REALM_NAME).addUserId(userId);
 
         oauth.realm(REALM_NAME);
-        driver.navigate().to(oauth.getLoginFormUrl());
+        oauth.openLoginForm();
         assertEquals("Test user should be on the login page.", "Sign in to your account", PageUtils.getPageTitle(driver));
         loginPage.login(userName, userPass);
         assertTrue("Test user should be successfully logged in.", driver.getTitle().contains("AUTH_RESPONSE"));
@@ -3300,7 +3298,7 @@ public class UserTest extends AbstractAdminTest {
         assertTrue("Test user should have a password credential set.", passwordCredential.isPresent());
         realm.users().get(userId).removeCredential(passwordCredential.get().getId());
 
-        driver.navigate().to(oauth.getLoginFormUrl());
+        oauth.openLoginForm();
         assertEquals("Test user should be on the login page.", "Sign in to your account", PageUtils.getPageTitle(driver));
         loginPage.login(userName, userPass);
         assertTrue("Test user should fail to log in after password was deleted.",

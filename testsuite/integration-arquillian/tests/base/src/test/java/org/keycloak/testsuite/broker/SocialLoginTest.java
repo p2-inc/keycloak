@@ -49,7 +49,7 @@ import org.keycloak.testsuite.pages.social.StackOverflowLoginPage;
 import org.keycloak.testsuite.pages.social.TwitterConsentLoginPage;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.IdentityProviderBuilder;
-import org.keycloak.testsuite.util.OAuthClient;
+import org.keycloak.testsuite.util.oauth.OAuthClient;
 import org.keycloak.testsuite.util.RealmBuilder;
 import org.keycloak.testsuite.util.URLUtils;
 import org.keycloak.testsuite.util.WaitUtils;
@@ -507,8 +507,8 @@ public class SocialLoginTest extends AbstractKeycloakTest {
 
         driver.navigate().to(
                 currentTestProvider.equals(PAYPAL)
-                        ? oauth.getLoginFormUrl("https://127.0.0.1:8543/auth")
-                        : oauth.getLoginFormUrl()
+                        ? oauth.loginForm().build().replace("https://localhost", "https://127.0.0.1")
+                        : oauth.loginForm().build()
         );
         loginPage.clickSocial(currentTestProvider.id());
 

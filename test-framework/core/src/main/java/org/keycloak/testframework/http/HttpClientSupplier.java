@@ -13,18 +13,14 @@ import java.io.IOException;
 public class HttpClientSupplier implements Supplier<HttpClient, InjectHttpClient> {
 
     @Override
-    public Class<InjectHttpClient> getAnnotationClass() {
-        return InjectHttpClient.class;
-    }
-
-    @Override
-    public Class<HttpClient> getValueType() {
-        return HttpClient.class;
-    }
-
-    @Override
     public HttpClient getValue(InstanceContext<HttpClient, InjectHttpClient> instanceContext) {
-        return HttpClientBuilder.create().build();
+        HttpClientBuilder builder = HttpClientBuilder.create();
+
+        if (!instanceContext.getAnnotation().followRedirects()) {
+            builder.disableRedirectHandling();
+        }
+
+        return builder.build();
     }
 
     @Override
@@ -38,6 +34,7 @@ public class HttpClientSupplier implements Supplier<HttpClient, InjectHttpClient
 
     @Override
     public boolean compatible(InstanceContext<HttpClient, InjectHttpClient> a, RequestedInstance<HttpClient, InjectHttpClient> b) {
-        return false;
+        return true;
     }
+
 }

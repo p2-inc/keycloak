@@ -962,6 +962,10 @@
           "optional" : true
         } ]
       }, {
+        "name" : "ReloadCertificateFunction",
+        "type_id" : 65615,
+        "fields" : [ ]
+      }, {
         "name" : "UserConsentsUpdatedEvent",
         "type_id" : 65590,
         "fields" : [ {

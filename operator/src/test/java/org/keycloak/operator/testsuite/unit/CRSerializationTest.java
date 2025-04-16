@@ -37,6 +37,7 @@ import org.keycloak.operator.crds.v2alpha1.deployment.spec.TracingSpec;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.TransactionsSpec;
 import org.keycloak.operator.crds.v2alpha1.realmimport.KeycloakRealmImport;
 import org.keycloak.operator.testsuite.utils.K8sUtils;
+import org.keycloak.operator.update.UpdateStrategy;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
@@ -49,6 +50,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -251,6 +253,33 @@ public class CRSerializationTest {
         assertNetworkPolicyRules(networkPolicySpec.getHttpRules());
         assertNetworkPolicyRules(networkPolicySpec.getHttpsRules());
         assertNetworkPolicyRules(networkPolicySpec.getManagementRules());
+    }
+
+    @Test
+    public void testUpdateStrategy() {
+        var keycloak = Serialization.unmarshal(this.getClass().getResourceAsStream("/test-serialization-keycloak-cr.yml"), Keycloak.class);
+        var updateSpec = keycloak.getSpec().getUpdateSpec();
+        assertNotNull(updateSpec);
+        var updateStrategy = updateSpec.getStrategy();
+        assertNotNull(updateStrategy);
+        assertEquals(UpdateStrategy.AUTO, updateStrategy);
+    }
+
+    @Test
+    public void testInvalidUpdateStrategy() {
+        var thrown = assertThrows(IllegalArgumentException.class,
+                () -> Serialization.unmarshal(this.getClass().getResourceAsStream("/test-serialization-keycloak-cr-invalid-update.yml"), Keycloak.class));
+        assertTrue(thrown.getMessage().contains("Cannot deserialize value of type `org.keycloak.operator.update.UpdateStrategy` from String \"abc\""));
+    }
+
+    @Test
+    public void testUpdateStrategyRevision() {
+        var keycloak = Serialization.unmarshal(this.getClass().getResourceAsStream("/test-serialization-keycloak-cr.yml"), Keycloak.class);
+        var updateSpec = keycloak.getSpec().getUpdateSpec();
+        assertNotNull(updateSpec);
+        var revision = updateSpec.getRevision();
+        assertNotNull(revision);
+        assertEquals("1", revision);
     }
 
     private static void assertNetworkPolicyRules(Collection<NetworkPolicyPeer> rules) {

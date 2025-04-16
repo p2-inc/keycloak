@@ -53,7 +53,7 @@ export const TextAreaControl = <
           fieldState.error ? ValidatedOptions.error : ValidatedOptions.default
         }
         isDisabled={props.isDisabled}
-        rows={props.rows}
+        {...props}
         {...field}
       />
     </FormLabel>

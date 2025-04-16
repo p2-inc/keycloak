@@ -70,7 +70,8 @@ public class ResetCredentialEmail implements Authenticator, AuthenticatorFactory
         AuthenticationSessionModel authenticationSession = context.getAuthenticationSession();
         String username = authenticationSession.getAuthNote(AbstractUsernameFormAuthenticator.ATTEMPTED_USERNAME);
 
-        // we don't want people guessing usernames, so if there was a problem obtaining the user, the user will be null.
+        // we don't want people guessing usernames, so if there was a problem obtaining
+        // the user, the user will be null.
         // just reset login for with a success message
         if (user == null) {
             context.forkWithSuccessMessage(new FormMessage(Messages.EMAIL_SENT));
@@ -79,18 +80,22 @@ public class ResetCredentialEmail implements Authenticator, AuthenticatorFactory
 
         String actionTokenUserId = authenticationSession.getAuthNote(DefaultActionTokenKey.ACTION_TOKEN_USER_ID);
         if (actionTokenUserId != null && Objects.equals(user.getId(), actionTokenUserId)) {
-            logger.debugf("Forget-password triggered when reauthenticating user after authentication via action token. Skipping " + PROVIDER_ID + " screen and using user '%s' ", user.getUsername());
+            logger.debugf(
+                    "Forget-password triggered when reauthenticating user after authentication via action token. Skipping "
+                            + PROVIDER_ID + " screen and using user '%s' ",
+                    user.getUsername());
             if (forceLogin(context.getAuthenticatorConfig(), user)) {
                 // force end of auth session after the required actions
-                context.getAuthenticationSession().setAuthNote(AuthenticationManager.END_AFTER_REQUIRED_ACTIONS, "true");
+                context.getAuthenticationSession().setAuthNote(AuthenticationManager.END_AFTER_REQUIRED_ACTIONS,
+                        "true");
             }
             context.success();
             return;
         }
 
-
         EventBuilder event = context.getEvent();
-        // we don't want people guessing usernames, so if there is a problem, just continuously challenge
+        // we don't want people guessing usernames, so if there is a problem, just
+        // continuously challenge
         if (user.getEmail() == null || user.getEmail().trim().length() == 0) {
             event.user(user)
                     .detail(Details.USERNAME, username)
@@ -100,27 +105,34 @@ public class ResetCredentialEmail implements Authenticator, AuthenticatorFactory
             return;
         }
 
-        int validityInSecs = context.getRealm().getActionTokenGeneratedByUserLifespan(ResetCredentialsActionToken.TOKEN_TYPE);
+        int validityInSecs = context.getRealm()
+                .getActionTokenGeneratedByUserLifespan(ResetCredentialsActionToken.TOKEN_TYPE);
         int absoluteExpirationInSecs = Time.currentTime() + validityInSecs;
 
         // We send the secret in the email in a link as a query param.
-        String authSessionEncodedId = AuthenticationSessionCompoundId.fromAuthSession(authenticationSession).getEncodedId();
-        ResetCredentialsActionToken token = new ResetCredentialsActionToken(user.getId(), user.getEmail(), absoluteExpirationInSecs, authSessionEncodedId, authenticationSession.getClient().getClientId());
+        String authSessionEncodedId = AuthenticationSessionCompoundId.fromAuthSession(authenticationSession)
+                .getEncodedId();
+        ResetCredentialsActionToken token = new ResetCredentialsActionToken(user.getId(), user.getEmail(),
+                absoluteExpirationInSecs, authSessionEncodedId, authenticationSession.getClient().getClientId());
         String link = UriBuilder
-          .fromUri(context.getActionTokenUrl(token.serialize(context.getSession(), context.getRealm(), context.getUriInfo())))
-          .build()
-          .toString();
+                .fromUri(context.getActionTokenUrl(
+                        token.serialize(context.getSession(), context.getRealm(), context.getUriInfo())))
+                .build()
+                .toString();
         long expirationInMinutes = TimeUnit.SECONDS.toMinutes(validityInSecs);
         try {
-            context.getSession().getProvider(EmailTemplateProvider.class).setRealm(context.getRealm()).setUser(user).setAuthenticationSession(authenticationSession).sendPasswordReset(link, expirationInMinutes);
+            context.getSession().getProvider(EmailTemplateProvider.class).setRealm(context.getRealm()).setUser(user)
+                    .setAuthenticationSession(authenticationSession).sendPasswordReset(link, expirationInMinutes);
 
             event.clone().event(EventType.SEND_RESET_PASSWORD)
-                         .user(user)
-                         .detail(Details.USERNAME, username)
-                         .detail(Details.EMAIL, user.getEmail()).detail(Details.CODE_ID, authenticationSession.getParentSession().getId()).success();
+                    .user(user)
+                    .detail(Details.USERNAME, username)
+                    .detail(Details.EMAIL, user.getEmail())
+                    .detail(Details.CODE_ID, authenticationSession.getParentSession().getId()).success();
             context.forkWithSuccessMessage(new FormMessage(Messages.EMAIL_SENT));
         } catch (EmailException e) {
             event.clone().event(EventType.SEND_RESET_PASSWORD)
+                    .detail(Details.REASON, e.getMessage())
                     .detail(Details.USERNAME, username)
                     .user(user)
                     .error(Errors.EMAIL_SEND_FAILED);
@@ -133,8 +145,10 @@ public class ResetCredentialEmail implements Authenticator, AuthenticatorFactory
     }
 
     public static Long getLastChangedTimestamp(KeycloakSession session, RealmModel realm, UserModel user) {
-        // TODO(hmlnarik): Make this more generic to support non-password credential types
-        PasswordCredentialProvider passwordProvider = (PasswordCredentialProvider) session.getProvider(CredentialProvider.class, PasswordCredentialProviderFactory.PROVIDER_ID);
+        // TODO(hmlnarik): Make this more generic to support non-password credential
+        // types
+        PasswordCredentialProvider passwordProvider = (PasswordCredentialProvider) session
+                .getProvider(CredentialProvider.class, PasswordCredentialProviderFactory.PROVIDER_ID);
         CredentialModel password = passwordProvider.getPassword(realm, user);
 
         return password == null ? null : password.getCreatedDate();
@@ -203,13 +217,12 @@ public class ResetCredentialEmail implements Authenticator, AuthenticatorFactory
                 .label("Force login after reset")
                 .helpText(
                         """
-                        If this property is true, the user needs to login again after the reset credentials.
-                        If this property is false, the user will be automatically logged in after the succesful
-                        reset credentials when the same authentication session is used.
-                        If this property is only-federated (default), only federated users will be forced to login again,
-                        users stored in the internal database will be logged in if using the same authentication session.
-                        """
-                )
+                                If this property is true, the user needs to login again after the reset credentials.
+                                If this property is false, the user will be automatically logged in after the succesful
+                                reset credentials when the same authentication session is used.
+                                If this property is only-federated (default), only federated users will be forced to login again,
+                                users stored in the internal database will be logged in if using the same authentication session.
+                                """)
                 .type(ProviderConfigProperty.LIST_TYPE)
                 .options(Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString(), FEDERATED_OPTION))
                 .defaultValue(FEDERATED_OPTION)
@@ -243,17 +256,18 @@ public class ResetCredentialEmail implements Authenticator, AuthenticatorFactory
     }
 
     private boolean forceLogin(AuthenticatorConfigModel config, UserModel user) {
-        final String forceLogin = config != null? config.getConfig().get(FORCE_LOGIN) : null;
+        final String forceLogin = config != null ? config.getConfig().get(FORCE_LOGIN) : null;
         if (forceLogin == null || FEDERATED_OPTION.equalsIgnoreCase(forceLogin)) {
             // default is only-federated, return true only for federated users
-            return !StorageId.isLocalStorage(user.getId()) || user.getFederationLink() != null;
+            return !StorageId.isLocalStorage(user.getId()) || user.isFederated();
         } else if (Boolean.TRUE.toString().equalsIgnoreCase(forceLogin)) {
             return Boolean.TRUE;
         } else if (Boolean.FALSE.toString().equalsIgnoreCase(forceLogin)) {
             return Boolean.FALSE;
         } else {
             logger.warnf("Invalid value for force-login option: %s", forceLogin);
-            throw new AuthenticationFlowException("Invalid value for force-login option: " + forceLogin, AuthenticationFlowError.INTERNAL_ERROR);
+            throw new AuthenticationFlowException("Invalid value for force-login option: " + forceLogin,
+                    AuthenticationFlowError.INTERNAL_ERROR);
         }
     }
 }

@@ -40,7 +40,7 @@ public interface CredentialBuilder extends Provider {
      * The credential is built incompletely, intended that it would be signed externally.
      * </p>
      *
-     * @param verifiableCredential an internal representation of the credential
+     * @param verifiableCredential  an internal representation of the credential
      * @param credentialBuildConfig additional configurations for building the credential
      * @return the built verifiable credential of the specific format, ready to be signed
      */

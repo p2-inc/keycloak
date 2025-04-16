@@ -20,7 +20,6 @@ package org.keycloak.models.utils;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.Config.Scope;
-import org.keycloak.authorization.AdminPermissionsSchema;
 import org.keycloak.broker.social.SocialIdentityProvider;
 import org.keycloak.broker.social.SocialIdentityProviderFactory;
 import org.keycloak.common.util.CertificateUtils;
@@ -111,6 +110,8 @@ public final class KeycloakModelUtils {
     public static final String GROUP_PATH_SEPARATOR = "/";
     public static final String GROUP_PATH_ESCAPE = "~";
     private static final char CLIENT_ROLE_SEPARATOR = '.';
+
+    public static final int MAX_CLIENT_LOOKUPS_DURING_ROLE_RESOLVE = 25;
 
     private KeycloakModelUtils() {
     }
@@ -300,11 +301,14 @@ public final class KeycloakModelUtils {
     }
 
     /**
-     * Try to find user by username or email for authentication
+     * If "Login with email" is enabled and the given username contains '@',
+     * attempts to find the user by email for authentication.
      *
-     * @param realm    realm
-     * @param username username or email of user
-     * @return found user
+     * Otherwise, or if not found, attempts to find the user by username.
+     *
+     * @param realm the realm to search within
+     * @param username the username or email of the user
+     * @return the found user if present; otherwise, {@code null}
      */
     public static UserModel findUserByNameOrEmail(KeycloakSession session, RealmModel realm, String username) {
         if (realm.isLoginWithEmailAllowed() && username.indexOf('@') != -1) {
@@ -935,8 +939,10 @@ public final class KeycloakModelUtils {
         }
 
         // Check client roles for all possible splits by dot
+        int counter = 0;
         int scopeIndex = roleName.lastIndexOf(CLIENT_ROLE_SEPARATOR);
-        while (scopeIndex >= 0) {
+        while (scopeIndex >= 0 && counter < MAX_CLIENT_LOOKUPS_DURING_ROLE_RESOLVE) {
+            counter++;
             String appName = roleName.substring(0, scopeIndex);
             ClientModel client = realm.getClientByClientId(appName);
             if (client != null) {
@@ -945,6 +951,10 @@ public final class KeycloakModelUtils {
             }
 
             scopeIndex = roleName.lastIndexOf(CLIENT_ROLE_SEPARATOR, scopeIndex - 1);
+        }
+        if (counter >= MAX_CLIENT_LOOKUPS_DURING_ROLE_RESOLVE) {
+            logger.warnf("Not able to retrieve role model from the role name '%s'. Please use shorter role names with the limited amount of dots, roleName", roleName.length() > 100 ? roleName.substring(0, 100) + "..." : roleName);
+            return null;
         }
 
         // determine if roleName is a realm role
@@ -1189,34 +1199,6 @@ public final class KeycloakModelUtils {
             if (found == null) throw new RuntimeException("default group in realm rep doesn't exist: " + path);
             realm.addDefaultGroup(found);
         });
-    }
-
-    public static boolean isAdminPermissionsEnabled(RealmModel realm) {
-        return Profile.isFeatureEnabled(Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ_V2) && realm.isAdminPermissionsEnabled();
-    }
-
-    public static void setupAdminPermissionsClient(KeycloakSession session, RealmModel realm) {
-        ClientModel client = session.clients().addClient(realm, Constants.ADMIN_PERMISSIONS_CLIENT_ID);
-        realm.setAdminPermissionsClient(client);
-
-        ResourceServer resourceServer = RepresentationToModel.createResourceServer(client, session, false);
-        ResourceServerRepresentation resourceServerRep = ModelToRepresentation.toRepresentation(resourceServer, client);
-
-        //create all scopes defined in the schema
-        //there is no way how to map scopes to the resourceType, we need to collect all scopes from all resourceTypes 
-        Set<ScopeRepresentation> scopes = AdminPermissionsSchema.SCHEMA.getResourceTypes().values().stream()
-                .flatMap((resourceType) -> resourceType.getScopes().stream())
-                .map(scope -> new ScopeRepresentation(scope))
-                .collect(Collectors.toSet());//collecting to set to get rid of duplicities
-
-        resourceServerRep.setScopes(List.copyOf(scopes));
-
-        //create 'all-resource' resources defined in the schema
-        resourceServerRep.setResources(AdminPermissionsSchema.SCHEMA.getResourceTypes().keySet().stream()
-                .map(type -> new ResourceRepresentation(type))
-                .collect(Collectors.toList()));
-
-        RepresentationToModel.toModel(resourceServerRep, session.getProvider(AuthorizationProvider.class), client);
     }
 
     /**

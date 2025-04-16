@@ -21,7 +21,7 @@
     <parent>
         <artifactId>keycloak-test-framework-parent</artifactId>
         <groupId>org.keycloak.testframework</groupId>
-        <version>26.1.4</version>
+        <version>26.2.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -41,13 +41,19 @@
             </dependency>
             <dependency>
                 <groupId>org.keycloak.testframework</groupId>
+                <artifactId>keycloak-test-framework-junit5-config</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak.testframework</groupId>
                 <artifactId>keycloak-test-framework-ui</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.keycloak.testframework</groupId>
-                <artifactId>keycloak-test-framework-oauth-nimbus-poc</artifactId>
+                <artifactId>keycloak-test-framework-oauth</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>

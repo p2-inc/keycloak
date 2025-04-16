@@ -36,7 +36,8 @@ import org.openqa.selenium.support.FindBy;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public class RegisterPage extends AbstractPage {
+public class RegisterPage extends LanguageComboboxAwarePage
+{
 
     @Page
     private AccountFields.AccountErrors accountErrors;
@@ -275,14 +276,8 @@ public class RegisterPage extends AbstractPage {
         return passwordErrors;
     }
 
-    @Override
-    public void open() {
-        oauth.openRegistrationForm();
-        assertCurrent();
-    }
-
     public void openWithLoginHint(String loginHint) {
-        oauth.addCustomParameter(OIDCLoginProtocol.LOGIN_HINT_PARAM, loginHint).openRegistrationForm();
+        oauth.registrationForm().loginHint(loginHint).open();
         assertCurrent();
     }
 

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-tests</artifactId>
-        <version>26.1.4</version>
+        <version>26.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -48,6 +48,10 @@
     </properties>
     
     <dependencies>
+        <dependency>
+            <groupId>org.keycloak.tests</groupId>
+            <artifactId>keycloak-tests-utils-shared</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-util-embedded-ldap</artifactId>
@@ -271,6 +275,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <runOrder>alphabetical</runOrder>
                     <excludes>
                         <exclude>${exclude.test}</exclude>
                         <exclude>${exclude.console}</exclude>

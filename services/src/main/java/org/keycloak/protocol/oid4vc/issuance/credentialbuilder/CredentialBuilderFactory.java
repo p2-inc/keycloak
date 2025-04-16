@@ -31,6 +31,16 @@ public interface CredentialBuilderFactory extends
         ComponentFactory<CredentialBuilder, CredentialBuilder>,
         OID4VCEnvironmentProviderFactory {
 
+    /**
+     * Returns the credential format supported by the credential builder.
+     */
+    String getSupportedFormat();
+
+    @Override
+    default String getId() {
+        return getSupportedFormat();
+    }
+
     @Override
     default void init(Config.Scope config) {
     }

@@ -13,6 +13,7 @@ import org.keycloak.it.utils.KeycloakDistribution;
 import org.keycloak.quarkus.runtime.cli.command.ShowConfig;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -86,11 +87,33 @@ public class ShowConfigCommandDistTest {
 
     @Test
     @Launch({ ShowConfig.NAME })
-    @WithEnvVars({"KC_DB_PASSWORD", "secret-pass"})
+    @WithEnvVars({"KC_DB_PASSWORD", "secret-pass", "KC_LOG_LEVEL_FOO_BAR", "trace"})
     void testNoDuplicitEnvVarEntries(LaunchResult result) {
         String output = result.getOutput();
         assertThat(output, containsString("kc.db-password =  " + PropertyMappers.VALUE_MASK));
+        assertThat(output, containsString("kc.log-level-foo.bar"));
+        assertThat(output, not(containsString("kc.log.")));
         assertThat(output, not(containsString("kc.db.password")));
         assertThat(output, not(containsString("secret-pass")));
+    }
+
+    @Test
+    @RawDistOnly(reason = "Containers are immutable")
+    void testConfigSourceNames(KeycloakDistribution distribution) {
+        CLIResult result = distribution.run("build");
+        result.assertBuild();
+
+        distribution.setEnvVar("KC_LOG", "file");
+        distribution.copyOrReplaceFile(Paths.get("src/test/resources/ShowConfigCommandTest/quarkus.properties"), Path.of("conf", "quarkus.properties"));
+
+        result = distribution.run(String.format("%s=%s", CONFIG_FILE_LONG_NAME, Paths.get("src/test/resources/ShowConfigCommandTest/keycloak-keystore.conf").toAbsolutePath().normalize()), ShowConfig.NAME, "all");
+
+        result.assertMessage("(CLI)");
+        result.assertMessage("(ENV)");
+        result.assertMessage("(quarkus.properties)");
+        result.assertMessage("(Persisted)");
+        result.assertMessage("(config-keystore)");
+        result.assertMessage("(classpath application.properties)");
+        result.assertMessage("(keycloak-keystore.conf)");
     }
 }

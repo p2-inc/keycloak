@@ -17,10 +17,17 @@
 
 package org.keycloak.protocol.oid4vc.issuance.credentialbuilder;
 
+import org.keycloak.jose.jwk.JWK;
+
 /**
  * Incomplete representations of format-specific credentials.
  *
  * @author <a href="mailto:Ingrid.Kamga@adorsys.com">Ingrid Kamga</a>
  */
 public interface CredentialBody {
+
+    /**
+     * Bind the credential to a public key prior to signing.
+     */
+    void addKeyBinding(JWK jwk) throws CredentialBuilderException;
 }

@@ -99,3 +99,4 @@ quarkus/data/*.db
 
 node
 node_modules
+.env.test

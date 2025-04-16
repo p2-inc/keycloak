@@ -7,8 +7,10 @@ defaults:
   run:
     shell: bash
 
-jobs:
+permissions:
+  contents: read
 
+jobs:
   analysis:
     name: Vulnerability scanner for containers
     runs-on: ubuntu-latest
@@ -17,16 +19,14 @@ jobs:
       matrix:
         container: [keycloak, keycloak-operator]
       fail-fast: false
+    permissions:
+      security-events: write # Required for SARIF uploads
     steps:
-      - name: Extract release ID
-        id: release
-        run: echo "id=${GITHUB_REF#refs/heads/release/}" >> $GITHUB_OUTPUT
-        
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: quay.io/keycloak/${{ matrix.container }}:${{ steps.release.outputs.id }}
           format: sarif

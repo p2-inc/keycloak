@@ -5,13 +5,18 @@ import io.quarkus.maven.dependency.DependencyBuilder;
 import io.smallrye.config.SmallRyeConfig;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.keycloak.common.Profile;
+import org.keycloak.common.Profile.Feature;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +28,7 @@ public class KeycloakServerConfigBuilder {
     private final Set<String> featuresDisabled = new HashSet<>();
     private final LogBuilder log = new LogBuilder();
     private final Set<Dependency> dependencies = new HashSet<>();
+    private final Set<Path> configFiles = new HashSet<>();
 
     private KeycloakServerConfigBuilder(String command) {
         this.command = command;
@@ -67,6 +73,18 @@ public class KeycloakServerConfigBuilder {
 
     public KeycloakServerConfigBuilder dependency(String groupId, String artifactId) {
         dependencies.add(new DependencyBuilder().setGroupId(groupId).setArtifactId(artifactId).build());
+        return this;
+    }
+
+    public KeycloakServerConfigBuilder cacheConfigFile(String resourcePath) {
+        try {
+            Path p = Paths.get(Objects.requireNonNull(getClass().getResource(resourcePath)).toURI());
+            configFiles.add(p);
+            option("cache-config-file", p.getFileName().toString());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
         return this;
     }
 
@@ -147,22 +165,12 @@ public class KeycloakServerConfigBuilder {
                 option("log-console-format", format);
             }
 
-            StringBuilder logLevel = new StringBuilder();
             if (rootLevel != null) {
-                logLevel.append(rootLevel);
+                option("log-level", rootLevel);
             }
 
             for (Map.Entry<String, String> e : categoryLevels.entrySet()) {
-                if (!logLevel.isEmpty()) {
-                    logLevel.append(",");
-                }
-                logLevel.append(e.getKey());
-                logLevel.append(":");
-                logLevel.append(e.getValue());
-            }
-
-            if (!logLevel.isEmpty()) {
-                option("log-level", logLevel.toString());
+                option("log-level-" + e.getKey(), e.getValue());
             }
 
             if (color != null) {
@@ -171,7 +179,7 @@ public class KeycloakServerConfigBuilder {
         }
     }
 
-    public List<String> toArgs() {
+    List<String> toArgs() {
         log.build();
 
         List<String> args = new LinkedList<>();
@@ -189,13 +197,17 @@ public class KeycloakServerConfigBuilder {
         return args;
     }
 
-    public Set<Dependency> toDependencies() {
+    Set<Dependency> toDependencies() {
         return dependencies;
+    }
+
+    Set<Path> toConfigFiles() {
+        return configFiles;
     }
 
     private Set<String> toFeatureStrings(Profile.Feature... features) {
         return Arrays.stream(features).map(f -> {
-            if (f.getVersion() > 1) {
+            if (Profile.getFeatureVersions(f.getKey()).size() > 1) {
                 return f.getVersionedKey();
             }
             return f.name().toLowerCase().replace('_', '-');

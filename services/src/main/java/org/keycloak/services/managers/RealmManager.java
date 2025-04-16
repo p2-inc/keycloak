@@ -19,6 +19,7 @@ package org.keycloak.services.managers;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.Config;
+import org.keycloak.authorization.AdminPermissionsSchema;
 import org.keycloak.common.Profile;
 import org.keycloak.common.enums.SslRequired;
 import org.keycloak.common.util.Encode;
@@ -32,6 +33,7 @@ import org.keycloak.models.ClientModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.ImpersonationConstants;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.ModelDuplicateException;
 import org.keycloak.models.ModelException;
 import org.keycloak.models.OTPPolicy;
 import org.keycloak.models.ProtocolMapperModel;
@@ -541,6 +543,9 @@ public class RealmManager {
         if (StringUtil.isBlank(rep.getRealm())) {
             throw new ModelException("Realm name cannot be empty");
         }
+        if (session.realms().getRealmByName(rep.getRealm()) != null) {
+            throw new ModelDuplicateException("Realm " + rep.getRealm() + " already exists");
+        }
 
         RealmModel realm = model.createRealm(id, rep.getRealm());
         RealmModel currentRealm = session.getContext().getRealm();
@@ -568,7 +573,7 @@ public class RealmManager {
                     realm.setAdminPermissionsClient(client);
                     RepresentationToModel.createResourceServer(client, session, false);
                 } else if (Boolean.TRUE.equals(rep.isAdminPermissionsEnabled())) {
-                    KeycloakModelUtils.setupAdminPermissionsClient(session, realm);
+                    AdminPermissionsSchema.SCHEMA.init(session, realm);
                 }
             }
 

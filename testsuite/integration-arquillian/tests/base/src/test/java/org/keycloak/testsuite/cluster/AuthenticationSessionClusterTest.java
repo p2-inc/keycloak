@@ -34,7 +34,7 @@ import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.pages.LoginUpdateProfilePage;
-import org.keycloak.testsuite.util.OAuthClient;
+import org.keycloak.testsuite.util.oauth.OAuthClient;
 
 import jakarta.ws.rs.core.UriBuilder;
 import java.util.HashSet;
@@ -85,11 +85,10 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
 //        String node1Route = backendNode(0).getArquillianContainer().getName();
 //        String node2Route = backendNode(1).getArquillianContainer().getName();
 
-        OAuthClient oAuthClient = new OAuthClient();
-        oAuthClient.init(driver);
+        OAuthClient oAuthClient = oauth;
         oAuthClient.baseUrl(UriBuilder.fromUri(backendNode(0).getUriBuilder().build() + "/auth").build("test").toString());
 
-        String testAppLoginNode1URL = oAuthClient.getLoginFormUrl();
+        String testAppLoginNode1URL = oAuthClient.loginForm().build();
 
         Set<String> visitedRoutes = new HashSet<>();
         for (int i = 0; i < 20; i++) {
@@ -110,11 +109,10 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
 
     @Test
     public void testAuthSessionCookieWithoutRoute() throws Exception {
-        OAuthClient oAuthClient = new OAuthClient();
-        oAuthClient.init(driver);
+        OAuthClient oAuthClient = oauth;
         oAuthClient.baseUrl(UriBuilder.fromUri(backendNode(0).getUriBuilder().build() + "/auth").build("test").toString());
 
-        String testAppLoginNode1URL = oAuthClient.getLoginFormUrl();
+        String testAppLoginNode1URL = oAuthClient.loginForm().build();
 
         // Disable route on backend server
         getTestingClientFor(backendNode(0)).server().run(session -> {

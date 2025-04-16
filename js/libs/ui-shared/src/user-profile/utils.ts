@@ -73,12 +73,13 @@ export function setUserProfileServerError<T>(
   ).forEach((e) => {
     const params = Object.assign(
       {},
-      e.params?.map((p) => (isBundleKey(p.toString()) ? t(unWrap(p)) : p)),
+      e.params?.map((p) => (isBundleKey(p?.toString()) ? t(unWrap(p)) : p)),
     );
     setError(fieldName(e.field) as keyof T, {
       message: t(
         isBundleKey(e.errorMessage) ? unWrap(e.errorMessage) : e.errorMessage,
         {
+          /* eslint-disable @typescript-eslint/no-misused-spread */
           ...params,
           defaultValue: e.errorMessage || e.field,
         },
