@@ -14,6 +14,7 @@ public class TransactionOptions {
       .category(OptionCategory.TRANSACTION)
       .description("Set if distributed transactions are supported. If set to false, transactions are managed by the server and can not be joined if multiple data sources are used. By default, distributed transactions are enabled and only XA data sources can be used.")
       .buildTime(true)
+      .defaultValue(Boolean.TRUE)
       .hidden()
       .build();
 
