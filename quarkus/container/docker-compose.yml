@@ -8,14 +8,14 @@ volumes:
 
 services:
   cockroach:
-    image: cockroachdb/cockroach:latest
+    image: cockroachdb/cockroach:v23.2.23
     volumes:
       - cockroach_data:/cockroach/cockroach-data
     command: start-single-node --insecure
     ports:
       - 26257:26257
   keycloak:
-    image: quay.io/phasetwo/keycloak-crdb:26.1.5
+    image: quay.io/garth/keycloak-crdb:26.1.5
     environment:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -29,7 +29,7 @@ services:
       KC_DB_USERNAME: root
       KC_HOSTNAME_STRICT: 'false'
       KC_HTTP_ENABLED: 'true'
-      KC_LOG_LEVEL: INFO
+      KC_LOG_LEVEL: "INFO,io.phasetwo:DEBUG,org.hibernate.SQL:DEBUG,org.hibernate.orm.jdbc.bind:TRACE"
       KC_PROXY_HEADERS: 'xforwarded'
       KC_TRANSACTION_JTA_ENABLED: 'false'
       KC_TRANSACTION_XA_ENABLED: 'false'

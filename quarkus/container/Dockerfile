@@ -7,13 +7,14 @@ RUN dnf install -y tar gzip
 
 ADD $KEYCLOAK_DIST /tmp/keycloak/
 ADD cockroachdb-jdbc-driver-1.2.1.jar /tmp/keycloak/
+ADD crdb-dialect-1.0.jar /tmp/keycloak/
 # The next step makes it uniform for local development and upstream built.
 # If it is a local tar archive then it is unpacked, if from remote is just downloaded.
 RUN (cd /tmp/keycloak && \
     tar -xvf /tmp/keycloak/keycloak-*.tar.gz && \
     rm /tmp/keycloak/keycloak-*.tar.gz) || true
 
-RUN mv /tmp/keycloak/keycloak-* /opt/keycloak && mkdir -p /opt/keycloak/data && mv /tmp/keycloak/cockroachdb-jdbc-driver-1.2.1.jar /opt/keycloak/providers/io.cockroachdb.jdbc.cockroachdb-jdbc-driver-1.2.1.jar
+RUN mv /tmp/keycloak/keycloak-* /opt/keycloak && mkdir -p /opt/keycloak/data && mv /tmp/keycloak/cockroachdb-jdbc-driver-1.2.1.jar /opt/keycloak/providers/io.cockroachdb.jdbc.cockroachdb-jdbc-driver-1.2.1.jar && mv /tmp/keycloak/crdb-dialect-1.0.jar /opt/keycloak/providers/io.phasetwo.crdb-dialect-1.0.jar
 RUN chmod -R g+rwX /opt/keycloak
 
 ADD ubi-null.sh /tmp/
