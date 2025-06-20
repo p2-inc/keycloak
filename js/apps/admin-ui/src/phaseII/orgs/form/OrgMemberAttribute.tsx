@@ -1,0 +1,126 @@
+import { useTranslation } from "react-i18next";
+import { Controller } from "react-hook-form";
+import { FormGroup, Grid, GridItem, TextInput } from "@patternfly/react-core";
+import { MultiLineInput } from "../../../components/multi-line-input/MultiLineInput";
+import { HelpItem } from "@keycloak/keycloak-ui-shared";
+import { useEffect } from "react";
+import {
+  Form,
+  Button,
+  ActionGroup,
+  AlertVariant,
+} from "@patternfly/react-core";
+import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
+import { defaultOrgState, OrgFormType } from "../modals/NewOrgModal";
+import type { OrgRepresentation } from "../routes";
+import { OrgFields } from "../form/OrgFields";
+import useOrgFetcher, {
+  PhaseTwoOrganizationUserRepresentation,
+} from "../useOrgFetcher";
+import { useRealm } from "../../../context/realm-context/RealmContext";
+import { useAlerts } from "@keycloak/keycloak-ui-shared";
+
+type Inputs = {
+  name: string;
+  value: string;
+};
+
+type Props = {
+  user: PhaseTwoOrganizationUserRepresentation;
+  orgId: string;
+  updateUser?: () => void;
+};
+
+export const OrgMemberAttribute = ({ user, orgId, updateUser }: Props) => {
+  const { t } = useTranslation();
+
+  const { realm } = useRealm();
+  const { addAlert } = useAlerts();
+
+  const { updateAttributesForOrgMember } = useOrgFetcher(realm);
+
+  const addMemberAttributeForm = useForm<Inputs>();
+  const {
+    handleSubmit: handleMemberAttributeSubmit,
+    reset: resetMemberAttributeForm,
+    formState: { isDirty: isMemberAttributeDirty },
+    control,
+  } = addMemberAttributeForm;
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log(data);
+
+    if (!data.name || !data.value) {
+      console.error("Name and value are required");
+      return;
+    }
+
+    try {
+      const res = await updateAttributesForOrgMember(orgId, user.id!, {
+        [data.name]: [data.value],
+      });
+      console.log("🚀 ~ constonSubmit:SubmitHandler<Inputs>= ~ res:", res);
+      resetMemberAttributeForm({ name: "", value: "" });
+      addAlert("Added attribute to member", AlertVariant.success);
+    } catch (error) {
+      console.error("Error updating member attribute", error);
+      addAlert("Failed to add attribute to member", AlertVariant.danger);
+    } finally {
+      if (updateUser) {
+        updateUser();
+      }
+    }
+  };
+
+  return (
+    <FormProvider {...addMemberAttributeForm}>
+      <Form onSubmit={handleMemberAttributeSubmit(onSubmit)}>
+        <Grid hasGutter>
+          <GridItem span={4}>
+            <FormGroup label="Name" fieldId="name">
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <TextInput
+                    id="name"
+                    value={field.value}
+                    onChange={field.onChange}
+                    data-testid="name-input"
+                  />
+                )}
+              />
+            </FormGroup>
+          </GridItem>
+          <GridItem span={8}>
+            <FormGroup label="Value" fieldId="value">
+              <Controller
+                name="value"
+                control={control}
+                render={({ field }) => (
+                  <TextInput
+                    id="value"
+                    value={field.value}
+                    onChange={field.onChange}
+                    data-testid="value-input"
+                  />
+                )}
+              />
+            </FormGroup>
+          </GridItem>
+        </Grid>
+        <ActionGroup className="pf-v5-u-mt-xs">
+          <Button type="submit" disabled={!isMemberAttributeDirty}>
+            {t("add")}
+          </Button>
+          <Button
+            variant="link"
+            onClick={() => resetMemberAttributeForm({ name: "", value: "" })}
+          >
+            {t("reset")}
+          </Button>
+        </ActionGroup>
+      </Form>
+    </FormProvider>
+  );
+};

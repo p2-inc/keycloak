@@ -97,6 +97,7 @@ export default function OrgMembers({
           }
           handleModalToggle={() => setViewUserOrganizationAttributes(false)}
           refresh={refresh}
+          orgId={org.id}
         />
       )}
       <KeycloakDataTable

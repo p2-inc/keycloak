@@ -1,25 +1,56 @@
 import {
   Button,
   ButtonVariant,
+  Divider,
   Modal,
   ModalVariant,
 } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import { PhaseTwoOrganizationUserRepresentation } from "../useOrgFetcher";
+import useOrgFetcher, {
+  PhaseTwoOrganizationUserRepresentation,
+} from "../useOrgFetcher";
+import { useRealm } from "../../../context/realm-context/RealmContext";
+import { useEffect, useState } from "react";
+import { TrashAltIcon } from "@patternfly/react-icons";
+import { OrgMemberAttribute } from "../form/OrgMemberAttribute";
 
 type AssignRoleToMemberProps = {
   handleModalToggle: () => void;
   refresh: () => void;
   user: PhaseTwoOrganizationUserRepresentation;
+  orgId: string;
 };
 
 export const ViewOrganizationUserAttributes = ({
   handleModalToggle,
   refresh,
   user,
+  orgId,
 }: AssignRoleToMemberProps) => {
+  console.log("🚀 ~ user:", user);
+  const { realm } = useRealm();
   const { t } = useTranslation();
+
+  const { getUserAttributesForOrgMember, updateAttributesForOrgMember } =
+    useOrgFetcher(realm);
+
+  const [userAttributes, setUserAttributes] =
+    useState<PhaseTwoOrganizationUserRepresentation | null>(null);
+  console.log("🚀 ~ userAttributes:", userAttributes);
+
+  const fetchUserAttributes = async () => {
+    try {
+      const attributes = await getUserAttributesForOrgMember(orgId, user.id!);
+      setUserAttributes(attributes);
+    } catch (error) {
+      console.error("Failed to fetch user attributes:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserAttributes();
+  }, []);
 
   const tableRows = Object.keys(user.organizationAttributes || {}).map(
     (key) => ({
@@ -32,17 +63,36 @@ export const ViewOrganizationUserAttributes = ({
   const columns = [
     {
       name: "name",
-      displayKey: t("attributeName"),
+      displayKey: t("userOrganizationAttributeName"),
     },
     {
       name: "value",
-      displayKey: t("attributeValue"),
+      displayKey: t("userOrganizationAttributeValue"),
+    },
+    {
+      name: "action",
+      displayKey: t("action"),
     },
   ];
 
+  const removeAttribute = async (row: {
+    id: string;
+    name: string;
+    value: string[];
+  }) => {
+    try {
+      const updatedAttributes = { ...user.organizationAttributes };
+      delete updatedAttributes[row.name];
+      await updateAttributesForOrgMember(orgId, user.id!, updatedAttributes);
+      fetchUserAttributes(); // Refresh attributes after removal
+    } catch (error) {
+      console.error("Failed to remove attribute:", error);
+    }
+  };
+
   const closeModal = () => {
-    refresh();
     handleModalToggle();
+    refresh();
   };
 
   return (
@@ -65,6 +115,12 @@ export const ViewOrganizationUserAttributes = ({
         </Button>,
       ]}
     >
+      <OrgMemberAttribute
+        orgId={orgId}
+        user={user}
+        updateUser={fetchUserAttributes}
+      />
+      <Divider className="pf-v5-u-mt-md" />
       <Table
         aria-label="View organization attributes for a user"
         variant="compact"
@@ -87,6 +143,13 @@ export const ViewOrganizationUserAttributes = ({
                 {columns.map((c) => (
                   <Td key={c.name}>{row[c.name as keyof typeof row]}</Td>
                 ))}
+                <Td>
+                  <Button
+                    variant={ButtonVariant.danger}
+                    icon={<TrashAltIcon />}
+                    onClick={() => removeAttribute(row)}
+                  ></Button>
+                </Td>
               </Tr>
             ))
           )}
