@@ -48,18 +48,16 @@ export const OrgMemberAttribute = ({ user, orgId, updateUser }: Props) => {
   } = addMemberAttributeForm;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
-
     if (!data.name || !data.value) {
       console.error("Name and value are required");
       return;
     }
 
     try {
-      const res = await updateAttributesForOrgMember(orgId, user.id!, {
+      await updateAttributesForOrgMember(orgId, user.id!, {
+        ...user.organizationMemberAttributes,
         [data.name]: [data.value],
       });
-      console.log("🚀 ~ constonSubmit:SubmitHandler<Inputs>= ~ res:", res);
       resetMemberAttributeForm({ name: "", value: "" });
       addAlert("Added attribute to member", AlertVariant.success);
     } catch (error) {
@@ -75,6 +73,7 @@ export const OrgMemberAttribute = ({ user, orgId, updateUser }: Props) => {
   return (
     <FormProvider {...addMemberAttributeForm}>
       <Form onSubmit={handleMemberAttributeSubmit(onSubmit)}>
+        <h2 className="pf-v5-c-title pf-v5-u-mt-xl">Add attribute</h2>
         <Grid hasGutter>
           <GridItem span={4}>
             <FormGroup label="Name" fieldId="name">
@@ -111,7 +110,7 @@ export const OrgMemberAttribute = ({ user, orgId, updateUser }: Props) => {
         </Grid>
         <ActionGroup className="pf-v5-u-mt-xs">
           <Button type="submit" disabled={!isMemberAttributeDirty}>
-            {t("add")}
+            {t("addAttributeToOrgMember")}
           </Button>
           <Button
             variant="link"

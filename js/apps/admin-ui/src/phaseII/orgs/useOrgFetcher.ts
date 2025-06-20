@@ -12,7 +12,7 @@ import { useEnvironment } from "@keycloak/keycloak-ui-shared";
 import type { Environment } from "../../environment";
 
 export type PhaseTwoOrganizationUserRepresentation = UserRepresentation & {
-  organizationAttributes: Record<string, string[]>;
+  organizationMemberAttributes: Record<string, string[]>;
   membership: GroupRepresentation[];
 };
 
@@ -156,7 +156,7 @@ export default function useOrgFetcher(realm: string) {
   async function deleteOrg(org: OrgRepresentation) {
     let resp = (await fetchDelete(`${baseUrl}/orgs/${org.id}`)) as OrgResp;
     if (resp.ok) {
-      return { success: true, message: "Organziation removed." };
+      return { success: true, message: "Organization removed." };
     }
     resp = await resp.json();
     return {
@@ -186,7 +186,7 @@ export default function useOrgFetcher(realm: string) {
   }
   async function addOrgMember(orgId: string, userId: string) {
     const token = await adminClient.getAccessToken();
-    await fetch(`${baseUrl}/orgs/${orgId}/members/org-members/${userId}`, {
+    await fetch(`${baseUrl}/orgs/${orgId}/members/${userId}`, {
       method: "PUT",
       mode: "cors",
       cache: "no-cache",

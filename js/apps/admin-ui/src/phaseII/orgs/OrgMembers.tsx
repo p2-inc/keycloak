@@ -90,11 +90,9 @@ export default function OrgMembers({
           orgRoles={orgRoles}
         />
       )}
-      {viewUserOrganizationAttributes && (
+      {viewUserOrganizationAttributes && typeof viewUserOrganizationAttributes === "object" && (
         <ViewOrganizationUserAttributes
-          user={
-            viewUserOrganizationAttributes as PhaseTwoOrganizationUserRepresentation
-          }
+          userId={viewUserOrganizationAttributes.id}
           handleModalToggle={() => setViewUserOrganizationAttributes(false)}
           refresh={refresh}
           orgId={org.id}
@@ -132,7 +130,7 @@ export default function OrgMembers({
             },
           } as Action<any>,
           {
-            title: t("viewAttributes"),
+            title: t("manageAttributes"),
             onRowClick: async (user: UserRepresentation): Promise<boolean> => {
               setViewUserOrganizationAttributes(user);
               // open a modal

@@ -18,17 +18,16 @@ import { OrgMemberAttribute } from "../form/OrgMemberAttribute";
 type AssignRoleToMemberProps = {
   handleModalToggle: () => void;
   refresh: () => void;
-  user: PhaseTwoOrganizationUserRepresentation;
+  userId: PhaseTwoOrganizationUserRepresentation["id"];
   orgId: string;
 };
 
 export const ViewOrganizationUserAttributes = ({
   handleModalToggle,
   refresh,
-  user,
+  userId,
   orgId,
 }: AssignRoleToMemberProps) => {
-  console.log("🚀 ~ user:", user);
   const { realm } = useRealm();
   const { t } = useTranslation();
 
@@ -37,11 +36,10 @@ export const ViewOrganizationUserAttributes = ({
 
   const [userAttributes, setUserAttributes] =
     useState<PhaseTwoOrganizationUserRepresentation | null>(null);
-  console.log("🚀 ~ userAttributes:", userAttributes);
 
   const fetchUserAttributes = async () => {
     try {
-      const attributes = await getUserAttributesForOrgMember(orgId, user.id!);
+      const attributes = await getUserAttributesForOrgMember(orgId, userId!);
       setUserAttributes(attributes);
     } catch (error) {
       console.error("Failed to fetch user attributes:", error);
@@ -52,13 +50,14 @@ export const ViewOrganizationUserAttributes = ({
     fetchUserAttributes();
   }, []);
 
-  const tableRows = Object.keys(user.organizationAttributes || {}).map(
-    (key) => ({
-      id: key,
-      name: key,
-      value: user.organizationAttributes?.[key],
-    }),
-  );
+  const tableRows = userAttributes
+    ? Object.keys(userAttributes?.organizationMemberAttributes || {}).map(
+        (key) => ({
+          name: key,
+          value: userAttributes.organizationMemberAttributes?.[key],
+        }),
+      )
+    : [];
 
   const columns = [
     {
@@ -69,21 +68,19 @@ export const ViewOrganizationUserAttributes = ({
       name: "value",
       displayKey: t("userOrganizationAttributeValue"),
     },
-    {
-      name: "action",
-      displayKey: t("action"),
-    },
   ];
 
-  const removeAttribute = async (row: {
-    id: string;
-    name: string;
-    value: string[];
-  }) => {
+  const removeAttribute = async (row: { name: string; value: string[] }) => {
     try {
-      const updatedAttributes = { ...user.organizationAttributes };
+      const updatedAttributes = {
+        ...userAttributes?.organizationMemberAttributes,
+      };
       delete updatedAttributes[row.name];
-      await updateAttributesForOrgMember(orgId, user.id!, updatedAttributes);
+      await updateAttributesForOrgMember(
+        orgId,
+        userAttributes?.id!,
+        updatedAttributes,
+      );
       fetchUserAttributes(); // Refresh attributes after removal
     } catch (error) {
       console.error("Failed to remove attribute:", error);
@@ -98,7 +95,7 @@ export const ViewOrganizationUserAttributes = ({
   return (
     <Modal
       variant={ModalVariant.medium}
-      title={`${t("organizationUserAttributes")}: ${user.username || t("user")}`}
+      title={`${t("organizationUserAttributes")}: ${userAttributes?.username || t("user")}`}
       isOpen={true}
       onClose={closeModal}
       actions={[
@@ -115,12 +112,6 @@ export const ViewOrganizationUserAttributes = ({
         </Button>,
       ]}
     >
-      <OrgMemberAttribute
-        orgId={orgId}
-        user={user}
-        updateUser={fetchUserAttributes}
-      />
-      <Divider className="pf-v5-u-mt-md" />
       <Table
         aria-label="View organization attributes for a user"
         variant="compact"
@@ -130,22 +121,25 @@ export const ViewOrganizationUserAttributes = ({
             {columns.map((c) => (
               <Th key={c.name}>{t(c.displayKey || c.name)}</Th>
             ))}
+            <Th className="pf-v5-u-text-align-right"></Th>
           </Tr>
         </Thead>
         <Tbody>
           {tableRows.length === 0 ? (
             <Tr>
-              <Td colSpan={2}>{t("noOrganizationUserAttributes")}</Td>
+              <Td colSpan={3}>{t("noOrganizationUserAttributes")}</Td>
             </Tr>
           ) : (
             tableRows.map((row) => (
-              <Tr key={row.id}>
+              <Tr key={row.name}>
                 {columns.map((c) => (
                   <Td key={c.name}>{row[c.name as keyof typeof row]}</Td>
                 ))}
-                <Td>
+                <Td className="pf-v5-u-text-align-right">
                   <Button
-                    variant={ButtonVariant.danger}
+                    variant={ButtonVariant.link}
+                    isDanger
+                    size="sm"
                     icon={<TrashAltIcon />}
                     onClick={() => removeAttribute(row)}
                   ></Button>
@@ -155,6 +149,12 @@ export const ViewOrganizationUserAttributes = ({
           )}
         </Tbody>
       </Table>
+      <OrgMemberAttribute
+        orgId={orgId}
+        user={userAttributes as PhaseTwoOrganizationUserRepresentation}
+        updateUser={fetchUserAttributes}
+      />
+      <Divider className="pf-v5-u-mt-md" />
     </Modal>
   );
 };
