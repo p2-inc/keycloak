@@ -8,6 +8,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import useOrgFetcher, {
+  PhaseTwoOrganizationMemberAttributesRepresentation,
   PhaseTwoOrganizationUserRepresentation,
 } from "../useOrgFetcher";
 import { useRealm } from "../../../context/realm-context/RealmContext";
@@ -35,7 +36,7 @@ export const ViewOrganizationUserAttributes = ({
     useOrgFetcher(realm);
 
   const [userAttributes, setUserAttributes] =
-    useState<PhaseTwoOrganizationUserRepresentation | null>(null);
+    useState<PhaseTwoOrganizationMemberAttributesRepresentation | null>(null);
 
   const fetchUserAttributes = async () => {
     try {
@@ -51,12 +52,10 @@ export const ViewOrganizationUserAttributes = ({
   }, []);
 
   const tableRows = userAttributes
-    ? Object.keys(userAttributes?.organizationMemberAttributes || {}).map(
-        (key) => ({
-          name: key,
-          value: userAttributes.organizationMemberAttributes?.[key],
-        }),
-      )
+    ? Object.keys(userAttributes || {}).map((key) => ({
+        name: key,
+        value: userAttributes[key],
+      }))
     : [];
 
   const columns = [
@@ -73,14 +72,10 @@ export const ViewOrganizationUserAttributes = ({
   const removeAttribute = async (row: { name: string; value: string[] }) => {
     try {
       const updatedAttributes = {
-        ...userAttributes?.organizationMemberAttributes,
+        ...userAttributes,
       };
       delete updatedAttributes[row.name];
-      await updateAttributesForOrgMember(
-        orgId,
-        userAttributes?.id!,
-        updatedAttributes,
-      );
+      await updateAttributesForOrgMember(orgId, userId!, updatedAttributes);
       fetchUserAttributes(); // Refresh attributes after removal
     } catch (error) {
       console.error("Failed to remove attribute:", error);
@@ -151,7 +146,10 @@ export const ViewOrganizationUserAttributes = ({
       </Table>
       <OrgMemberAttribute
         orgId={orgId}
-        user={userAttributes as PhaseTwoOrganizationUserRepresentation}
+        userId={userId!}
+        userAttributes={
+          userAttributes as PhaseTwoOrganizationMemberAttributesRepresentation
+        }
         updateUser={fetchUserAttributes}
       />
       <Divider className="pf-v5-u-mt-md" />

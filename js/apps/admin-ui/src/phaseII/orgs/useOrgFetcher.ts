@@ -16,6 +16,11 @@ export type PhaseTwoOrganizationUserRepresentation = UserRepresentation & {
   membership: GroupRepresentation[];
 };
 
+export type PhaseTwoOrganizationMemberAttributesRepresentation = Record<
+  string,
+  string[]
+>;
+
 type OrgResp = Response & { error: string; data?: any[] };
 
 export default function useOrgFetcher(realm: string) {
@@ -206,9 +211,9 @@ export default function useOrgFetcher(realm: string) {
   async function getUserAttributesForOrgMember(
     orgId: string,
     userId: string
-  ): Promise<PhaseTwoOrganizationUserRepresentation> {
+  ): Promise<PhaseTwoOrganizationMemberAttributesRepresentation> {
     const resp = await fetchGet(
-      `${baseUrl}/orgs/${orgId}/members/org-members/${userId}/attributes`
+      `${baseUrl}/orgs/${orgId}/members/${userId}/attributes`
     );
     return await resp.json();
   }
@@ -219,22 +224,19 @@ export default function useOrgFetcher(realm: string) {
     attributes: Record<string, string[]>
   ) {
     const token = await adminClient.getAccessToken();
-    await fetch(
-      `${baseUrl}/orgs/${orgId}/members/org-members/${userId}/attributes`,
-      {
-        method: "PUT",
-        mode: "cors",
-        cache: "no-cache",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          attributes,
-        }),
-        redirect: "follow",
-      }
-    );
+    await fetch(`${baseUrl}/orgs/${orgId}/members/${userId}/attributes`, {
+      method: "PUT",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        attributes,
+      }),
+      redirect: "follow",
+    });
   }
 
   async function removeMemberFromOrg(orgId: string, userId: string) {

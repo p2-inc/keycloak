@@ -15,6 +15,7 @@ import { defaultOrgState, OrgFormType } from "../modals/NewOrgModal";
 import type { OrgRepresentation } from "../routes";
 import { OrgFields } from "../form/OrgFields";
 import useOrgFetcher, {
+  PhaseTwoOrganizationMemberAttributesRepresentation,
   PhaseTwoOrganizationUserRepresentation,
 } from "../useOrgFetcher";
 import { useRealm } from "../../../context/realm-context/RealmContext";
@@ -26,12 +27,18 @@ type Inputs = {
 };
 
 type Props = {
-  user: PhaseTwoOrganizationUserRepresentation;
+  userId: string;
+  userAttributes?: PhaseTwoOrganizationMemberAttributesRepresentation;
   orgId: string;
   updateUser?: () => void;
 };
 
-export const OrgMemberAttribute = ({ user, orgId, updateUser }: Props) => {
+export const OrgMemberAttribute = ({
+  userId,
+  userAttributes,
+  orgId,
+  updateUser,
+}: Props) => {
   const { t } = useTranslation();
 
   const { realm } = useRealm();
@@ -54,8 +61,8 @@ export const OrgMemberAttribute = ({ user, orgId, updateUser }: Props) => {
     }
 
     try {
-      await updateAttributesForOrgMember(orgId, user.id!, {
-        ...user.organizationMemberAttributes,
+      await updateAttributesForOrgMember(orgId, userId, {
+        ...userAttributes,
         [data.name]: [data.value],
       });
       resetMemberAttributeForm({ name: "", value: "" });
