@@ -9,6 +9,11 @@ import java.util.Optional;
 
 public class DatabaseOptions {
 
+    public static final Option<String> DB_VERSION = new OptionBuilder<>("db-version", String.class)
+            .category(OptionCategory.DATABASE)
+            .description("The database version.")
+            .build();
+
     public static final Option<String> DB_DIALECT = new OptionBuilder<>("db-dialect", String.class)
             .category(OptionCategory.DATABASE)
             .hidden()

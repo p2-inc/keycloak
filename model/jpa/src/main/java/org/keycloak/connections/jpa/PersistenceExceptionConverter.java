@@ -20,10 +20,17 @@ package org.keycloak.connections.jpa;
 import org.keycloak.connections.jpa.support.EntityManagerProxy;
 import org.keycloak.models.ModelException;
 
+import java.lang.reflect.Proxy;
+import jakarta.persistence.EntityManager;
+
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
 public class PersistenceExceptionConverter {
+
+    public static EntityManager create(KeycloakSession session, EntityManager em) {
+        return (EntityManager) Proxy.newProxyInstance(EntityManager.class.getClassLoader(), new Class[]{EntityManager.class}, new PersistenceExceptionConverter(session, em));
+    }
 
     // For JTA, the database operations are executed during the commit phase of a transaction, and DB exceptions can be propagated differently
     public static ModelException convert(Throwable t) {

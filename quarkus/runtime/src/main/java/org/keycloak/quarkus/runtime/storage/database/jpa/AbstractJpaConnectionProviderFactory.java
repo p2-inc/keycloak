@@ -44,6 +44,7 @@ public abstract class AbstractJpaConnectionProviderFactory implements JpaConnect
     private final Logger logger = Logger.getLogger(getClass());
 
     protected Config.Scope config;
+    protected Boolean xaEnabled;
     protected EntityManagerFactory entityManagerFactory;
 
     @Override
@@ -70,6 +71,7 @@ public abstract class AbstractJpaConnectionProviderFactory implements JpaConnect
     @Override
     public void init(Config.Scope config) {
         this.config = config;
+        xaEnabled = "xa".equals(Configuration.getRawValue("kc.transaction-xa-enabled"));
     }
 
     @Override
@@ -108,7 +110,13 @@ public abstract class AbstractJpaConnectionProviderFactory implements JpaConnect
     }
 
     protected EntityManager createEntityManager(EntityManagerFactory emf, KeycloakSession session) {
-        EntityManager entityManager = EntityManagerProxy.create(session, emf.createEntityManager(SynchronizationType.SYNCHRONIZED));
+        EntityManager entityManager;
+
+        if (xaEnabled) {
+            entityManager = EntityManagerProxy.create(session, emf.createEntityManager(SynchronizationType.SYNCHRONIZED));
+        } else {
+            entityManager = EntityManagerProxy.create(session, emf.createEntityManager());
+        }
 
         entityManager.setFlushMode(FlushModeType.AUTO);
 
