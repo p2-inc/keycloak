@@ -16,7 +16,7 @@ import { useFetch } from "@keycloak/keycloak-ui-shared";
 import { useState } from "react";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAdminClient } from "../../admin-client";
-import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
+import RealmRepresentation from "js/libs/keycloak-admin-client/lib/defs/realmRepresentation";
 
 export default function StylesSection() {
   const { t } = useTranslation();

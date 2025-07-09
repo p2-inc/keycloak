@@ -66,7 +66,7 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 - Help URLs
   - In the `/js/apps/admin-ui/src/help-urls.ts` file import `PhaseTwoHelpUrls` and spread it into the object
 - TextAreaControl in ui-shared
-  - `rows={props.rows}` to the `TextArea` to allow passing through (allows setting rows number height)
+  - `rows={props.rows}` to the `TextArea` to allow passing through (allows setting rows number height), or just spread all the props `{...props}`
 - In `vite.config.ts` update `outDir` to be `phasetwo.v2` instead of `keycloak.v2`
 
 ## Verify

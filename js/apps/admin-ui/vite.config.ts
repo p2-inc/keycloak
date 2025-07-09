@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
         },
       }
     : {
-        outDir: "target/classes/theme/keycloak.v2/admin/resources",
+        outDir: "target/classes/theme/phastwo.v2/admin/resources",
       };
   return {
     base: "",

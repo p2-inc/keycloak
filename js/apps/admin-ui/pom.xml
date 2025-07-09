@@ -7,11 +7,17 @@
     <parent>
         <artifactId>keycloak-js-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>26.0.3</version>
+        <version>26.3.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>keycloak-admin-ui</artifactId>
+    <groupId>io.phasetwo</groupId>
+    <artifactId>phasetwo-admin-ui</artifactId>
+    <version>26.3.0</version> 
+
+    <properties>
+        <admin-ui.theme.name>phasetwo.v2</admin-ui.theme.name>
+    </properties>
 
     <name>Keycloak Admin UI</name>
     <description>The user interface to administrate the Keycloak server.</description>
