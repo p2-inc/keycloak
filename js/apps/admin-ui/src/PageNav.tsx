@@ -18,6 +18,7 @@ import { routes } from "./routes";
 import useIsFeatureEnabled, { Feature } from "./utils/useIsFeatureEnabled";
 
 import "./page-nav.css";
+import Extensions from "./phaseII/navigation/extensions";
 
 type LeftNavProps = {
   title: string;
@@ -25,7 +26,7 @@ type LeftNavProps = {
   id?: string;
 };
 
-const LeftNav = ({ title, path, id }: LeftNavProps) => {
+export const LeftNav = ({ title, path, id }: LeftNavProps) => {
   const { t } = useTranslation();
   const { hasAccess } = useAccess();
   const { realm } = useRealm();
@@ -156,6 +157,7 @@ export const PageNav = () => {
                 ))}
             </NavGroup>
           )}
+          <Extensions />
         </Nav>
       </PageSidebarBody>
     </PageSidebar>

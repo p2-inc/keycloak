@@ -23,7 +23,6 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 
 - Copy the `phaseII` folder into the new fork made from the newest KC tag release. This should go into the `js/apps/admin-ui/src`.
 - Building
-
   - Make sure to merge all changes in the `admin-ui/pom.xml` file so that the correct name and resources are built.
 
   ```
@@ -59,14 +58,14 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
   - In `admin-ui/src/user/EditUser.tsx` import `UserOrgs`, add the `userOrgsTab` and add the `<Tab><UsersOrgs />...`
 - Custom Styles
   - This folder contains all the Custom Styles UI. It exists mostly independent of other code, but does import components from the `ui-shared` and the `src/components` folder.
-- Realm Settings Attributes Tab `realmSettingsTabs.tsx`
+- Realm Settings Attributes Tab `RealmSettingsTabs.tsx`
   - A tab to allow setting and configuring the realm settings.
   - Needs to be imported and added as a tab in `../realm-settings/RealmSettingsTabs.tsx`
   - Add `attributes` as a tab option to the type def in `../realm-settings/routes/RealmSettings.tsx`
 - Help URLs
   - In the `/js/apps/admin-ui/src/help-urls.ts` file import `PhaseTwoHelpUrls` and spread it into the object
 - TextAreaControl in ui-shared
-  - `rows={props.rows}` to the `TextArea` to allow passing through (allows setting rows number height)
+  - this has been updated by the Keycloak team, leave to check for now spread the props to allow row passing `{...props}` to the `TextArea` to allow passing through (allows setting rows number height)
 - In `vite.config.ts` update `outDir` to be `phasetwo.v2` instead of `keycloak.v2`
 
 ## Verify
