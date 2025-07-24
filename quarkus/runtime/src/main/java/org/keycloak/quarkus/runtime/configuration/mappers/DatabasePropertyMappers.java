@@ -88,6 +88,10 @@ final class DatabasePropertyMappers {
                         .to("quarkus.datasource.jdbc.max-size")
                         .paramLabel("size")
                         .build(),
+                fromOption(DatabaseOptions.DB_VERSION)
+                        .to("quarkus.datasource.db-version")
+                        .paramLabel("version")
+                        .build(),
                 fromOption(DatabaseOptions.DB_SQL_JPA_DEBUG)
                         .to("kc." + DatabaseOptions.DB_SQL_JPA_DEBUG.getKey())
                         .build(),
@@ -120,7 +124,14 @@ final class DatabasePropertyMappers {
 
     private static String getXaOrNonXaDriver(String name, String value, ConfigSourceInterceptorContext context) {
         var key = StringUtil.isNotBlank(name) ? TransactionOptions.getNamedTxXADatasource(name) : TransactionOptions.TRANSACTION_XA_ENABLED.getKey();
+        ConfigValue jtaEnabledConfiguration = context.proceed("kc.transaction-jta-enabled");
         boolean isXaEnabled = Configuration.isKcPropertyTrue(key);
+        boolean isJtaEnabled = jtaEnabledConfiguration == null || Boolean.parseBoolean(jtaEnabledConfiguration.getValue());
+
+        if (!isJtaEnabled) {
+            isXaEnabled = false;
+        }
+
         return Database.getDriver(value, isXaEnabled).orElse(null);
     }
 
