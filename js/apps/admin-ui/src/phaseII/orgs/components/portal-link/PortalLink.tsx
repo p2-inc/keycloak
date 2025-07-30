@@ -29,9 +29,6 @@ export const PortalLink = ({ id, open, toggleDialog }: PortalLinkProps) => {
   const { getPortalLink } = useOrgFetcher(realm);
   const [portalLink, setPortalLink] = useState<string | boolean>(false);
 
-  // User needs to be a member fo the organization if there is no admin user (default user)
-  // if bad request, or
-
   const fetchPortalLink = async () => {
     try {
       const pl = await getPortalLink(orgId!, "");
