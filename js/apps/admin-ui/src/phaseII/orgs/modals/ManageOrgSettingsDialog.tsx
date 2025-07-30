@@ -10,10 +10,11 @@ import {
   ModalVariant,
   Text,
   TextContent,
+  TextInput,
 } from "@patternfly/react-core";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAlerts } from "@keycloak/keycloak-ui-shared";
+import { HelpItem, useAlerts } from "@keycloak/keycloak-ui-shared";
 
 import { useFetch } from "@keycloak/keycloak-ui-shared";
 import useOrgFetcher from "../useOrgFetcher";
@@ -27,6 +28,7 @@ type ManageOrderDialogProps = {
 export type OrgConfigType = {
   createAdminUserEnabled: boolean;
   sharedIdpsEnabled: boolean;
+  consoleLinkExpiration?: string;
 };
 
 export const ManageOrgSettingsDialog = ({
@@ -148,6 +150,28 @@ export const ManageOrgSettingsDialog = ({
                 className="pf-v5-u-mt-lg"
               />
             )}
+        </FormGroup>
+        <FormGroup
+          label={t("consoleLinkExpiration")}
+          fieldId="consoleLinkExpiration"
+          disabled={isNil(orgConfig)}
+        >
+          <TextInput
+            id="consoleLinkExpiration"
+            defaultValue={orgConfig?.consoleLinkExpiration}
+            placeholder="time in seconds"
+            isDisabled={isNil(orgConfig)}
+            onChange={(e) =>
+              setOrgConfig({
+                ...orgConfig!,
+                consoleLinkExpiration: e.currentTarget.value,
+              })
+            }
+          />
+          <HelpItem
+            helpText={t("consoleLinkExpirationHelpText")}
+            fieldLabelId="consoleLinkExpiration"
+          />
         </FormGroup>
       </Form>
     </Modal>
