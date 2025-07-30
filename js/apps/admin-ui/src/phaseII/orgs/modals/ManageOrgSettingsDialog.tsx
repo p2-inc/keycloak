@@ -28,7 +28,7 @@ type ManageOrderDialogProps = {
 export type OrgConfigType = {
   createAdminUserEnabled: boolean;
   sharedIdpsEnabled: boolean;
-  consoleLinkExpiration?: string;
+  expirationInSecs?: number;
 };
 
 export const ManageOrgSettingsDialog = ({
@@ -158,20 +158,22 @@ export const ManageOrgSettingsDialog = ({
         >
           <TextInput
             id="consoleLinkExpiration"
-            defaultValue={orgConfig?.consoleLinkExpiration}
+            defaultValue={orgConfig?.expirationInSecs}
             placeholder="time in seconds"
             isDisabled={isNil(orgConfig)}
             onChange={(e) =>
               setOrgConfig({
                 ...orgConfig!,
-                consoleLinkExpiration: e.currentTarget.value,
+                expirationInSecs:
+                  e.currentTarget.value === ""
+                    ? 86400 // default to 1 day if empty
+                    : Number(e.currentTarget.value),
               })
             }
           />
-          <HelpItem
-            helpText={t("consoleLinkExpirationHelpText")}
-            fieldLabelId="consoleLinkExpiration"
-          />
+          <TextContent className="pf-v5-c-check__description">
+            <Text>{t("consoleLinkExpirationHelpText")}</Text>
+          </TextContent>
         </FormGroup>
       </Form>
     </Modal>

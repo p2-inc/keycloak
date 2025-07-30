@@ -73,6 +73,7 @@ export const PortalLink = ({ id, open, toggleDialog }: PortalLinkProps) => {
               title={t("organizationPortalHelpTitle")}
               variant={AlertVariant.warning}
               isInline
+              className="pf-v5-u-mt-md"
             >
               {t("portalLinkInformation")}
             </Alert>
