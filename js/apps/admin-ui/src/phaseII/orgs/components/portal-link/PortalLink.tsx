@@ -27,13 +27,24 @@ export const PortalLink = ({ id, open, toggleDialog }: PortalLinkProps) => {
   const { orgId } = useParams<OrgParams>();
   const { realm } = useRealm();
   const { getPortalLink } = useOrgFetcher(realm);
-  const [portalLink, setPortalLink] = useState("");
+  const [portalLink, setPortalLink] = useState<string | boolean>(false);
+
+  // User needs to be a member fo the organization if there is no admin user (default user)
+  // if bad request, or
+
+  const fetchPortalLink = async () => {
+    try {
+      const pl = await getPortalLink(orgId!, "");
+      setPortalLink(pl?.link);
+    } catch (e) {
+      setPortalLink("error");
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     if (open) {
-      getPortalLink(orgId!, "")
-        .then((pl) => setPortalLink(pl?.link || ""))
-        .catch((e) => console.log(e));
+      fetchPortalLink();
     }
   }, [open]);
 
@@ -60,11 +71,31 @@ export const PortalLink = ({ id, open, toggleDialog }: PortalLinkProps) => {
             >
               {t("portalLinkHelp")}
             </Alert>
+            <Alert
+              id={id}
+              title={t("organizationPortalHelpTitle")}
+              variant={AlertVariant.warning}
+              isInline
+            >
+              {t("portalLinkInformation")}
+            </Alert>
           </StackItem>
           <StackItem>
-            <FormGroup fieldId="type" label={t("organizationPortalLink")}>
-              <ClipboardCopy isReadOnly>{portalLink}</ClipboardCopy>
-            </FormGroup>
+            {portalLink === "error" && (
+              <Alert
+                id={id}
+                title={t("organizationPortalHelpTitle")}
+                variant={AlertVariant.danger}
+                isInline
+              >
+                {t("portalLinkHelp")}
+              </Alert>
+            )}
+            {portalLink && (
+              <FormGroup fieldId="type" label={t("organizationPortalLink")}>
+                <ClipboardCopy isReadOnly>{portalLink}</ClipboardCopy>
+              </FormGroup>
+            )}
           </StackItem>
         </Stack>
       </Form>
