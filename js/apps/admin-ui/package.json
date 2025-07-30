@@ -53,7 +53,7 @@
         "vite.config.ts"
       ],
       "output": [
-        "target/classes/theme/keycloak.v2/admin/resources"
+        "target/classes/theme/phasetwo.v2/admin/resources"
       ]
     },
     "build-lib": {
