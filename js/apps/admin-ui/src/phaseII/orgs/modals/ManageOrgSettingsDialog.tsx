@@ -159,6 +159,7 @@ export const ManageOrgSettingsDialog = ({
           <TextInput
             id="consoleLinkExpiration"
             defaultValue={orgConfig?.expirationInSecs}
+            value={orgConfig?.expirationInSecs}
             placeholder="time in seconds"
             isDisabled={isNil(orgConfig)}
             onChange={(e) =>
@@ -171,7 +172,7 @@ export const ManageOrgSettingsDialog = ({
               })
             }
           />
-          <TextContent className="pf-v5-c-check__description">
+          <TextContent className="pf-v5-u-font-size-sm pf-v5-u-color-400">
             <Text>{t("consoleLinkExpirationHelpText")}</Text>
           </TextContent>
         </FormGroup>
