@@ -107,7 +107,12 @@ export const ManageOrgSettingsDialog = ({
       <TextContent className="pf-v5-u-pb-lg">
         <Text>{t("manageOrgSettingsExplainer")}</Text>
       </TextContent>
-      <Form>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          updateOrgsConfigForm();
+        }}
+      >
         <FormGroup
           label={t("createAdminUser")}
           fieldId="createAdminUser"
@@ -160,17 +165,17 @@ export const ManageOrgSettingsDialog = ({
             id="consoleLinkExpiration"
             defaultValue={orgConfig?.expirationInSecs}
             value={orgConfig?.expirationInSecs}
-            placeholder="time in seconds"
+            placeholder="time in seconds (86400 is default)"
             isDisabled={isNil(orgConfig)}
-            onChange={(e) =>
-              setOrgConfig({
-                ...orgConfig!,
-                expirationInSecs:
-                  e.currentTarget.value === ""
-                    ? 86400 // default to 1 day if empty
-                    : Number(e.currentTarget.value),
-              })
-            }
+            type="number"
+            onChange={(e) => {
+              const raw = e.currentTarget.value;
+              const parsed = Number(raw);
+              // Only save when parsed is a finite number;
+              if (Number.isFinite(parsed)) {
+                setOrgConfig({ ...orgConfig!, expirationInSecs: parsed });
+              }
+            }}
           />
           <TextContent className="pf-v5-u-font-size-sm pf-v5-u-color-400">
             <Text>{t("consoleLinkExpirationHelpText")}</Text>
