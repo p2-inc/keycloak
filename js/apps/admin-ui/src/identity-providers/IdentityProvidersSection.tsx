@@ -315,11 +315,11 @@ export default function IdentityProvidersSection() {
                 displayKey: "providerDetails",
                 cellFormatters: [upperCaseFormatter()],
               },
-              {
-                name: "organizationId",
-                displayKey: "linkedOrganization",
-                cellRenderer: OrganizationLink,
-              },
+              // {
+              //   name: "organizationId",
+              //   displayKey: "linkedOrganization",
+              //   cellRenderer: OrganizationLink,
+              // },
             ]}
             emptyState={
               <ListEmptyState

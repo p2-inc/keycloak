@@ -184,6 +184,8 @@ export const EmailTemplate = ({ realm, refresh }: EmailTemplateTabProps) => {
     } catch (e) {
       console.error("Could not update the email templates.", e);
       addError("Failed to update the email templates.", e);
+    } finally {
+      refresh();
     }
     setIsSaving(false);
     setTemplateSelectDisabled(false);
