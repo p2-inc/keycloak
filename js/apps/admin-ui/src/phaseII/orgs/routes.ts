@@ -9,7 +9,7 @@ export type OrgRepresentation = {
   displayName: string;
   url: string;
   domains: string[];
-  attributes: any;
+  attributes: Record<string, string[]>;
 };
 
 const routes: AppRouteObject[] = [OrgsRoute, OrgRoute];

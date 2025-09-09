@@ -5,7 +5,10 @@ import {
 } from "./components/key-value-form-custom/AttributeForm";
 import { OrgRepresentation } from "./routes";
 import { useForm } from "react-hook-form";
-import { arrayToKeyValue } from "../../components/key-value-form/key-value-convert";
+import {
+  arrayToKeyValue,
+  keyValueToArray,
+} from "../../components/key-value-form/key-value-convert";
 import type { KeyValueType } from "../../components/key-value-form/key-value-convert";
 import useOrgFetcher from "./useOrgFetcher";
 import { useRealm } from "../../context/realm-context/RealmContext";
@@ -43,10 +46,7 @@ export default function OrgAttributes({ org, refresh }: OrgAttributesProps) {
 
   async function saveAttributes(data: any) {
     if (org) {
-      const attributes: any = {};
-      data.attributes.forEach((item: any) => {
-        attributes[item.key] = [item.value];
-      });
+      const attributes = keyValueToArray(data.attributes);
       const updatedData: OrgRepresentation = { ...org, attributes };
       await updateOrg(updatedData);
       addAlert("Attributes updated for organization");
