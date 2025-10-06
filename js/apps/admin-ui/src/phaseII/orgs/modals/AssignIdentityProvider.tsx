@@ -234,7 +234,7 @@ export function AssignIdentityProvider({
     <Modal
       variant={ModalVariant.medium}
       isOpen={true}
-      title={t("assignIdentityProviderTo", { organization })}
+      title={t("assignIdentityProviderTo", { organization: organization.name })}
       onClose={() => onClear()}
       actions={[
         <Button

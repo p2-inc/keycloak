@@ -28,6 +28,7 @@ type ManageOrderDialogProps = {
 export type OrgConfigType = {
   createAdminUserEnabled: boolean;
   sharedIdpsEnabled: boolean;
+  multipleIdpsEnabled: boolean;
   expirationInSecs?: number;
 };
 
@@ -152,6 +153,32 @@ export const ManageOrgSettingsDialog = ({
                 variant={AlertVariant.warning}
                 isInline
                 title={t("orgSettingsSharedIdpsWarning")}
+                className="pf-v5-u-mt-lg"
+              />
+            )}
+        </FormGroup>
+        <FormGroup
+          label={t("multipleIdpsEnabled")}
+          fieldId="multipleIdpsEnabled"
+          disabled={isNil(orgConfig)}
+        >
+          <Checkbox
+            label={t("multipleIdpsEnabled")}
+            aria-label={t("multipleIdpsEnabled")}
+            id="multipleIdpsEnabled"
+            description={t("multipleIdpsEnabledExplainer")}
+            isChecked={orgConfig?.multipleIdpsEnabled}
+            isDisabled={isNil(orgConfig)}
+            onChange={(evt, checked) =>
+              setOrgConfig({ ...orgConfig!, multipleIdpsEnabled: checked })
+            }
+          />
+          {currentOrgConfig?.multipleIdpsEnabled === true &&
+            orgConfig?.multipleIdpsEnabled === false && (
+              <Alert
+                variant={AlertVariant.warning}
+                isInline
+                title={t("orgSettingsMultipleIdpsEnabledWarning")}
                 className="pf-v5-u-mt-lg"
               />
             )}

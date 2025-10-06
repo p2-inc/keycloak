@@ -13,6 +13,7 @@ import type { KeyValueType } from "../../components/key-value-form/key-value-con
 import useOrgFetcher from "./useOrgFetcher";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
+import { CardBody, Card } from "@patternfly/react-core";
 
 type OrgAttributesProps = {
   org: OrgRepresentation;
@@ -60,12 +61,16 @@ export default function OrgAttributes({ org, refresh }: OrgAttributesProps) {
 
   return (
     <div className="pf-v5-u-pt-lg">
-      <AttributesForm
-        form={attributesForm}
-        save={saveAttributes}
-        reset={resetAttributes}
-        allowFullClear
-      />
+      <Card isFlat>
+        <CardBody>
+          <AttributesForm
+            form={attributesForm}
+            save={saveAttributes}
+            reset={resetAttributes}
+            allowFullClear
+          />
+        </CardBody>
+      </Card>
     </div>
   );
 }
