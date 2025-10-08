@@ -67,3 +67,7 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 Once done, make sure to test a build with the following:
 
 `mvn clean package -pl :phasetwo-admin-ui -am -DskipTests`
+
+## Building for Prod
+
+From Root, run `mvn clean package -pl :phasetwo-admin-ui -am -DskipTests`, then copy the built jar from `/js/apps/admin-ui/target/phasetwo-admin-ui-<version>.jar` to the `phasetwo-container` repo.
