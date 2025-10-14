@@ -1,3 +1,4 @@
+import { PhaseTwoHelpUrls } from "./phaseII/help-urls";
 const adminGuide =
   "https://www.keycloak.org/docs/latest/server_admin/index.html";
 
@@ -21,4 +22,5 @@ export default {
   community: `${keycloakHomepageURL}/community`,
   blog: `${keycloakHomepageURL}/blog`,
   workflowsUrl: `https://github.com/keycloak/keycloak/issues/39888`,
+  ...PhaseTwoHelpUrls,
 };

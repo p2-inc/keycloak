@@ -6,16 +6,63 @@ Starting and running the Admin UI without anything else is somewhat of a pain. U
 
 The [CONTRIBUTING.md](../../CONTRIBUTING.md) file contains the general information for doing a local development admin ui server.
 
-1. If possible, use a Phase Two image for this. It contains the extensions needed for getting things to work. To make this work, copy the contents of `start-server-custom.js` file from [start-server-custom.js](./start-server-custom.js) to the `/js/apps/keycloak-server/scripts/start-server.js` file. Use the command as `pnpm start --admin-dev --phasetwo --tag=<tab>` or omit for latest. This will start a local Keycloak server with the Phase Two extensions and features enabled. To get this to work fully, you must also copy the `/theme/phasetwo.v2` as a duplicate in the same spot and rename it to `keycloak.v2` (or update the `vite.config.ts` file to output to `phasetwo.v2` instead of `keycloak.v2`).
-1. Or start the local Keycloak image in the [`/js/apps/keycloak-server`](/js/apps/keycloak-server/README.md) folder. Follow the instructions in the readme and start the local server with `pnpm start --admin-dev`. Then disable items in the PageNav to see things
-1. Start the local dev server at the root of the `admin-ui` [`/js/apps/admin-ui`](/js/apps/admin-ui/) repo with `pnpm dev` (run `pnpm i` first)
-1. Open `localhost:8080` to start working
+### Development Server Options
+
+#### Option 1: Using Phase Two Container (Recommended)
+
+Use the custom start server script to run against a Phase Two Keycloak container:
+
+```bash
+# From the keycloak-server directory
+cd /js/apps/keycloak-server
+
+# Start Phase Two container with admin dev mode
+pnpm start --phasetwo --admin-dev
+
+# Or with a specific tag
+pnpm start --phasetwo --tag=26.0.2 --admin-dev
+```
+
+**Available Flags:**
+
+- `--phasetwo` - Use Phase Two Keycloak Docker container instead of nightly build
+- `--tag=<version>` - Specify Phase Two image tag (default: latest)
+- `--admin-dev` - Enable admin UI development mode (serves from http://localhost:5174)
+- `--account-dev` - Enable account UI development mode (serves from http://localhost:5173)
+- `--local` - Use locally built Keycloak distribution
+
+**Requirements:**
+
+- Docker must be installed and running
+- Phase Two extensions and features are automatically enabled
+
+#### Option 2: Using Standard Keycloak
+
+Start the local Keycloak image in the [`/js/apps/keycloak-server`](/js/apps/keycloak-server/README.md) folder:
+
+```bash
+pnpm start --admin-dev
+```
+
+Then disable items in the PageNav to see things.
+
+### Starting the Admin UI Dev Server
+
+After starting Keycloak (using either option above):
+
+1. Navigate to the admin-ui directory: `cd /js/apps/admin-ui`
+2. Install dependencies if needed: `pnpm i`
+3. Start the dev server: `pnpm dev`
+4. Open `localhost:8080` to start working
+
+**Note:** To get Phase Two features to work fully, you must also copy the `/theme/phasetwo.v2` as a duplicate in the same spot and rename it to `keycloak.v2` (or update the `vite.config.ts` file to output to `phasetwo.v2` instead of `keycloak.v2`).
 
 ## Customizations
 
 P// has added a lot of additional functionality to the Admin UI. Those are cordoned off as much as possible from the main Admin UI repo to keep them from being clobbered by various updates to the main Admin UI repo. The list below is the area of customizations.
 
 - Copy the `phaseII` folder into the new fork made from the newest KC tag release. This should go into the `js/apps/admin-ui/src`.
+- Copy `start-server-custom.js` and replace contents of `start-server.js`
 - Building
   - Make sure to merge all changes in the `admin-ui/pom.xml` file so that the correct name and resources are built.
 
@@ -38,6 +85,7 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 - `src/context/access/Access.tsx`
   - Import `ExtendedAccessType` from `phaseII/access/access.tsx`
   - Adjust the functions to use that type, from `AccessType` to `ExtendedAccessType`
+  - Cast the access var to `ExtendedAccessType`: `const access = whoAmI.realm_access[realm] as ExtendedAccessType[] ?? [];`
 - Include the routes for the Phase II orgs and styles in `admin-ui/src/routes`
 - Translations
   - In `maven-resources/theme/keycloak.v2/` and `maven-resources-community/theme/keycloak.v2/` change the directory name to `phasetwo.v2`
@@ -66,7 +114,9 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 
 Once done, make sure to test a build with the following:
 
-`mvn clean package -pl :phasetwo-admin-ui -am -DskipTests`
+```bash
+    mvn clean package -pl :phasetwo-admin-ui -am -DskipTests
+```
 
 ## Building for Prod
 

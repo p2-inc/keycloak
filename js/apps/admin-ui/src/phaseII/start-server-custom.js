@@ -1,4 +1,48 @@
 #!/usr/bin/env node
+
+/**
+ * Custom Keycloak Server Starter Script
+ *
+ * This script provides flexible options for starting a Keycloak server for development,
+ * including support for Phase Two Keycloak containers and local development servers.
+ *
+ * USAGE:
+ *   node start-server-custom.js [OPTIONS]
+ *
+ * OPTIONS:
+ *   --phasetwo              Use Phase Two Keycloak Docker container instead of nightly build
+ *   --tag=<version>         Specify Phase Two image tag (default: latest)
+ *                           Example: --tag=26.0.2
+ *   --admin-dev             Enable admin UI development mode (serves from http://localhost:5174)
+ *   --account-dev           Enable account UI development mode (serves from http://localhost:5173)
+ *   --local                 Use locally built Keycloak distribution
+ *
+ * EXAMPLES:
+ *   # Start Phase Two container with admin dev mode
+ *   node start-server-custom.js --phasetwo --admin-dev
+ *
+ *   # Start Phase Two container with specific tag
+ *   node start-server-custom.js --phasetwo --tag=26.0.2 --admin-dev
+ *
+ *   # Start standard Keycloak nightly with admin dev mode
+ *   node start-server-custom.js --admin-dev
+ *
+ *   # Start local build with both admin and account dev modes
+ *   node start-server-custom.js --local --admin-dev --account-dev
+ *
+ * ENVIRONMENT VARIABLES:
+ *   KC_BOOTSTRAP_ADMIN_USERNAME  Admin username (default: admin)
+ *   KC_BOOTSTRAP_ADMIN_PASSWORD  Admin password (default: admin)
+ *   KC_BOOTSTRAP_ADMIN_CLIENT_ID Client ID (default: admin-cli)
+ *   KC_BOOTSTRAP_ADMIN_CLIENT_SECRET Client secret (default: none)
+ *
+ * NOTES:
+ *   - When using --phasetwo, Docker must be installed and running
+ *   - The --admin-dev flag sets KC_ADMIN_VITE_URL to point to local dev server
+ *   - The --account-dev flag sets KC_ACCOUNT_VITE_URL to point to local dev server
+ *   - Keycloak will be accessible at http://localhost:8080
+ */
+
 import { Octokit } from "@octokit/rest";
 import gunzip from "gunzip-maybe";
 import { spawn } from "node:child_process";
