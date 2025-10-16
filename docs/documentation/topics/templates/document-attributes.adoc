@@ -2,10 +2,10 @@
 :project_name_full: Keycloak
 :project_community: true
 :project_product: false
-:project_version: 26.4.0
-:project_versionMvn: 26.4.0
-:project_versionNpm: 26.4.0
-:project_versionDoc: 26.4.0
+:project_version: 26.4.1
+:project_versionMvn: 26.4.1
+:project_versionNpm: 26.4.1
+:project_versionDoc: 26.4.1
 
 :archivebasename: keycloak
 :archivedownloadurl: https://github.com/keycloak/keycloak/releases/download/{project_version}/keycloak-{project_version}.zip
@@ -71,6 +71,8 @@
 :developerguide_actiontoken_name: Action Token Handler SPI
 :developerguide_actiontoken_link: {developerguide_link}#_action_token_handler_spi
 :developerguide_jsproviders_name: JavaScript Providers
+:developerguide_userstoragespi_link: {developerguide_link}#_user-storage-spi
+:developerguide_userstoragespi_name: User Storage SPI
 :developerguide_jsproviders_link: {developerguide_link}#_script_providers
 :importexportguide_link: https://www.keycloak.org/nightly/server/importExport
 :gettingstarted_name: Getting Started Guide
