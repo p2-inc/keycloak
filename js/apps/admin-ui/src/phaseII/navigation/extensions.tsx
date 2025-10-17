@@ -8,14 +8,6 @@ const Extensions = () => {
   const { hasSomeAccess } = useAccess();
 
   const showOrgs = hasSomeAccess("view-organizations", "manage-organizations");
-  // const showOrgs = true;
-
-  // return (
-  //   <NavGroup aria-label={t("extensions")} title={t("extensions")}>
-  //     {showOrgs && <LeftNav title={t("orgList")} path="/ext-organizations" />}
-  //     <LeftNav title={t("styles")} path="/ext-styles" />
-  //   </NavGroup>
-  // );
 
   return (
     <NavGroup aria-label={t("extensions")} title={t("extensions")}>

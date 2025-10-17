@@ -1,31 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useEffect, useState } from "react";
-import type { OrgRepresentation } from "./routes";
-import useOrgFetcher from "./useOrgFetcher";
-import { useRealm } from "../../context/realm-context/RealmContext";
+import { useAlerts } from "@keycloak/keycloak-ui-shared";
 import {
-  Button,
-  Alert,
-  AlertGroup,
   AlertVariant,
+  Button,
   Card,
-  CardTitle,
-  Title,
   CardBody,
+  CardTitle,
+  Chip,
+  Title,
 } from "@patternfly/react-core";
-import { useTranslation } from "react-i18next";
-import { first } from "lodash-es";
-import { Link, NavLink } from "react-router-dom";
-import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
-import { AssignIdentityProvider } from "./modals/AssignIdentityProvider";
-import { toIdentityProvider } from "../../identity-providers/routes/IdentityProvider";
-import { Table, Tbody, Th, Thead, Tr, Td } from "@patternfly/react-table";
 import {
   CheckCircleIcon,
+  PencilAltIcon,
   StopCircleIcon,
   TrashIcon,
 } from "@patternfly/react-icons";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
+import { first } from "lodash-es";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, NavLink } from "react-router-dom";
+import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
+import { useRealm } from "../../context/realm-context/RealmContext";
+import { toIdentityProvider } from "../../identity-providers/routes/IdentityProvider";
+import { AssignIdentityProvider } from "./modals/AssignIdentityProvider";
+import EditIdentityProviderHomeIdpDomains from "./modals/EditIdentityProviderHomeIdpDomains";
+import type { OrgRepresentation } from "./routes";
+import useOrgFetcher from "./useOrgFetcher";
 
 export type SyncMode = "FORCE" | "IMPORT" | "LEGACY";
 export interface idpRep extends IdentityProviderRepresentation {
@@ -53,24 +55,23 @@ export default function OrgIdentityProviders({
   const { t } = useTranslation();
   const [orgIdps, setOrgIdps] = useState<IdentityProviderRepresentation[]>([]);
   const [idps, setIdps] = useState<idpRep[]>([]);
+  const [idpToEdit, setIdpToEdit] = useState<IdentityProviderRepresentation>();
 
   const [enabledIdP, setEnabledIdP] = useState<idpRep>();
-  const [alerts, setAlerts] = useState<AlertInfo[]>([]);
-  const getUniqueId: () => number = () => new Date().getTime();
+  const { addAlert } = useAlerts();
 
   const [showAssignIdpModal, setShowAssignIdpModal] = useState<boolean>();
 
   async function getIDPs() {
     const identityProviders = (await getIdpsForRealm({
       first: 0,
-      max: 100,
+      max: 10,
     })) as idpRep[];
     setIdps(identityProviders);
   }
 
   async function fetchOrgIdps() {
     const orgIdps = await getIdpsForOrg(org.id);
-    console.log("🚀 ~ fetchOrgIdps ~ orgIdps:", orgIdps);
     if ("error" in orgIdps && orgIdps.error) {
       console.error("Error fetching org IdPs", orgIdps.error);
       return;
@@ -116,25 +117,11 @@ export default function OrgIdentityProviders({
         throw new Error("Failed to update new IdP.");
       }
 
-      setAlerts((prevAlertInfo) => [
-        ...prevAlertInfo,
-        {
-          title: resp!.message as string,
-          variant: AlertVariant.success,
-          key: getUniqueId(),
-        },
-      ]);
+      addAlert(resp!.message as string, AlertVariant.success);
       setShowAssignIdpModal(false);
     } catch (e) {
       console.log("Error during IdP assignment", e);
-      setAlerts((prevAlertInfo) => [
-        ...prevAlertInfo,
-        {
-          title: "IdP failed to update for this org. Please try again.",
-          variant: AlertVariant.danger,
-          key: getUniqueId(),
-        },
-      ]);
+      addAlert(t("orgIdpFailedAssignment"), AlertVariant.danger);
     } finally {
       refresh();
       refreshIdPs();
@@ -144,36 +131,13 @@ export default function OrgIdentityProviders({
   const unassignIdentityProvider = async (idpAlias: string) => {
     try {
       const resp = await unlinkIDPtoOrg(org.id, idpAlias);
-
-      if (resp!.error) {
-        setAlerts((prevAlertInfo) => [
-          ...prevAlertInfo,
-          {
-            title: resp!.message as string,
-            variant: AlertVariant.danger,
-            key: getUniqueId(),
-          },
-        ]);
-      } else {
-        setAlerts((prevAlertInfo) => [
-          ...prevAlertInfo,
-          {
-            title: resp!.message as string,
-            variant: AlertVariant.success,
-            key: getUniqueId(),
-          },
-        ]);
-      }
+      addAlert(
+        resp!.message as string,
+        !resp?.error ? AlertVariant.success : AlertVariant.danger,
+      );
     } catch (e) {
       console.log("Error during IdP unassignment", e);
-      setAlerts((prevAlertInfo) => [
-        ...prevAlertInfo,
-        {
-          title: "IdP failed to unassign for this org. Please try again.",
-          variant: AlertVariant.danger,
-          key: getUniqueId(),
-        },
-      ]);
+      addAlert(t("orgIdpFailedAssignment"), AlertVariant.danger);
     } finally {
       setEnabledIdP(undefined);
       refresh();
@@ -201,7 +165,12 @@ export default function OrgIdentityProviders({
   const tableHeaders = [
     { title: t("alias"), key: "alias" },
     { title: t("displayName"), key: "displayName" },
+    { title: t("providerId"), key: "providerId" },
     { title: t("enabled"), key: "enabled" },
+    {
+      title: t("orgIdpAssignedDomains"),
+      key: "config[home.idp.discovery.domains]",
+    },
     {
       title: "actions",
       props: { className: "pf-v5-u-text-align-right pf-v5-u-display-none" },
@@ -211,27 +180,10 @@ export default function OrgIdentityProviders({
   if (idps.length > 0) {
     body = (
       <div>
-        {alerts
-          .filter(({ variant }) => variant === AlertVariant.success)
-          .map(({ title, variant, key }) => (
-            <Alert
-              variant={variant}
-              title={title}
-              key={key}
-              timeout={8000}
-              className="pf-v5-u-mb-lg"
-            />
-          ))}
         <Card isFlat>
-          <AlertGroup
-            isLiveRegion
-            aria-live="polite"
-            aria-relevant="additions text"
-            aria-atomic="false"
-          ></AlertGroup>
           {enabledIdP ? (
             <>
-              <CardTitle className="pf-v5-u-mt-lg">
+              <CardTitle>
                 <Title headingLevel="h4" size="lg">
                   {t("idpAssignedToOrg")}
                 </Title>
@@ -266,14 +218,39 @@ export default function OrgIdentityProviders({
                           {idp.displayName || "--"}
                         </Td>
                         <Td dataLabel={tableHeaders[2].title}>
+                          {idp.providerId || "--"}
+                        </Td>
+                        <Td dataLabel={tableHeaders[3].title}>
                           {idp.enabled ? (
                             <CheckCircleIcon />
                           ) : (
                             <StopCircleIcon />
                           )}
                         </Td>
+                        <Td dataLabel={tableHeaders[4].title}>
+                          <div className="pf-v5-u-display-flex pf-v5-u-align-items-center">
+                            {idp.config?.["home.idp.discovery.domains"]
+                              ?.split("##")
+                              .map((domain: string) => (
+                                <Chip
+                                  key={domain}
+                                  isReadOnly
+                                  className="pf-v5-u-mr-xs"
+                                >
+                                  {domain}
+                                </Chip>
+                              )) || t("any")}
+                            <Button
+                              variant="plain"
+                              onClick={() => setIdpToEdit(idp)}
+                              title={t("idpEdit")}
+                            >
+                              <PencilAltIcon />
+                            </Button>
+                          </div>
+                        </Td>
                         <Td
-                          dataLabel={tableHeaders[3].title}
+                          dataLabel={tableHeaders[5].title}
                           className="pf-v5-u-text-align-right"
                         >
                           <Button
@@ -316,10 +293,17 @@ export default function OrgIdentityProviders({
               }}
               onClear={() => setShowAssignIdpModal(false)}
               organization={org}
-              alerts={alerts}
             />
           )}
         </div>
+        <EditIdentityProviderHomeIdpDomains
+          idp={idpToEdit}
+          org={org}
+          onClear={() => {
+            setIdpToEdit(undefined);
+            refreshIdPs();
+          }}
+        />
       </div>
     );
   }

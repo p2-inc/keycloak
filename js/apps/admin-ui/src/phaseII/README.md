@@ -91,6 +91,7 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
   - In `maven-resources/theme/keycloak.v2/` and `maven-resources-community/theme/keycloak.v2/` change the directory name to `phasetwo.v2`
   - In `maven-resources/META-INF/keycloak-themes.json` rename `keycloak.v2` to `phasetwo.v2`
   - At the bottom of `maven-resources/theme/phasetwo.v2/admin/messages/messages_en.properties` append the section called "phasetwo additions". This must be **added** to the current Keycloak version, as they change a lot of things every release.
+  - Update the `vite.config.ts` to point ot the right theme: `phasetwo.v2` instead of `keycloak.v2`: important for local dev, doesn't affect the build.
 - Orgs
   - This folder contains all the Orgs UI. It exists mostly independent of other code, but does import components from the `ui-shared` and the `src/components` folder.
   - Check all references and imports for changes in location. The KC maintainers have a tendency to move these around a lot. Confirm the imports have also not changed functionality.

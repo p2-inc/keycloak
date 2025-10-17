@@ -116,7 +116,6 @@ type AssignIdentityProviderProps = {
   ) => void;
   onClear: () => void;
   organization: OrgRepresentation;
-  alerts: AlertInfo[];
 };
 
 type idpFormValues = {
@@ -128,7 +127,6 @@ export function AssignIdentityProvider({
   onSelect,
   onClear,
   organization,
-  alerts,
 }: AssignIdentityProviderProps) {
   const { adminClient } = useAdminClient();
   const { t } = useTranslation();
@@ -222,7 +220,7 @@ export function AssignIdentityProvider({
     (identityProviders) => {
       setIdentityProviders(identityProviders);
     },
-    [search],
+    [search, max, first],
   );
 
   let warning;
@@ -259,28 +257,9 @@ export function AssignIdentityProvider({
         </Button>,
       ]}
     >
-      <AlertGroup
-        isLiveRegion
-        aria-live="polite"
-        aria-relevant="additions text"
-        aria-atomic="false"
-      >
-        {alerts
-          .filter(({ variant }) => variant === AlertVariant.danger)
-          .map(({ title, variant, key }) => (
-            <Alert
-              variant={variant}
-              title={title}
-              key={key}
-              timeout={8000}
-              className="pf-v5-u-mb-lg"
-            />
-          ))}
-      </AlertGroup>
-
       {identityProviders && (
         <PaginatingTableToolbar
-          count={page.length || 0}
+          count={identityProviders.length + 1}
           first={first}
           max={max}
           onNextClick={setFirst}
@@ -294,7 +273,7 @@ export function AssignIdentityProvider({
           inputGroupOnEnter={setSearch}
         >
           <IdentityProviderList
-            list={page.slice(0, max)}
+            list={identityProviders}
             setValue={setValue}
             org={organization}
           />
