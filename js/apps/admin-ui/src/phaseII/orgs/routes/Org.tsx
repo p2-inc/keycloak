@@ -1,7 +1,8 @@
+import { generateEncodedPath } from "../../../utils/generateEncodedPath";
 import type { AppRouteObject } from "../../../routes";
 
 import { lazy } from "react";
-import { generatePath, Path } from "react-router-dom";
+import { Path } from "react-router-dom";
 
 export type OrgTab =
   | "settings"
@@ -29,5 +30,5 @@ export const OrgRoute: AppRouteObject = {
 };
 
 export const toOrg = (params: OrgParams): Partial<Path> => ({
-  pathname: generatePath(OrgRoute.path, params),
+  pathname: generateEncodedPath(OrgRoute.path, params),
 });

@@ -1,7 +1,7 @@
 import { lazy } from "react";
-import { generatePath } from "react-router-dom";
 import type { AppRouteObject } from "../../../routes";
 import type { Path } from "react-router-dom";
+import { generateEncodedPath } from "../../../utils/generateEncodedPath";
 
 export type StylesTab = "general" | "login" | "email" | "portal";
 
@@ -30,6 +30,6 @@ export const toStyles = (params: StylesParams): Partial<Path> => {
   const path = params.tab ? StylesRouteWithTab.path : StylesRoute.path;
 
   return {
-    pathname: generatePath(path, params),
+    pathname: generateEncodedPath(path, params),
   };
 };
