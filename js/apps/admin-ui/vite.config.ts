@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
           if (process.env.NODE_ENV === "development") {
             properties = getProperties(
               readFileSync(
-                "./maven-resources/theme/keycloak.v2/admin/messages/messages_en.properties"
+                "./maven-resources/theme/phasetwo.v2/admin/messages/messages_en.properties"
               )
             );
           }
