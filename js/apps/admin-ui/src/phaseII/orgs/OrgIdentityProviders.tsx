@@ -117,7 +117,7 @@ export default function OrgIdentityProviders({
         throw new Error("Failed to update new IdP.");
       }
 
-      addAlert(resp!.message as string, AlertVariant.success);
+      addAlert(resp!.message as string);
       setShowAssignIdpModal(false);
     } catch (e) {
       console.log("Error during IdP assignment", e);
@@ -131,13 +131,13 @@ export default function OrgIdentityProviders({
   const unassignIdentityProvider = async (idpAlias: string) => {
     try {
       const resp = await unlinkIDPtoOrg(org.id, idpAlias);
-      addAlert(
-        resp!.message as string,
-        !resp?.error ? AlertVariant.success : AlertVariant.danger,
-      );
+      if (resp!.error) {
+        throw new Error("Failed to unassign IdP.");
+      }
+      addAlert(t("orgIdpAssignedSuccess"));
     } catch (e) {
       console.log("Error during IdP unassignment", e);
-      addAlert(t("orgIdpFailedAssignment"), AlertVariant.danger);
+      addAlert(t("orgIdpFailedUnassignment"), AlertVariant.danger);
     } finally {
       setEnabledIdP(undefined);
       refresh();
