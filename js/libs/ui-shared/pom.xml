@@ -5,7 +5,7 @@
     <parent>
         <artifactId>keycloak-js-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>26.4.1</version>
+        <version>26.4.2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
