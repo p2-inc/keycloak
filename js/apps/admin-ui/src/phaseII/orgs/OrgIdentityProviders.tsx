@@ -112,12 +112,10 @@ export default function OrgIdentityProviders({
         post_broker_flow: idpConfig.postBrokerLoginFlowAlias,
         sync_mode: idpConfig.syncMode,
       });
-
       if (resp!.error) {
         throw new Error("Failed to update new IdP.");
       }
-
-      addAlert(resp!.message as string);
+      addAlert(t("orgIdpAssignedSuccess"));
       setShowAssignIdpModal(false);
     } catch (e) {
       console.log("Error during IdP assignment", e);
@@ -134,7 +132,7 @@ export default function OrgIdentityProviders({
       if (resp!.error) {
         throw new Error("Failed to unassign IdP.");
       }
-      addAlert(t("orgIdpAssignedSuccess"));
+      addAlert(t("orgIdpUnassignedSuccess"));
     } catch (e) {
       console.log("Error during IdP unassignment", e);
       addAlert(t("orgIdpFailedUnassignment"), AlertVariant.danger);

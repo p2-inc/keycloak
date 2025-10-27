@@ -561,7 +561,6 @@ export default function useOrgFetcher(realm: string) {
     idpAlias: IdentityProviderRepresentation["alias"]
   ) {
     try {
-      console.log("orgId, idpAlias", orgId, idpAlias);
       const resp = await fetchPost(
         `${baseUrl}/orgs/${orgId}/idps/${idpAlias}/unlink`,
         {}

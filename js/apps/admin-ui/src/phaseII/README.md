@@ -113,9 +113,10 @@ P// has added a lot of additional functionality to the Admin UI. Those are cordo
 
 ## Verify
 
-Once done, make sure to test a build with the following:
+Once done, make sure to test a build with the following from root:
 
 ```bash
+    rm -rf js/apps/admin-ui/.wireit && \
     mvn clean package -pl :phasetwo-admin-ui -am -DskipTests
 ```
 
