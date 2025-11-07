@@ -229,6 +229,19 @@ public final class Database {
                 "liquibase.database.core.PostgresDatabase",
                 "postgres"
         ),
+        COCKROACH(POSTGRES.databaseKind, //needs to be aligned with https://quarkus.io/guides/datasource#default-datasource
+                POSTGRES.xaDriver,
+                "io.cockroachdb.jdbc.CockroachDriver",
+                "org.hibernate.dialect.CockroachDialect",
+                //"jdbc:cockroachdb://${kc.db-url-host:localhost}:${kc.db-url-port:26257}/${kc.db-url-database:keycloak}${kc.db-url-properties:}",
+                (namedProperty, alias) -> "jdbc:cockroachdb://%s:%s/%s%s".formatted(
+                        getProperty(DatabaseOptions.DB_URL_HOST, namedProperty, "localhost"),
+                        getProperty(DatabaseOptions.DB_URL_PORT, namedProperty, "26257"),
+                        getProperty(DatabaseOptions.DB_URL_DATABASE, namedProperty, "keycloak"),
+                        getProperty(DatabaseOptions.DB_URL_PROPERTIES, namedProperty)),
+                "liquibase.database.core.CockroachDatabase",
+                "cockroach"
+        ),
         MSSQL("mssql",
                 "com.microsoft.sqlserver.jdbc.SQLServerXADataSource",
                 "com.microsoft.sqlserver.jdbc.SQLServerDriver",
