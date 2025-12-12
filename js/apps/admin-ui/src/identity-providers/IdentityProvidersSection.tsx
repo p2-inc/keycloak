@@ -41,6 +41,7 @@ import { useRealm } from "../context/realm-context/RealmContext";
 import { useServerInfo } from "../context/server-info/ServerInfoProvider";
 import helpUrls from "../help-urls";
 import { toEditOrganization } from "../organizations/routes/EditOrganization";
+import { toOrg } from "../phaseII/orgs/routes/Org";
 import { upperCaseFormatter } from "../util";
 import { ManageOrderDialog } from "./ManageOrderDialog";
 import { toIdentityProvider } from "./routes/IdentityProvider";
@@ -77,6 +78,18 @@ const DetailLink = (identityProvider: IdentityProviderRepresentation) => {
 const OrganizationLink = (identityProvider: IdentityProviderRepresentation) => {
   const { t } = useTranslation();
   const { realm } = useRealm();
+
+  const phaseIIOrgId = identityProvider.config?.["home.idp.discovery.org"];
+  if (phaseIIOrgId) {
+    return (
+      <Link
+        key={identityProvider.providerId}
+        to={toOrg({ realm, orgId: phaseIIOrgId, tab: "settings" })}
+      >
+        {t("organization")}
+      </Link>
+    );
+  }
 
   if (!identityProvider?.organizationId) {
     return "—";
