@@ -16,7 +16,8 @@ export type RealmSettingsTab =
   | "tokens"
   | "client-policies"
   | "user-profile"
-  | "user-registration";
+  | "user-registration"
+  | "attributes"; // Phase Two Realm Settings Addition
 
 export type RealmSettingsParams = {
   realm: string;

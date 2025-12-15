@@ -62,6 +62,7 @@ import { isLightweightUser } from "./utils";
 
 import "./user-section.css";
 import { AdminEvents } from "../events/AdminEvents";
+import { UserOrgs } from "../phaseII/user/user-details-orgs";
 
 export default function EditUser() {
   const { adminClient } = useAdminClient();
@@ -118,6 +119,9 @@ export default function EditUser() {
   );
   const sessionsTab = useRoutableTab(toTab("sessions"));
   const eventsTab = useRoutableTab(toTab("events"));
+
+  // Phase Two User Orgs Tab
+  const userOrgsTab = useRoutableTab(toTab("user-orgs"));
 
   useFetch(
     async () =>
@@ -429,6 +433,13 @@ export default function EditUser() {
                 {...sessionsTab}
               >
                 <UserSessions />
+              </Tab>
+              <Tab
+                data-testid="phasetwo-user-organizations-tab"
+                title={<TabTitleText>{t("userOrganizations")}</TabTitleText>}
+                {...userOrgsTab}
+              >
+                <UserOrgs />
               </Tab>
               {hasAccess("view-events") && (
                 <Tab

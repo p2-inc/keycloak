@@ -108,10 +108,11 @@ When a new Keycloak version is released, the Phase II customizations need to be 
   - Cast the access var to `ExtendedAccessType`: `const access = whoAmI.realm_access[realm] as ExtendedAccessType[] ?? [];`
 - Include the routes for the Phase II orgs and styles in `admin-ui/src/routes`
 - Translations
-  - In `maven-resources/theme/keycloak.v2/` and `maven-resources-community/theme/keycloak.v2/` change the directory name to `phasetwo.v2`
-  - In `maven-resources/META-INF/keycloak-themes.json` rename `keycloak.v2` to `phasetwo.v2`
-  - At the bottom of `maven-resources/theme/phasetwo.v2/admin/messages/messages_en.properties` append the section called "phasetwo additions". This must be **added** to the current Keycloak version, as they change a lot of things every release.
+  - In `admin-ui/maven-resources/theme/keycloak.v2/` and `admin-ui/maven-resources-community/theme/keycloak.v2/` change the directory name to `phasetwo.v2`
+  - In `admin-ui/maven-resources/META-INF/keycloak-themes.json` rename `keycloak.v2` to `phasetwo.v2`
+  - At the bottom of `admin-ui/maven-resources/theme/phasetwo.v2/admin/messages/messages_en.properties` append the section called "phasetwo additions". This must be **added** to the current Keycloak version, as they change a lot of things every release.
   - Update the `vite.config.ts` to point ot the right theme: `phasetwo.v2` instead of `keycloak.v2`: important for local dev, doesn't affect the build.
+- In `vite.config.ts` update `outDir` to be `phasetwo.v2` instead of `keycloak.v2`
 - Orgs
   - This folder contains all the Orgs UI. It exists mostly independent of other code, but does import components from the `ui-shared` and the `src/components` folder.
   - Check all references and imports for changes in location. The KC maintainers have a tendency to move these around a lot. Confirm the imports have also not changed functionality.
@@ -127,9 +128,6 @@ When a new Keycloak version is released, the Phase II customizations need to be 
   - Add `attributes` as a tab option to the type def in `../realm-settings/routes/RealmSettings.tsx`
 - Help URLs
   - In the `/js/apps/admin-ui/src/help-urls.ts` file import `PhaseTwoHelpUrls` and spread it into the object
-- TextAreaControl in ui-shared
-  - this has been updated by the Keycloak team, leave to check for now spread the props to allow row passing `{...props}` to the `TextArea` to allow passing through (allows setting rows number height)
-- In `vite.config.ts` update `outDir` to be `phasetwo.v2` instead of `keycloak.v2`
 
 ## Verify
 

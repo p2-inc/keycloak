@@ -7,9 +7,11 @@ import { PropsWithChildren } from "react";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useWhoAmI } from "../../context/whoami/WhoAmI";
 
+import { ExtendedAccessType } from "../../phaseII/access/access";
+
 type AccessContextProps = {
-  hasAccess: (...types: AccessType[]) => boolean;
-  hasSomeAccess: (...types: AccessType[]) => boolean;
+  hasAccess: (...types: ExtendedAccessType[]) => boolean;
+  hasSomeAccess: (...types: ExtendedAccessType[]) => boolean;
 };
 
 export const AccessContext = createNamedContext<AccessContextProps | undefined>(
@@ -22,9 +24,9 @@ export const useAccess = () => useRequiredContext(AccessContext);
 export const AccessContextProvider = ({ children }: PropsWithChildren) => {
   const { whoAmI } = useWhoAmI();
   const { realm } = useRealm();
-  const access = whoAmI.realm_access[realm] ?? [];
+  const access = (whoAmI.realm_access[realm] as ExtendedAccessType[]) ?? [];
 
-  const hasAccess = (...types: AccessType[]): boolean => {
+  const hasAccess = (...types: ExtendedAccessType[]): boolean => {
     return types.every(
       (type) =>
         type === "anyone" ||
@@ -34,7 +36,7 @@ export const AccessContextProvider = ({ children }: PropsWithChildren) => {
     );
   };
 
-  const hasSomeAccess = (...types: AccessType[]): boolean => {
+  const hasSomeAccess = (...types: ExtendedAccessType[]): boolean => {
     return types.some(
       (type) =>
         type === "anyone" ||
