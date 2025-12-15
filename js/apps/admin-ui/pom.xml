@@ -11,6 +11,14 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+      <groupId>io.phasetwo</groupId>
+    <artifactId>phasetwo-admin-ui</artifactId>
+    <version>26.4.2</version>
+
+    <properties>
+        <admin-ui.theme.name>phasetwo.v2</admin-ui.theme.name>
+    </properties>
+
     <artifactId>keycloak-admin-ui</artifactId>
 
     <name>Keycloak Admin UI</name>
