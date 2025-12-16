@@ -45,6 +45,7 @@ import { upperCaseFormatter } from "../util";
 import { ManageOrderDialog } from "./ManageOrderDialog";
 import { toIdentityProvider } from "./routes/IdentityProvider";
 import { toIdentityProviderCreate } from "./routes/IdentityProviderCreate";
+import { toOrg } from "../phaseII/orgs/routes/Org";
 
 const DetailLink = (identityProvider: IdentityProviderRepresentation) => {
   const { t } = useTranslation();
@@ -78,6 +79,18 @@ const OrganizationLink = (identityProvider: IdentityProviderRepresentation) => {
   const { t } = useTranslation();
   const { realm } = useRealm();
 
+  const phaseIIOrgId = identityProvider.config?.["home.idp.discovery.org"];
+  if (phaseIIOrgId) {
+    return (
+      <Link
+        key={identityProvider.providerId}
+        to={toOrg({ realm, orgId: phaseIIOrgId, tab: "settings" })}
+      >
+        {t("organization")}
+      </Link>
+    );
+  }
+
   if (!identityProvider?.organizationId) {
     return "—";
   }
@@ -95,7 +108,6 @@ const OrganizationLink = (identityProvider: IdentityProviderRepresentation) => {
     </Link>
   );
 };
-
 export default function IdentityProvidersSection() {
   const { adminClient } = useAdminClient();
 

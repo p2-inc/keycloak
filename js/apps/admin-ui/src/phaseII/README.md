@@ -129,6 +129,7 @@ When a new Keycloak version is released, the Phase II customizations need to be 
   - Add `attributes` as a tab option to the type def in `../realm-settings/routes/RealmSettings.tsx`
 - Help URLs
   - In the `/js/apps/admin-ui/src/help-urls.ts` file import `PhaseTwoHelpUrls` and spread it into the object
+- In the `/js/apps/admin-ui/src/identity-providers/IdentityProviderSection.tsx` file, update the `OrganizationLink` function to use the function to create a Phase Two Org link.
 
 ## Verify
 
