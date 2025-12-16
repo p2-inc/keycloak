@@ -51,7 +51,12 @@ export const NewOrgModal = ({
 
   const submitForm = async (org: OrgFormType) => {
     try {
-      const res = await createOrg(org);
+      const cleanedOrg = {
+        ...org,
+        domains: org.domains.filter((domain) => domain.trim() !== ""),
+      };
+
+      const res = await createOrg(cleanedOrg);
 
       if (res.success) {
         addAlert(t("orgCreated"), AlertVariant.success);
