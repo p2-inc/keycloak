@@ -1,6 +1,10 @@
 {
   "themes": [
     {
+      "name": "keycloak.v2",
+      "types": ["admin"]
+    },
+    {
       "name": "phasetwo.v2",
       "types": ["admin"]
     }
