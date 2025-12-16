@@ -43,8 +43,7 @@ export default function EditIdentityProviderHomeIdpDomains({
     },
   });
 
-  const { control, handleSubmit, watch, reset } = form;
-  const selectedDomains = watch("homeIdpDomains");
+  const { control, handleSubmit, reset } = form;
 
   // Reset form when idp changes
   useEffect(() => {
@@ -58,7 +57,7 @@ export default function EditIdentityProviderHomeIdpDomains({
   }, [idp, reset]);
 
   async function handleConfirm() {
-    handleSubmit(async (data) => {
+    await handleSubmit(async (data) => {
       if (!idp) return;
 
       try {
@@ -120,36 +119,42 @@ export default function EditIdentityProviderHomeIdpDomains({
             <Controller
               name="homeIdpDomains"
               control={control}
-              render={({ field }) => (
-                <div>
-                  {org.domains?.map((domain) => (
-                    <Checkbox
-                      key={domain}
-                      id={`domain-${domain}`}
-                      label={domain}
-                      isChecked={field.value.includes(domain)}
-                      className="pf-v5-u-mt-sm"
-                      onChange={(event, checked) => {
-                        const currentValues = field.value || [];
-                        if (checked) {
-                          // Add domain if not already selected
-                          if (!currentValues.includes(domain)) {
-                            field.onChange([...currentValues, domain]);
-                          }
-                        } else {
-                          // Remove domain if currently selected
-                          field.onChange(
-                            currentValues.filter((d) => d !== domain),
-                          );
-                        }
-                      }}
-                    />
-                  ))}
-                  {(!org.domains || org.domains.length === 0) && (
-                    <div>{t("orgNoDomainsAvailable")}</div>
-                  )}
-                </div>
-              )}
+              render={({ field }) => {
+                const validDomains =
+                  org.domains?.filter((domain) => domain.trim() !== "") || [];
+
+                return (
+                  <div>
+                    {validDomains.length > 0 ? (
+                      validDomains.map((domain) => (
+                        <Checkbox
+                          key={domain}
+                          id={`domain-${domain}`}
+                          label={domain}
+                          isChecked={field.value.includes(domain)}
+                          className="pf-v5-u-mt-sm"
+                          onChange={(event, checked) => {
+                            const currentValues = field.value || [];
+                            if (checked) {
+                              // Add domain if not already selected
+                              if (!currentValues.includes(domain)) {
+                                field.onChange([...currentValues, domain]);
+                              }
+                            } else {
+                              // Remove domain if currently selected
+                              field.onChange(
+                                currentValues.filter((d) => d !== domain),
+                              );
+                            }
+                          }}
+                        />
+                      ))
+                    ) : (
+                      <div>{t("orgNoDomainsAvailable")}</div>
+                    )}
+                  </div>
+                );
+              }}
             />
             <FormHelperText className="pf-v5-u-mt-lg">
               {t("orgIdpAssignedDomainsHelperText")}
