@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <changeSet author="keycloak" id="20.0.0-12964-crdb-simple">
+    <createIndex tableName="GROUP_ATTRIBUTE" indexName="IDX_GROUP_ATT_BY_NAME_VALUE">
+      <column name="NAME" type="VARCHAR(255)"/>
+      <!-- Do not include VALUE column -->
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="keycloak" id="client-attributes-string-accomodation-fixed">
+    <addColumn tableName="CLIENT_ATTRIBUTES">
+      <column name="VALUE_NEW" type="NCLOB" />
+    </addColumn>
+
+    <update tableName="CLIENT_ATTRIBUTES">
+      <column name="VALUE_NEW" valueComputed="VALUE"/>
+    </update>
+
+    <dropIndex indexName="idx_client_att_by_name_value" tableName="client_attributes"/>
+
+    <dropColumn tableName="CLIENT_ATTRIBUTES" columnName="VALUE"/>
+    <renameColumn tableName="CLIENT_ATTRIBUTES" oldColumnName="VALUE_NEW" newColumnName="VALUE" columnDataType="NCLOB"/>
+
+    <createIndex indexName="idx_client_att_by_name_value" tableName="client_attributes">
+      <column name="name"/>
+      <column computed="true" name="((value)::character varying(250))"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>
