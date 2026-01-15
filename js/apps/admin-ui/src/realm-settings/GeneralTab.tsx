@@ -172,6 +172,7 @@ function RealmSettingsGeneralTabForm({
                 <ClipboardCopy
                   data-testid="realmName"
                   onChange={field.onChange}
+                  isReadOnly
                 >
                   {field.value}
                 </ClipboardCopy>
