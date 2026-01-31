@@ -130,6 +130,7 @@ When a new Keycloak version is released, the Phase II customizations need to be 
 - Help URLs
   - In the `/js/apps/admin-ui/src/help-urls.ts` file import `PhaseTwoHelpUrls` and spread it into the object
 - In the `/js/apps/admin-ui/src/identity-providers/IdentityProviderSection.tsx` file, update the `OrganizationLink` function to use the function to create a Phase Two Org link.
+- In the `js/apps/admin-ui/src/realm-settings/GeneralTab.tsx` file, update the `ClipboardCopy` element to include the `isReadOnly` prop to prevent editing the realm name.
 
 ## Verify
 
