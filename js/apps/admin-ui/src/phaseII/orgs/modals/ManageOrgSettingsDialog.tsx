@@ -29,6 +29,7 @@ export type OrgConfigType = {
   createAdminUserEnabled: boolean;
   sharedIdpsEnabled: boolean;
   multipleIdpsEnabled: boolean;
+  validateIdpEnabled: boolean;
   expirationInSecs?: number;
 };
 
@@ -179,6 +180,32 @@ export const ManageOrgSettingsDialog = ({
                 variant={AlertVariant.warning}
                 isInline
                 title={t("orgSettingsMultipleIdpsEnabledWarning")}
+                className="pf-v5-u-mt-lg"
+              />
+            )}
+        </FormGroup>
+        <FormGroup
+          label={t("validateIdpEnabled")}
+          fieldId="validateIdpEnabled"
+          disabled={isNil(orgConfig)}
+        >
+          <Checkbox
+            label={t("validateIdpEnabled")}
+            aria-label={t("validateIdpEnabled")}
+            id="validateIdpEnabled"
+            description={t("validateIdpEnabledExplainer")}
+            isChecked={orgConfig?.validateIdpEnabled}
+            isDisabled={isNil(orgConfig)}
+            onChange={(evt, checked) =>
+              setOrgConfig({ ...orgConfig!, validateIdpEnabled: checked })
+            }
+          />
+          {currentOrgConfig?.validateIdpEnabled === true &&
+            orgConfig?.validateIdpEnabled === false && (
+              <Alert
+                variant={AlertVariant.warning}
+                isInline
+                title={t("orgSettingsValidateIdpEnabledWarning")}
                 className="pf-v5-u-mt-lg"
               />
             )}
