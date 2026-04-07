@@ -1,6 +1,8 @@
 import { useState } from "react";
 import {
   PageSection,
+  Text,
+  TextContent,
   ToolbarItem,
   Button,
   AlertVariant,
@@ -8,6 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ViewHeader } from "../../components/view-header/ViewHeader";
+import { FormattedLink } from "../../components/external-link/FormattedLink";
 import helpUrls from "../../help-urls";
 import useOrgFetcher from "./useOrgFetcher";
 import { KeycloakDataTable } from "@keycloak/keycloak-ui-shared";
@@ -71,6 +74,25 @@ export default function OrgsSection() {
         subKey={t("orgExplain")}
         helpUrl={helpUrls.orgsUrl}
       />
+      <PageSection variant="light" className="pf-v5-u-pt-0 pf-v5-u-pb-md">
+        <TextContent>
+          <Text component="small">
+            Use the{" "}
+            <FormattedLink
+              title="IdP Wizard"
+              href={helpUrls.idpWizardUrl}
+              isInline
+            />{" "}
+            to allow for self-setup for SSO configuration. Use the{" "}
+            <FormattedLink
+              title="Org Admin Portal"
+              href={helpUrls.adminPortalUrl}
+              isInline
+            />{" "}
+            to allow self-management of organizations by the members.
+          </Text>
+        </TextContent>
+      </PageSection>
       {manageOrgSettingsDialog && (
         <ManageOrgSettingsDialog
           onClose={() => {

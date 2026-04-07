@@ -1,10 +1,13 @@
 import {
+  Alert,
   AlertVariant,
   Checkbox,
   Form,
   PageSection,
   Title,
 } from "@patternfly/react-core";
+import { FormattedLink } from "../../../components/external-link/FormattedLink";
+import helpUrls from "../../../help-urls";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { HelpItem, TextAreaControl } from "@keycloak/keycloak-ui-shared";
@@ -153,7 +156,7 @@ export const PortalStyles = ({ refresh, realm }: PortalStylesArgs) => {
   }
 
   useEffect(() => {
-    loadRealm();
+    void loadRealm();
   }, []);
 
   const addOrRemoveItem = (
@@ -278,6 +281,23 @@ export const PortalStyles = ({ refresh, realm }: PortalStylesArgs) => {
 
   return (
     <PageSection variant="light" className="keycloak__form portal-styles">
+      <Alert
+        variant="info"
+        title="Admin Portal"
+        isInline
+        className="pf-v5-u-mb-lg"
+      >
+        <p>
+          Learn more about how the Admin Portal works and how to customize it.
+          Launch the &quot;admin portal&quot; client from the client list to see
+          the portal in action.{" "}
+          <FormattedLink
+            title={t("learnMore")}
+            href={helpUrls.adminPortalUrl}
+            isInline
+          />
+        </p>
+      </Alert>
       <Form isHorizontal>
         <FormProvider {...form}>
           <Title headingLevel="h3" className="pf-c-title pf-m-xl">
