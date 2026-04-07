@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  PageSection,
-  Tab,
-  TabTitleText,
-  DropdownItem,
-} from "@patternfly/react-core";
+import { Button, PageSection, Tab, TabTitleText } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useRealm } from "../../context/realm-context/RealmContext";
@@ -20,6 +15,7 @@ import { PortalLink } from "./components/portal-link/PortalLink";
 import useToggle from "../../utils/useToggle";
 import OrgIdentityProviders from "./OrgIdentityProviders";
 import OrgSettings from "./OrgSettings";
+import OrgDomains from "./OrgDomains";
 import OrgAttributes from "./OrgAttributes";
 import {
   RoutableTabs,
@@ -55,6 +51,7 @@ export default function OrgDetails() {
     );
 
   const settingsTab = useTab("settings");
+  const domainsTab = useTab("domains");
   const attributesTab = useTab("attributes");
   const membersTab = useTab("members");
   const invitationsTab = useTab("invitations");
@@ -63,19 +60,22 @@ export default function OrgDetails() {
 
   if (!org) return <div></div>;
 
-  const dropdownItems = [
-    <DropdownItem key="download" onClick={togglePortalLinkOpen}>
-      {t("generatePortalLink")}
-    </DropdownItem>,
-  ];
-
   return (
     <>
       <ViewHeader
         titleKey={org.displayName || org.name || org.id}
         divider={false}
-        dropdownItems={dropdownItems}
       />
+      <PageSection variant="light" className="pf-v5-u-pt-0 pf-v5-u-pb-md">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={togglePortalLinkOpen}
+          data-testid="generate-portal-link-btn"
+        >
+          {t("generatePortalLink")}
+        </Button>
+      </PageSection>
       <PortalLink
         id="id"
         open={portalLinkOpen}
@@ -89,6 +89,13 @@ export default function OrgDetails() {
             {...settingsTab}
           >
             <OrgSettings org={org} refresh={refresh} />
+          </Tab>
+          <Tab
+            id="domains"
+            title={<TabTitleText>Domains</TabTitleText>}
+            {...domainsTab}
+          >
+            <OrgDomains org={org} refresh={refresh} />
           </Tab>
           <Tab
             id="attributes"

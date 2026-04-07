@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
 import {
   AlertVariant,
@@ -23,6 +21,8 @@ import { useTranslation } from "react-i18next";
 import { Link, NavLink } from "react-router-dom";
 import IdentityProviderRepresentation from "../../../../../libs/keycloak-admin-client/lib/defs/identityProviderRepresentation";
 import { useRealm } from "../../context/realm-context/RealmContext";
+import { FormattedLink } from "../../components/external-link/FormattedLink";
+import helpUrls from "../../help-urls";
 import { toIdentityProvider } from "../../identity-providers/routes/IdentityProvider";
 import { AssignIdentityProvider } from "./modals/AssignIdentityProvider";
 import EditIdentityProviderHomeIdpDomains from "./modals/EditIdentityProviderHomeIdpDomains";
@@ -91,8 +91,8 @@ export default function OrgIdentityProviders({
   }
 
   const refreshIdPs = () => {
-    getIDPs();
-    fetchOrgIdps();
+    void getIDPs();
+    void fetchOrgIdps();
   };
 
   useEffect(() => {
@@ -280,7 +280,7 @@ export default function OrgIdentityProviders({
           {showAssignIdpModal && (
             <AssignIdentityProvider
               onSelect={(identityProvider, idpConfig) => {
-                assignIdentityProvider({
+                void assignIdentityProvider({
                   identityProvider,
                   idpConfig: {
                     ...idpConfig,
@@ -306,5 +306,16 @@ export default function OrgIdentityProviders({
     );
   }
 
-  return <div className="pf-v5-u-p-lg">{body}</div>;
+  return (
+    <div className="pf-v5-u-p-lg">
+      <div className="pf-v5-u-mb-md">
+        <FormattedLink
+          title={t("learnMore")}
+          href={helpUrls.orgIdpsUrl}
+          isInline
+        />
+      </div>
+      {body}
+    </div>
+  );
 }
