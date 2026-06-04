@@ -121,6 +121,10 @@ public final class Configuration {
         return PersistedConfigSource.getInstance().getProperties();
     }
 
+    public static String getRawValue(String propertyName) {
+        return getConfig().getRawValue(propertyName);
+    }
+
     public static Iterable<String> getPropertyNames() {
         return getPropertyNames(false);
     }
