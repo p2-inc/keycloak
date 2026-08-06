@@ -1,4 +1,4 @@
-import type { AccessType } from "@keycloak/keycloak-admin-client/lib/defs/whoAmIRepresentation";
+import type { ExtendedAccessType } from "../../phaseII/access/access";
 import {
   ActionGroup,
   ClipboardCopy,
@@ -27,9 +27,9 @@ import { FixedButtonsGroup } from "./FixedButtonGroup";
 export type FormAccessProps = FormProps & {
   /**
    * One of the AccessType's that the user needs to have to view this form. Also see {@link useAccess}.
-   * @type {AccessType}
+   * @type {ExtendedAccessType}
    */
-  role: AccessType;
+  role: ExtendedAccessType;
 
   /**
    * An override property if fine grained access has been setup for this form.

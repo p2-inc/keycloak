@@ -1,4 +1,4 @@
-import type { AccessType } from "@keycloak/keycloak-admin-client/lib/defs/whoAmIRepresentation";
+import type { ExtendedAccessType } from "./phaseII/access/access";
 import type { TFunction } from "i18next";
 import type { ComponentType } from "react";
 import type { NonIndexRouteObject, RouteObject } from "react-router-dom";
@@ -26,7 +26,7 @@ import orgRoutes from "./phaseII/orgs/routes";
 import stylesRoutes from "./phaseII/custom-styles/routes";
 
 export type AppRouteObjectHandle = {
-  access: AccessType | AccessType[];
+  access: ExtendedAccessType | ExtendedAccessType[];
 };
 
 export interface AppRouteObject extends NonIndexRouteObject {

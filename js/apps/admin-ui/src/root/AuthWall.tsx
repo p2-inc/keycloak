@@ -1,8 +1,8 @@
-import { AccessType } from "@keycloak/keycloak-admin-client/lib/defs/whoAmIRepresentation";
 import { useMatches } from "react-router-dom";
 
 import { ForbiddenSection } from "../ForbiddenSection";
 import { useAccess } from "../context/access/Access";
+import type { ExtendedAccessType } from "../phaseII/access/access";
 
 function hasProp<K extends PropertyKey>(
   data: object,
@@ -25,10 +25,10 @@ export const AuthWall = ({ children }: any) => {
     }
 
     if (Array.isArray(handle.access)) {
-      return handle.access as AccessType[];
+      return handle.access as ExtendedAccessType[];
     }
 
-    return [handle.access] as AccessType[];
+    return [handle.access] as ExtendedAccessType[];
   });
 
   if (!hasAccess(...permissionNeeded)) {

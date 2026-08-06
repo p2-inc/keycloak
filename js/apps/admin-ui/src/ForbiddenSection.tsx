@@ -1,10 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { PageSection } from "@patternfly/react-core";
 
-import type { AccessType } from "@keycloak/keycloak-admin-client/lib/defs/whoAmIRepresentation";
+import {
+  describeAccessType,
+  type ExtendedAccessType,
+} from "./phaseII/access/access";
 
 type ForbiddenSectionProps = {
-  permissionNeeded: AccessType | AccessType[];
+  permissionNeeded: ExtendedAccessType | ExtendedAccessType[];
 };
 
 export const ForbiddenSection = ({
@@ -15,10 +18,20 @@ export const ForbiddenSection = ({
     ? permissionNeeded
     : [permissionNeeded];
 
+  const permissionNames = permissionNeededArray
+    .map(describeAccessType)
+    .filter((name) => name !== "");
+
   return (
     <PageSection>
-      {t("forbidden", { count: permissionNeededArray.length })}{" "}
-      {permissionNeededArray.map((p) => p.toString()).join(", ")}
+      {permissionNames.length === 0 ? (
+        t("forbiddenAdminConsole")
+      ) : (
+        <>
+          {t("forbidden", { count: permissionNames.length })}{" "}
+          {permissionNames.join(", ")}
+        </>
+      )}
     </PageSection>
   );
 };
