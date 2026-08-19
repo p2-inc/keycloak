@@ -112,7 +112,7 @@
                             <goal>pnpm</goal>
                         </goals>
                         <configuration>
-                            <arguments>install --prefer-offline --frozen-lockfile --ignore-scripts</arguments>
+                            <arguments>install --prefer-offline --frozen-lockfile --ignore-scripts --config.confirmModulesPurge=false</arguments>
                         </configuration>
                     </execution>
                     <execution>
