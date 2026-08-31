@@ -843,6 +843,1178 @@
     "id" : "25.0.0-28265-tables",
     "author" : "keycloak",
     "filename" : "META-INF/jpa-changelog-25.0.0.xml"
+  }, {
+    "id" : "1648153483142-1",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-2",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-3",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-4",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-5",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-6",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-7",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-8",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-9",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-10",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-11",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-12",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-13",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-14",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-15",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-16",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-17",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-18",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-19",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-20",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-21",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-22",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-23",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-24",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-25",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-26",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-27",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-28",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-29",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-30",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-31",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-32",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-33",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-34",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-35",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-36",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-37",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-38",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-39",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-40",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-41",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-42",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-43",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-44",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-45",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-46",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-47",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-48",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-49",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-50",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-51",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-52",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-53",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-54",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-55",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-56",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-57",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-58",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-59",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-60",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-61",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-62",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-63",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-64",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-65",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-66",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-67",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-68",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-69",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-70",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-71",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-72",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-73",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-74",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-75",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-76",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-77",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-78",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-79",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-80",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-81",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-82",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-83",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-84",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-85",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-86",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-87",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-88",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-89",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-90",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-91",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-92",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-93",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-94",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-95",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-96",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-97",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-98",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-99",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-100",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-101",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-102",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-103",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-104",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-105",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-106",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-107",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-108",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-109",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-110",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-111",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-112",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-113",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-114",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-115",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-116",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-117",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-118",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-119",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-120",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-121",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-122",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-123",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-124",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-125",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-126",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-127",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-128",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-129",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-130",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-131",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-132",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-133",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-134",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-135",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-136",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-137",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-138",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-139",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-140",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-141",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-142",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-143",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-144",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-145",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-146",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-147",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-148",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-149",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-150",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-151",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-152",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-153",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-154",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-155",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-156",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-157",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-158",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-159",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-160",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-161",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-162",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-163",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-164",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-165",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-166",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-167",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-168",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-169",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-170",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-171",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-172",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-173",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-174",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-175",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-176",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-177",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-178",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-179",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-180",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-181",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-182",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-183",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-184",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-185",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-186",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-187",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-188",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-189",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-190",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-191",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-192",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-193",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-194",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-195",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-196",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-197",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-198",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-199",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-200",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-201",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-202",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-203",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-204",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-205",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-206",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-207",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-208",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-209",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-210",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-211",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-212",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-213",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-214",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-215",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-216",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-217",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-218",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-219",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-220",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-221",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-222",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-223",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-224",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-225",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-226",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-227",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-228",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-229",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-230",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-231",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-232",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-233",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-234",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-235",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-236",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-237",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-238",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-239",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-240",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-241",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-242",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-243",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-244",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-245",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-246",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-247",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-248",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-249",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-250",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-251",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-252",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-253",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-254",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-255",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-256",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-257",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-258",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-259",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-260",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-261",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-262",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-263",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-264",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-265",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-266",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-267",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "1648153483142-268",
+    "author" : "garth (generated)",
+    "filename" : "META-INF/jpa-changelog-17.0.0-crdb.xml"
+  }, {
+    "id" : "20.0.0-12964-crdb-simple",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-20.0.0-crdb.xml"
+  }, {
+    "id" : "client-attributes-string-accomodation-fixed",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-20.0.0-crdb.xml"
+  }, {
+    "id" : "21.1.0-19404-2-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-21.1.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-jdbcping-timestamp-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-45292-realm-display-name-add-column-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-45292-realm-display-name-migrate-data-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-45292-realm-display-name-remove-attribute-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-verifiable-credential-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-federated-verifiable-credentials-1-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-outbox-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-9686-dynamic-scopes-consent-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-46204-issued-ver-credential-table-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-issued-ver-credential-expires-at-index-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-issued-ver-credential-vc-id-index-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-federated-issued-ver-credential-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-persistent-auth-session-root-table-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-persistent-auth-session-root-index-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-persistent-auth-session-table-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-single-use-object-table-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-single-use-object-index-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-login-failure-table-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-login-failure-index-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-add-timestamps-client-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-add-last-modified-timestamp-client-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-cluster-event-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
   } ],
   "migrations" : [ ]
 }
