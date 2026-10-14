@@ -2123,6 +2123,18 @@
     "id" : "26.7.0-cluster-event-crdb",
     "author" : "keycloak",
     "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-cluster-event-data-clear-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-cluster-event-data-drop-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
+  }, {
+    "id" : "26.7.0-cluster-event-data-bytes-crdb",
+    "author" : "keycloak",
+    "filename" : "META-INF/jpa-changelog-26.7.0-crdb.xml"
   } ],
   "migrations" : [ ]
 }
