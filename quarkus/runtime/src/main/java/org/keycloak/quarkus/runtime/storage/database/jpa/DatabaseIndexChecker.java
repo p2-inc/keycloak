@@ -181,7 +181,7 @@ public class DatabaseIndexChecker implements Runnable {
 
     private boolean supportsOnlineIndexCreation(Connection connection) throws SQLException {
         String productName = connection.getMetaData().getDatabaseProductName().toLowerCase();
-        if (productName.contains("postgres")
+        if (productName.contains("postgres") || productName.contains("cockroach")
                 || productName.contains("mysql") || productName.contains("mariadb")) {
             return true;
         }
@@ -209,7 +209,10 @@ public class DatabaseIndexChecker implements Runnable {
 
     private void createIndexes(Connection connection, List<IndexInfo> indexes) throws SQLException {
         String productName = connection.getMetaData().getDatabaseProductName().toLowerCase();
-        boolean isPostgres = productName.contains("postgres");
+        // CockroachDB reports itself as "CockroachDB" when the JDBC driver runs with useCockroachMetadata=true.
+        // It speaks the PostgreSQL dialect and accepts CREATE INDEX CONCURRENTLY (index builds are always online),
+        // so it takes the PostgreSQL path: CONCURRENTLY syntax and DDL outside a transaction block.
+        boolean isPostgres = productName.contains("postgres") || productName.contains("cockroach");
         boolean isOracle = productName.contains("oracle");
         boolean isMssql = productName.contains("microsoft");
 
