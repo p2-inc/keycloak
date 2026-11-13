@@ -190,7 +190,7 @@ public class QuarkusJpaConnectionProviderFactory extends AbstractJpaConnectionPr
                 .property()
                 .name("autoCreateMissingIndexes")
                 .type("boolean")
-                .helpText("If enabled, missing database indexes are automatically created using online/concurrent DDL after startup on databases that support it (PostgreSQL, Oracle, MySQL/MariaDB, and MSSQL Enterprise/Developer/Azure SQL). If disabled, missing indexes are only logged for manual creation.")
+                .helpText("If enabled, missing database indexes are automatically created using online/concurrent DDL after startup on databases that support it (PostgreSQL, CockroachDB, Oracle, MySQL/MariaDB, and MSSQL Enterprise/Developer/Azure SQL). If disabled, missing indexes are only logged for manual creation.")
                 .defaultValue(true)
                 .add()
                 .build();
